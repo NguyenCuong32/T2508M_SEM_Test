@@ -35,7 +35,7 @@ namespace ComicSystem.Controllers
                 (model.Username == "user" && model.Password == "user123"))
             {
                 var jwtSettings = _configuration.GetSection("Jwt");
-                var keyString = jwtSettings["Key"] ?? "ComicSystemSuperSecretKeyForJWTAuth2026_SecureKeyVeryLongSecret!";
+                var keyString = jwtSettings["Key"] ?? "ManhConDepTraiNhatTheGioiDungKhongMoiNguoi!";
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -65,11 +65,11 @@ namespace ComicSystem.Controllers
                     Token = tokenString,
                     Expiration = expiration,
                     Username = model.Username,
-                    Message = "Đăng nhập thành công! Hãy đính kèm token này vào Header 'Authorization: Bearer <token>' khi gọi API."
+                    Message = "Đăng nhập thành công!"
                 });
             }
 
-            return Unauthorized(new { message = "Tên đăng nhập hoặc mật khẩu không chính xác! Tải khoản mẫu: admin / admin123" });
+            return Unauthorized(new { message = "Tên đăng nhập hoặc mật khẩu không chính xác!" });
         }
     }
 }
