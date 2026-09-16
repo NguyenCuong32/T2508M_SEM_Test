@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ComicSystem.Models;
 using ComicSystem.Services;
 
 namespace ComicSystem.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/customers")]
     [Route("api/khachhang")]

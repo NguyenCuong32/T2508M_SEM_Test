@@ -1,3 +1,6 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using ComicSystem.Data;
 using ComicSystem.Repositories;
@@ -21,6 +24,33 @@ builder.Services.AddScoped<IRentalRepository, RentalRepository>();
 builder.Services.AddScoped<IComicBookService, ComicBookService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IRentalService, RentalService>();
+
+// Configure JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var keyString = jwtSettings["Key"] ?? "ComicSystemSuperSecretKeyForJWTAuth2026_SecureKeyVeryLongSecret!";
+var key = Encoding.UTF8.GetBytes(keyString);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings["Issuer"] ?? "ComicSystemServer",
+        ValidateAudience = true,
+        ValidAudience = jwtSettings["Audience"] ?? "ComicSystemClient",
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
 
 
 var app = builder.Build();
@@ -53,6 +83,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

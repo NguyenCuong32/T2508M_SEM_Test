@@ -145,3 +145,4 @@ C:\Users\Admin\Downloads\T2508M_SEM_Test\obj\Debug\net8.0\refint\ComicSystem.dll
 C:\Users\Admin\Downloads\T2508M_SEM_Test\obj\Debug\net8.0\ComicSystem.pdb
 C:\Users\Admin\Downloads\T2508M_SEM_Test\obj\Debug\net8.0\ComicSystem.genruntimeconfig.cache
 C:\Users\Admin\Downloads\T2508M_SEM_Test\obj\Debug\net8.0\ref\ComicSystem.dll
+C:\Users\Admin\Downloads\T2508M_SEM_Test\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
