@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using ComicSystem.Models;
 
-namespace ComicSystem.Repositories
+namespace ComicSystem.Services
 {
-    public interface ICustomerRepository
+    public interface ICustomerService
     {
         Task<IEnumerable<Customer>> GetAllAsync();
         Task<Customer?> GetByIdAsync(int id);

@@ -2,24 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ComicSystem.Repositories;
+using ComicSystem.Services;
 using ComicSystem.ViewModels;
 
 namespace ComicSystem.Controllers
 {
     public class ReportsController : Controller
     {
-        private readonly IRentalRepository _rentalRepository;
+        private readonly IRentalService _rentalService;
 
-        public ReportsController(IRentalRepository rentalRepository)
+        public ReportsController(IRentalService rentalService)
         {
-            _rentalRepository = rentalRepository;
+            _rentalService = rentalService;
         }
 
         // GET: Reports
         public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
         {
-            var rentalDetailsList = await _rentalRepository.GetReportDetailsAsync(startDate, endDate);
+            var rentalDetailsList = await _rentalService.GetReportDetailsAsync(startDate, endDate);
 
             var reportItems = new List<ReportItemViewModel>();
             int stt = 1;

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ComicSystem.Data;
 using ComicSystem.Repositories;
+using ComicSystem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,11 @@ builder.Services.AddDbContext<ComicDbContext>(options =>
 builder.Services.AddScoped<IComicBookRepository, ComicBookRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IRentalRepository, RentalRepository>();
+
+// Register Services (Dependency Injection)
+builder.Services.AddScoped<IComicBookService, ComicBookService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IRentalService, RentalService>();
 
 
 var app = builder.Build();

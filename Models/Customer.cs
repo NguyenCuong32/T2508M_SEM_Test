@@ -27,6 +27,7 @@ namespace ComicSystem.Models
         public DateTime RegisterDate { get; set; } = DateTime.Now;
 
         // Navigation property
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual ICollection<Rental>? Rentals { get; set; }
     }
 }

@@ -30,5 +30,26 @@ namespace ComicSystem.Repositories
             await _context.Customers.AddAsync(customer);
             await _context.SaveChangesAsync();
         }
+
+        public async Task DeleteAsync(int id)
+        {
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer != null)
+            {
+                // Remove all rentals for this customer
+                var rentals = await _context.Rentals
+                    .Include(r => r.RentalDetails)
+                    .Where(r => r.CustomerID == id)
+                    .ToListAsync();
+
+                if (rentals.Count > 0)
+                {
+                    _context.Rentals.RemoveRange(rentals);
+                }
+
+                _context.Customers.Remove(customer);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

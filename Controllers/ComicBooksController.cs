@@ -1,23 +1,23 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ComicSystem.Models;
-using ComicSystem.Repositories;
+using ComicSystem.Services;
 
 namespace ComicSystem.Controllers
 {
     public class ComicBooksController : Controller
     {
-        private readonly IComicBookRepository _comicBookRepository;
+        private readonly IComicBookService _comicBookService;
 
-        public ComicBooksController(IComicBookRepository comicBookRepository)
+        public ComicBooksController(IComicBookService comicBookService)
         {
-            _comicBookRepository = comicBookRepository;
+            _comicBookService = comicBookService;
         }
 
         // GET: ComicBooks
         public async Task<IActionResult> Index()
         {
-            var books = await _comicBookRepository.GetAllAsync();
+            var books = await _comicBookService.GetAllAsync();
             return View(books);
         }
 
@@ -29,7 +29,7 @@ namespace ComicSystem.Controllers
                 return NotFound();
             }
 
-            var comicBook = await _comicBookRepository.GetByIdAsync(id.Value);
+            var comicBook = await _comicBookService.GetByIdAsync(id.Value);
             if (comicBook == null)
             {
                 return NotFound();
@@ -51,7 +51,7 @@ namespace ComicSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _comicBookRepository.AddAsync(comicBook);
+                await _comicBookService.AddAsync(comicBook);
                 TempData["SuccessMessage"] = "Thêm mới truyện thành công!";
                 return RedirectToAction(nameof(Index));
             }
@@ -66,7 +66,7 @@ namespace ComicSystem.Controllers
                 return NotFound();
             }
 
-            var comicBook = await _comicBookRepository.GetByIdAsync(id.Value);
+            var comicBook = await _comicBookService.GetByIdAsync(id.Value);
             if (comicBook == null)
             {
                 return NotFound();
@@ -86,12 +86,12 @@ namespace ComicSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                if (!await _comicBookRepository.ExistsAsync(comicBook.ComicBookID))
+                if (!await _comicBookService.ExistsAsync(comicBook.ComicBookID))
                 {
                     return NotFound();
                 }
 
-                await _comicBookRepository.UpdateAsync(comicBook);
+                await _comicBookService.UpdateAsync(comicBook);
                 TempData["SuccessMessage"] = "Cập nhật truyện thành công!";
                 return RedirectToAction(nameof(Index));
             }
@@ -106,7 +106,7 @@ namespace ComicSystem.Controllers
                 return NotFound();
             }
 
-            var comicBook = await _comicBookRepository.GetByIdAsync(id.Value);
+            var comicBook = await _comicBookService.GetByIdAsync(id.Value);
             if (comicBook == null)
             {
                 return NotFound();
@@ -120,7 +120,7 @@ namespace ComicSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _comicBookRepository.DeleteAsync(id);
+            await _comicBookService.DeleteAsync(id);
             TempData["SuccessMessage"] = "Xóa truyện thành công!";
             return RedirectToAction(nameof(Index));
         }

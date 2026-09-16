@@ -1,0 +1,45 @@
+@model ComicSystem.Models.Customer
+
+@{
+    ViewData["Title"] = "Xóa khách hàng";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="bi bi-person-x me-2"></i>Xác nhận xóa Khách hàng</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-danger fw-bold">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    Bạn có chắc chắn muốn xóa khách hàng này không?
+                </p>
+                <div class="alert alert-warning py-2 small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Lưu ý: Nếu khách hàng này có các phiếu cho thuê truyện đang tồn tại, các phiếu thuê đó cũng sẽ tự động bị xóa!
+                </div>
+
+                <dl class="row">
+                    <dt class="col-sm-4">ID:</dt>
+                    <dd class="col-sm-8">@Model.CustomerID</dd>
+
+                    <dt class="col-sm-4">Họ và tên:</dt>
+                    <dd class="col-sm-8 fw-bold text-primary">@Model.FullName</dd>
+
+                    <dt class="col-sm-4">Số điện thoại:</dt>
+                    <dd class="col-sm-8">@Model.PhoneNumber</dd>
+
+                    <dt class="col-sm-4">Ngày đăng ký:</dt>
+                    <dd class="col-sm-8">@Model.RegisterDate.ToString("dd/MM/yyyy")</dd>
+                </dl>
+
+                <form asp-action="Delete" class="d-flex justify-content-between pt-3">
+                    <input type="hidden" asp-for="CustomerID" />
+                    <a asp-action="Index" class="btn btn-secondary">Hủy bỏ</a>
+                    <button type="submit" class="btn btn-danger">Xác nhận xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
