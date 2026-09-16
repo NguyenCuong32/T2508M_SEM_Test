@@ -1,0 +1,40 @@
+@model ComicSystem.Models.Customer
+
+@{
+    ViewData["Title"] = "Customer Registration";
+}
+
+<h1>Register Customer</h1>
+
+<h4>Customer Information</h4>
+<hr />
+<div class="row">
+    <div class="col-md-5">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="FullName" class="control-label">Full Name</label>
+                <input asp-for="FullName" class="form-control" placeholder="Nhập họ tên" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="RegistrationDate" class="control-label">Registration Date</label>
+                <input asp-for="RegistrationDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
+                <span asp-validation-for="RegistrationDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Register" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>

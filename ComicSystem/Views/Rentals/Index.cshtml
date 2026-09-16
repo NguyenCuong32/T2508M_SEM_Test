@@ -1,0 +1,60 @@
+﻿@model IEnumerable<ComicSystem.Models.RentalReportViewModel>
+
+@{
+    ViewData["Title"] = "Rental Report";
+    int no = 1;
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Rental Report</h2>
+
+    <form method="get" asp-action="Index" class="row g-3 mb-4">
+        <div class="col-auto">
+            <label class="form-label fw-bold">Start Date</label>
+            <input type="date" name="startDate" value="@ViewBag.StartDate" class="form-control" />
+        </div>
+        <div class="col-auto">
+            <label class="form-label fw-bold">End Date</label>
+            <input type="date" name="endDate" value="@ViewBag.EndDate" class="form-control" />
+        </div>
+        <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-striped text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>No</th>
+                <th>Book name</th>
+                <th>Rental date</th>
+                <th>Return date</th>
+                <th>Customer name</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@(no++)</td>
+                        <td>@item.BookName</td>
+                        <td>@item.RentalDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.ReturnDate.ToString("dd/MM/yyyy")</td>
+                        <td>@item.CustomerName</td>
+                        <td>@item.Quantity</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-muted">Không có dữ liệu trong khoảng thời gian này</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
