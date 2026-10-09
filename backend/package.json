@@ -1,0 +1,23 @@
+{
+  "name": "battlegame-azure-functions",
+  "version": "1.0.0",
+  "description": "BattleGame Azure Functions API",
+  "main": "dist/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "start": "func start",
+    "prestart": "npm run build"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "mssql": "^10.0.4",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/mssql": "^9.1.4",
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^9.0.0",
+    "typescript": "^5.0.0"
+  }
+}

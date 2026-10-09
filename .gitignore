@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+backend/dist/
+frontend/dist/
+
+# Local settings (contains passwords - do not commit)
+backend/local.settings.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
