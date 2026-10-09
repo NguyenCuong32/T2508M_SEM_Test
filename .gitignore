@@ -1,0 +1,21 @@
+# Build and IDE artifacts
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+
+# Node.js
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Azure Functions
+local.settings.json
+.azurefunctions/
+
+# OS files
+.DS_Store
+Thumbs.db
