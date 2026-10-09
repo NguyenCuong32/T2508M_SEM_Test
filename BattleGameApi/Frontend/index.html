@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Assets by Player Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        table { border-collapse: collapse; width: 80%; margin-top: 20px; }
+        th, td { border: 1px solid #000; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h2>Assets by Player Report</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Player name</th>
+                <th>Level</th>
+                <th>Age</th>
+                <th>Asset name</th>
+            </tr>
+        </thead>
+        <tbody id="data-table"></tbody>
+    </table>
+
+    <script>
+        fetch('http://localhost:7071/api/getassetsbyplayer')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('data-table');
+                tbody.innerHTML = '';
+                data.forEach((item, index) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.playerName || item.PlayerName}</td>
+                        <td>${item.level || item.Level}</td>
+                        <td>${item.age || item.Age}</td>
+                        <td>${item.assetName || item.AssetName}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            })
+            .catch(err => console.error(err));
+    </script>
+</body>
+</html>
