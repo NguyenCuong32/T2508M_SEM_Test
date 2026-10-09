@@ -1,0 +1,23 @@
+# .NET
+**/bin/
+**/obj/
+*.user
+
+# Azure Functions local secrets
+**/local.settings.json
+
+# Node/Vite
+**/node_modules/
+**/dist/
+**/.env
+**/.env.local
+
+# Editors and operating systems
+.vs/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
