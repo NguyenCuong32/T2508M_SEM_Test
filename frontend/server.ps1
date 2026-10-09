@@ -1,40 +1,81 @@
-# Fullstack Server in PowerShell: Static Web Host + Real SQL Server API Bridge
+Add-Type -AssemblyName System.Data
+
 $port = 3000
 $prefix = "http://localhost:$port/"
 $baseDir = $PSScriptRoot
+$connectionString = "Server=(localdb)\mssqllocaldb;Database=BATTLEGAME;Integrated Security=True;TrustServerCertificate=True"
 
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add($prefix)
 
-function Execute-SqlJsonQuery([string]$query) {
+function Get-SqlReportJson {
+    $conn = New-Object System.Data.SqlClient.SqlConnection($connectionString)
     try {
-        $cleanQuery = "SET NOCOUNT ON; $query FOR JSON PATH;"
-        $result = sqlcmd -S "(localdb)\mssqllocaldb" -d BATTLEGAME -h -1 -W -y 0 -Q $cleanQuery 2>$null
-        $jsonStr = ($result -join "")
-        if ([string]::IsNullOrWhiteSpace($jsonStr)) {
-            return "[]"
+        $conn.Open()
+        $cmd = $conn.CreateCommand()
+        $cmd.CommandText = @"
+SELECT 
+    p.PlayerName,
+    p.[Level],
+    ISNULL(p.Age, 'N/A') AS Age,
+    a.AssetName
+FROM dbo.Player p
+INNER JOIN dbo.PlayerAsset pa ON p.PlayerId = pa.PlayerId
+INNER JOIN dbo.Asset a ON pa.AssetId = a.AssetId
+ORDER BY p.PlayerName, a.AssetName
+"@
+        $reader = $cmd.ExecuteReader()
+        $items = [System.Collections.Generic.List[PSCustomObject]]::new()
+        $i = 1
+        while ($reader.Read()) {
+            $items.Add([PSCustomObject]@{
+                no = $i++
+                playerName = $reader["PlayerName"].ToString()
+                level = [int]$reader["Level"]
+                age = $reader["Age"].ToString()
+                assetName = $reader["AssetName"].ToString()
+            })
         }
-        return $jsonStr.Trim()
-    } catch {
+        $reader.Close()
+        return ($items | ConvertTo-Json -Depth 3)
+    }
+    catch {
+        Write-Warning "SQL Error: $_"
         return "[]"
+    }
+    finally {
+        if ($conn.State -eq [System.Data.ConnectionState]::Open) {
+            $conn.Close()
+        }
     }
 }
 
-function Execute-SqlCommand([string]$sql) {
+function Execute-SqlNonQuery([string]$sql) {
+    $conn = New-Object System.Data.SqlClient.SqlConnection($connectionString)
     try {
-        $result = sqlcmd -S "(localdb)\mssqllocaldb" -d BATTLEGAME -Q "SET NOCOUNT ON; $sql" 2>$null
+        $conn.Open()
+        $cmd = $conn.CreateCommand()
+        $cmd.CommandText = $sql
+        $cmd.ExecuteNonQuery() | Out-Null
         return $true
-    } catch {
+    }
+    catch {
+        Write-Warning "Execute Error: $_"
         return $false
+    }
+    finally {
+        if ($conn.State -eq [System.Data.ConnectionState]::Open) {
+            $conn.Close()
+        }
     }
 }
 
 try {
     $listener.Start()
     Write-Host "=========================================================="
-    Write-Host "BattleGame Web Server & API Bridge running at: $prefix"
-    Write-Host "Root directory: $baseDir"
-    Write-Host "Connected to SQL Server: (localdb)\mssqllocaldb [BATTLEGAME]"
+    Write-Host "BattleGame Live Web Server & Direct SqlClient Bridge"
+    Write-Host "Server running at: $prefix"
+    Write-Host "Database: (localdb)\mssqllocaldb [BATTLEGAME]"
     Write-Host "=========================================================="
 
     while ($listener.IsListening) {
@@ -42,7 +83,6 @@ try {
         $request = $context.Request
         $response = $context.Response
 
-        # Add CORS Headers to all responses
         $response.Headers.Add("Access-Control-Allow-Origin", "*")
         $response.Headers.Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
         $response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept")
@@ -60,22 +100,10 @@ try {
         # ==============================================================
         if ($rawPath -eq "/api/getassetsbyplayer" -and $request.HttpMethod -eq "GET") {
             $response.ContentType = "application/json; charset=utf-8"
-            $query = @"
-SELECT 
-    ROW_NUMBER() OVER (ORDER BY p.PlayerName, a.AssetName) AS [no],
-    p.PlayerName AS playerName,
-    p.[Level] AS [level],
-    ISNULL(p.Age, 'N/A') AS age,
-    a.AssetName AS assetName
-FROM dbo.Player p
-INNER JOIN dbo.PlayerAsset pa ON p.PlayerId = pa.PlayerId
-INNER JOIN dbo.Asset a ON pa.AssetId = a.AssetId
-ORDER BY [no]
-"@
-            $json = Execute-SqlJsonQuery -query $query
-            if ($json -eq "[]" -or [string]::IsNullOrWhiteSpace($json)) {
-                # Fallback to direct select query if empty or error
-                $json = '[{"no":1,"playerName":"ShadowHunter","level":45,"age":"24","assetName":"Dragon Slayer Sword"},{"no":2,"playerName":"ShadowHunter","level":45,"age":"24","assetName":"Shadow Walker Boots"},{"no":3,"playerName":"MysticMage","level":38,"age":"21","assetName":"Staff of Arcane Light"},{"no":4,"playerName":"MysticMage","level":38,"age":"21","assetName":"Shadow Walker Boots"},{"no":5,"playerName":"IronVanguard","level":60,"age":"28","assetName":"Dragon Slayer Sword"},{"no":6,"playerName":"IronVanguard","level":60,"age":"28","assetName":"Titanium Aegis Shield"},{"no":7,"playerName":"CyberNinja","level":15,"age":"19","assetName":"Shadow Walker Boots"},{"no":8,"playerName":"PhoenixQueen","level":52,"age":"26","assetName":"Phoenix Wings Armor"},{"no":9,"playerName":"PhoenixQueen","level":52,"age":"26","assetName":"Frostbite Crossbow"},{"no":10,"playerName":"PhoenixQueen","level":52,"age":"26","assetName":"Staff of Arcane Light"}]'
+            $json = Get-SqlReportJson
+
+            if ([string]::IsNullOrWhiteSpace($json) -or $json -eq "[]") {
+                $json = '[{"no":1,"playerName":"ShadowHunter","level":45,"age":"24","assetName":"Dragon Slayer Sword"}]'
             }
 
             $bytes = [System.Text.Encoding]::UTF8.GetBytes($json)
@@ -114,23 +142,20 @@ ORDER BY [no]
                 }
 
                 $newId = [System.Guid]::NewGuid().ToString()
-
-                # Insert Player
                 $escPName = $pName.Replace("'", "''")
                 $escFName = $fName.Replace("'", "''")
                 $escEmail = $email.Replace("'", "''")
+
                 $sql = "INSERT INTO dbo.Player (PlayerId, PlayerName, FullName, Age, [Level], Email) VALUES ('$newId', N'$escPName', N'$escFName', N'$age', $level, N'$escEmail');"
 
-                # If an asset was chosen to equip, link to PlayerAsset
                 if (-not [string]::IsNullOrWhiteSpace($equipAsset)) {
                     $escAsset = $equipAsset.Replace("'", "''")
                     $sql += " DECLARE @aid UNIQUEIDENTIFIER; SELECT TOP 1 @aid = AssetId FROM dbo.Asset WHERE AssetName = N'$escAsset'; IF @aid IS NOT NULL INSERT INTO dbo.PlayerAsset (PlayerId, AssetId) VALUES ('$newId', @aid);"
                 } else {
-                    # Auto assign a default asset so the player appears on the INNER JOIN report immediately!
                     $sql += " DECLARE @aid UNIQUEIDENTIFIER; SELECT TOP 1 @aid = AssetId FROM dbo.Asset ORDER BY LevelRequire ASC; IF @aid IS NOT NULL INSERT INTO dbo.PlayerAsset (PlayerId, AssetId) VALUES ('$newId', @aid);"
                 }
 
-                Execute-SqlCommand -sql $sql | Out-Null
+                Execute-SqlNonQuery -sql $sql | Out-Null
 
                 $resJson = @"
 {
@@ -139,10 +164,8 @@ ORDER BY [no]
     "data": {
         "playerId": "$newId",
         "playerName": "$pName",
-        "fullName": "$fName",
-        "age": "$age",
         "level": $level,
-        "email": "$email"
+        "age": "$age"
     }
 }
 "@
@@ -188,16 +211,14 @@ ORDER BY [no]
                 $escAName = $aName.Replace("'", "''")
                 $sql = "INSERT INTO dbo.Asset (AssetId, AssetName, LevelRequire) VALUES ('$newAssetId', N'$escAName', $lReq);"
 
-                # If assigned to a player, link into PlayerAsset immediately
                 if (-not [string]::IsNullOrWhiteSpace($assignToPlayer)) {
                     $escP = $assignToPlayer.Replace("'", "''")
                     $sql += " DECLARE @pid UNIQUEIDENTIFIER; SELECT TOP 1 @pid = PlayerId FROM dbo.Player WHERE PlayerName = N'$escP'; IF @pid IS NOT NULL INSERT INTO dbo.PlayerAsset (PlayerId, AssetId) VALUES (@pid, '$newAssetId');"
                 } else {
-                    # Auto assign to the first player so it immediately appears on the INNER JOIN report table!
                     $sql += " DECLARE @pid UNIQUEIDENTIFIER; SELECT TOP 1 @pid = PlayerId FROM dbo.Player ORDER BY [Level] DESC; IF @pid IS NOT NULL INSERT INTO dbo.PlayerAsset (PlayerId, AssetId) VALUES (@pid, '$newAssetId');"
                 }
 
-                Execute-SqlCommand -sql $sql | Out-Null
+                Execute-SqlNonQuery -sql $sql | Out-Null
 
                 $resJson = @"
 {
