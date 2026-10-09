@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BATTLEGAME - Cổng Quản Lý Người Chơi &amp; Tài Sản</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-enter {
+            animation: slideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @media print {
+            header, .no-print, .tab-buttons, footer, #toastContainer, #playerModal {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .print-area {
+                border: none !important;
+                box-shadow: none !important;
+            }
+            table {
+                width: 100% !important;
+                color: black !important;
+                border-collapse: collapse !important;
+            }
+            th, td {
+                border: 1px solid #ccc !important;
+                color: black !important;
+                padding: 8px !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased selection:bg-violet-600 selection:text-white transition-colors duration-200">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-gamepad text-xl text-white"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl font-bold bg-gradient-to-r from-violet-400 to-indigo-300 bg-clip-text text-transparent">BATTLEGAME</h1>
+                        <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30">Hệ Thống Pro</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Hệ Thống Quản Lý Người Chơi &amp; Tài Sản Game</p>
+                </div>
+            </div>
+
+            <!-- Các nút tiện ích Header -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Hướng dẫn phím tắt -->
+                <button onclick="toggleShortcutsModal()" title="Xem phím tắt nhanh" class="p-2 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white text-xs transition">
+                    <i class="fa-regular fa-keyboard"></i>
+                </button>
+
+                <!-- Bật/Tắt âm thanh hiệu ứng -->
+                <button onclick="toggleSound()" id="soundToggleBtn" title="Bật/Tắt âm thanh thông báo" class="p-2 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-violet-400 hover:text-violet-300 text-xs transition">
+                    <i class="fa-solid fa-volume-high" id="soundIcon"></i>
+                </button>
+
+                <a href="/swagger" target="_blank" class="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 transition">
+                    <i class="fa-solid fa-code text-indigo-400 mr-1.5"></i> Swagger API
+                </a>
+                <span id="apiStatusBadge" class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span> API Online
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <!-- Navigation Tabs -->
+        <div class="tab-buttons flex flex-wrap gap-2 border-b border-slate-700/80 pb-3">
+            <button onclick="switchTab('report')" id="tabBtn-report" class="tab-btn px-4 py-2 rounded-xl font-medium text-sm flex items-center gap-2 bg-violet-600 text-white shadow-lg shadow-violet-600/30 transition">
+                <i class="fa-solid fa-table-list"></i> Báo Cáo Tài Sản <span class="text-xs opacity-60">[1]</span>
+            </button>
+            <button onclick="switchTab('register')" id="tabBtn-register" class="tab-btn px-4 py-2 rounded-xl font-medium text-sm flex items-center gap-2 bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition">
+                <i class="fa-solid fa-user-plus"></i> Đăng Ký Người Chơi <span class="text-xs opacity-60">[2]</span>
+            </button>
+            <button onclick="switchTab('asset')" id="tabBtn-asset" class="tab-btn px-4 py-2 rounded-xl font-medium text-sm flex items-center gap-2 bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition">
+                <i class="fa-solid fa-shield-halved"></i> Tạo Tài Sản Mới <span class="text-xs opacity-60">[3]</span>
+            </button>
+            <button onclick="switchTab('assign')" id="tabBtn-assign" class="tab-btn px-4 py-2 rounded-xl font-medium text-sm flex items-center gap-2 bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition">
+                <i class="fa-solid fa-link"></i> Gán Tài Sản Cho Người Chơi <span class="text-xs opacity-60">[4]</span>
+            </button>
+        </div>
+
+        <!-- Toast Notification Container -->
+        <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+        <!-- ================= TAB 1: BÁO CÁO (YÊU CẦU 3 & 4) ================= -->
+        <section id="tab-report" class="space-y-6">
+            <!-- Thống kê tổng quan -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 no-print">
+                <div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-2xl flex items-center justify-between hover:border-violet-500/50 transition">
+                    <div>
+                        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tổng Báo Cáo</p>
+                        <p id="totalReportCount" class="text-2xl font-bold text-white mt-1">0</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                        <i class="fa-solid fa-scroll text-lg"></i>
+                    </div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-2xl flex items-center justify-between hover:border-blue-500/50 transition">
+                    <div>
+                        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Người Chơi</p>
+                        <p id="totalPlayersCount" class="text-2xl font-bold text-white mt-1">0</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+                        <i class="fa-solid fa-users text-lg"></i>
+                    </div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-2xl flex items-center justify-between hover:border-emerald-500/50 transition">
+                    <div>
+                        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tài Sản Game</p>
+                        <p id="totalAssetsCount" class="text-2xl font-bold text-white mt-1">0</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                        <i class="fa-solid fa-gem text-lg"></i>
+                    </div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 p-4 rounded-2xl flex items-center justify-between hover:border-amber-500/50 transition">
+                    <div>
+                        <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Cấp Độ TB</p>
+                        <p id="avgLevelCount" class="text-2xl font-bold text-amber-400 mt-1">0</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-chart-line text-lg"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bảng Báo Cáo Card -->
+            <div class="print-area bg-slate-800/80 border border-slate-700/80 rounded-2xl shadow-xl overflow-hidden">
+                <!-- Toolbar Điều khiển -->
+                <div class="p-5 border-b border-slate-700/80 flex flex-col lg:flex-row lg:items-center justify-between gap-4 no-print">
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-violet-400"></i> Báo Cáo Tài Sản Người Chơi
+                        </h2>
+                        <p id="filterStatsText" class="text-xs text-slate-400 mt-0.5">Hiển thị dữ liệu người chơi và tài sản sở hữu</p>
+                    </div>
+
+                    <!-- Tiện ích Lọc, Tìm kiếm & Xuất File -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Bộ lọc Cấp Bậc (Filter Chips) -->
+                        <div class="flex items-center gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-700/60 text-xs">
+                            <button onclick="setTierFilter('all')" id="tier-all" class="tier-chip px-2.5 py-1 rounded-lg bg-violet-600 text-white font-medium transition">Tất cả</button>
+                            <button onclick="setTierFilter('rookie')" id="tier-rookie" class="tier-chip px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Tân thủ</button>
+                            <button onclick="setTierFilter('warrior')" id="tier-warrior" class="tier-chip px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Chiến binh</button>
+                            <button onclick="setTierFilter('master')" id="tier-master" class="tier-chip px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition">Cao thủ</button>
+                        </div>
+
+                        <!-- Ô tìm kiếm thông minh -->
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                            <input id="searchInput" oninput="handleSearchInput()" type="text" placeholder="Tìm kiếm nhanh... [/]" class="bg-slate-900 border border-slate-700 rounded-lg pl-8 pr-7 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 w-44 sm:w-56 transition">
+                            <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-2 text-slate-500 hover:text-slate-300 text-xs">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <!-- Nút Xuất CSV -->
+                        <button onclick="exportToCSV()" title="Xuất dữ liệu bảng ra file CSV / Excel" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs font-medium flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-file-excel"></i> Xuất CSV
+                        </button>
+
+                        <!-- Nút In Báo Cáo -->
+                        <button onclick="window.print()" title="In bản báo cáo trang" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-print"></i> In
+                        </button>
+
+                        <!-- Nút Làm Mới -->
+                        <button onclick="loadReportData()" title="Tải lại dữ liệu" class="px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-rotate" id="refreshIcon"></i> Làm Mới
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bảng Dữ Liệu -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900/70 text-slate-400 text-xs uppercase tracking-wider border-b border-slate-700 select-none">
+                            <tr>
+                                <th onclick="sortBy('no')" class="px-6 py-3.5 font-semibold text-center w-20 cursor-pointer hover:text-white transition">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <span>STT</span>
+                                        <i id="sortIcon-no" class="fa-solid fa-sort text-[10px] text-slate-500"></i>
+                                    </div>
+                                </th>
+                                <th onclick="sortBy('playerName')" class="px-6 py-3.5 font-semibold cursor-pointer hover:text-white transition">
+                                    <div class="flex items-center gap-1.5">
+                                        <span>Tên người chơi</span>
+                                        <i id="sortIcon-playerName" class="fa-solid fa-sort text-[10px] text-slate-500"></i>
+                                    </div>
+                                </th>
+                                <th onclick="sortBy('level')" class="px-6 py-3.5 font-semibold text-center cursor-pointer hover:text-white transition">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <span>Cấp độ</span>
+                                        <i id="sortIcon-level" class="fa-solid fa-sort text-[10px] text-slate-500"></i>
+                                    </div>
+                                </th>
+                                <th onclick="sortBy('age')" class="px-6 py-3.5 font-semibold text-center cursor-pointer hover:text-white transition">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <span>Tuổi</span>
+                                        <i id="sortIcon-age" class="fa-solid fa-sort text-[10px] text-slate-500"></i>
+                                    </div>
+                                </th>
+                                <th onclick="sortBy('assetName')" class="px-6 py-3.5 font-semibold cursor-pointer hover:text-white transition">
+                                    <div class="flex items-center gap-1.5">
+                                        <span>Tên tài sản</span>
+                                        <i id="sortIcon-assetName" class="fa-solid fa-sort text-[10px] text-slate-500"></i>
+                                    </div>
+                                </th>
+                                <th class="px-6 py-3.5 font-semibold text-center w-28 no-print">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody" class="divide-y divide-slate-700/60 text-slate-200 font-medium">
+                            <tr>
+                                <td colspan="6" class="px-6 py-12 text-center text-slate-400">
+                                    <i class="fa-solid fa-circle-notch fa-spin text-2xl text-violet-400 mb-2"></i>
+                                    <p>Đang tải dữ liệu báo cáo...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer Phân Trang & Điều Hướng Bảng -->
+                <div class="px-6 py-3.5 bg-slate-900/50 border-t border-slate-700/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400 no-print">
+                    <div class="flex items-center gap-3">
+                        <span id="footerCountText">Đang hiển thị 0 bản ghi</span>
+                        <div class="flex items-center gap-1.5 text-slate-500">
+                            <span>Hiển thị:</span>
+                            <select id="pageSizeSelect" onchange="changePageSize()" class="bg-slate-800 border border-slate-700 rounded px-2 py-0.5 text-slate-300 text-xs focus:outline-none">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="25">25</option>
+                                <option value="100">Tất cả</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Phân trang (Pagination) -->
+                    <div class="flex items-center gap-1" id="paginationControls">
+                        <button onclick="changePage(currentPage - 1)" id="prevPageBtn" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 transition">
+                            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        </button>
+                        <span id="pageNumbers" class="flex items-center gap-1"></span>
+                        <button onclick="changePage(currentPage + 1)" id="nextPageBtn" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 transition">
+                            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: ĐĂNG KÝ NGƯỜI CHƠI (YÊU CẦU 1) ================= -->
+        <section id="tab-register" class="hidden max-w-2xl mx-auto">
+            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus text-violet-400"></i> Đăng Ký Người Chơi Mới
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Thêm thông tin người chơi mới vào hệ thống</p>
+                    </div>
+                    <!-- Nút Điền Dữ Liệu Mẫu Nhanh -->
+                    <button type="button" onclick="autoFillPlayer()" class="px-3 py-1.5 rounded-lg bg-violet-600/20 hover:bg-violet-600/30 border border-violet-500/30 text-violet-300 text-xs font-semibold flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Điền Mẫu Nhanh
+                    </button>
+                </div>
+
+                <form id="registerPlayerForm" onsubmit="handleRegisterPlayer(event)" class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-medium text-slate-300">Tên Người Chơi (Player Name) <span class="text-red-400">*</span></label>
+                            <span id="playerNameCount" class="text-[10px] text-slate-500 font-mono">0/64</span>
+                        </div>
+                        <input type="text" id="regPlayerName" required maxlength="64" oninput="updateCharCount('regPlayerName', 'playerNameCount')" placeholder="Ví dụ: DragonSlayer" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Họ Và Tên (Full Name)</label>
+                        <input type="text" id="regFullName" maxlength="128" placeholder="Ví dụ: Nguyễn Văn A" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Tuổi (Age)</label>
+                            <input type="text" id="regAge" maxlength="10" placeholder="Ví dụ: 22" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-medium text-slate-300">Cấp Độ (Level)</label>
+                                <span id="levelDisplayBadge" class="text-[10px] px-1.5 py-0.2 rounded bg-violet-500/20 text-violet-300 font-mono">Cấp 1</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="adjustLevel(-1)" class="w-9 h-9 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold flex items-center justify-center transition">-</button>
+                                <input type="number" id="regLevel" min="1" max="100" value="1" oninput="document.getElementById('levelDisplayBadge').innerText = 'Cấp ' + this.value" class="w-full text-center bg-slate-900 border border-slate-700 rounded-lg py-1.5 text-sm text-slate-200 focus:outline-none focus:border-violet-500 transition">
+                                <button type="button" onclick="adjustLevel(1)" class="w-9 h-9 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold flex items-center justify-center transition">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Địa Chỉ Email</label>
+                        <input type="email" id="regEmail" maxlength="64" placeholder="Ví dụ: player@example.com" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 transition">
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="resetRegisterForm()" class="px-4 py-2.5 rounded-lg border border-slate-700 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+                            <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Làm trống
+                        </button>
+                        <button type="submit" id="btnSubmitPlayer" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 rounded-lg font-semibold text-sm text-white shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+                            <span id="btnSubmitPlayerText">Xác Nhận Đăng Ký</span>
+                            <i class="fa-solid fa-paper-plane" id="btnSubmitPlayerIcon"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: TẠO TÀI SẢN (YÊU CẦU 2) ================= -->
+        <section id="tab-asset" class="hidden max-w-2xl mx-auto">
+            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-emerald-400"></i> Tạo Mới Tài Sản / Trang Bị
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Thêm vũ khí, trang bị hoặc thú cưỡi vào game</p>
+                    </div>
+                    <!-- Nút Điền Dữ Liệu Mẫu Nhanh -->
+                    <button type="button" onclick="autoFillAsset()" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Điền Mẫu Nhanh
+                    </button>
+                </div>
+
+                <form id="createAssetForm" onsubmit="handleCreateAsset(event)" class="space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-medium text-slate-300">Tên Tài Sản (Asset Name) <span class="text-red-400">*</span></label>
+                            <span id="assetNameCount" class="text-[10px] text-slate-500 font-mono">0/64</span>
+                        </div>
+                        <input type="text" id="astName" required maxlength="64" oninput="updateCharCount('astName', 'assetNameCount')" placeholder="Ví dụ: Kiếm Excalibur, Giáp Hắc Ám..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-medium text-slate-300">Cấp Độ Yêu Cầu (Level Require) <span class="text-red-400">*</span></label>
+                            <span id="assetLevelBadge" class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">Yêu cầu Cấp 1</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="adjustAssetLevel(-1)" class="w-9 h-9 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold flex items-center justify-center transition">-</button>
+                            <input type="number" id="astLevelRequire" min="1" max="100" value="1" required oninput="document.getElementById('assetLevelBadge').innerText = 'Yêu cầu Cấp ' + this.value" class="w-full text-center bg-slate-900 border border-slate-700 rounded-lg py-1.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500 transition">
+                            <button type="button" onclick="adjustAssetLevel(1)" class="w-9 h-9 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold flex items-center justify-center transition">+</button>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="resetAssetForm()" class="px-4 py-2.5 rounded-lg border border-slate-700 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+                            <i class="fa-solid fa-arrow-rotate-left mr-1"></i> Làm trống
+                        </button>
+                        <button type="submit" id="btnSubmitAsset" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-lg font-semibold text-sm text-white shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2">
+                            <span id="btnSubmitAssetText">Xác Nhận Tạo Tài Sản</span>
+                            <i class="fa-solid fa-plus-circle" id="btnSubmitAssetIcon"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: GÁN TÀI SẢN ================= -->
+        <section id="tab-assign" class="hidden max-w-2xl mx-auto">
+            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 sm:p-8 shadow-xl">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-link text-indigo-400"></i> Gán Tài Sản Cho Người Chơi
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Liên kết trang bị hoặc tướng cho nhân vật để cập nhật vào báo cáo</p>
+                </div>
+
+                <form id="assignAssetForm" onsubmit="handleAssignAsset(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Chọn Người Chơi <span class="text-red-400">*</span></label>
+                        <select id="assignPlayerSelect" onchange="checkLevelRequirementWarning()" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+                            <option value="">-- Vui lòng chọn người chơi --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Chọn Tài Sản / Trang Bị <span class="text-red-400">*</span></label>
+                        <select id="assignAssetSelect" onchange="checkLevelRequirementWarning()" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+                            <option value="">-- Vui lòng chọn tài sản --</option>
+                        </select>
+                    </div>
+
+                    <!-- Hộp Cảnh báo Cấp độ Thông minh (Smart Warning Box) -->
+                    <div id="levelWarningBox" class="hidden p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-center gap-2.5">
+                        <i class="fa-solid fa-triangle-exclamation text-base text-amber-400"></i>
+                        <span id="levelWarningText"></span>
+                    </div>
+
+                    <button type="submit" id="btnSubmitAssign" class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 rounded-lg font-semibold text-sm text-white shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+                        <span id="btnSubmitAssignText">Xác Nhận Gán Tài Sản</span>
+                        <i class="fa-solid fa-check-double" id="btnSubmitAssignIcon"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Chi Tiết Người Chơi (Player Inspector Modal) -->
+    <div id="playerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="p-5 border-b border-slate-700 flex items-center justify-between">
+                <h3 class="font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-id-card text-violet-400"></i> Hồ Sơ Người Chơi
+                </h3>
+                <button onclick="closePlayerModal()" class="text-slate-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4" id="playerModalContent">
+                <!-- Nội dung được nạp tự động qua JS -->
+            </div>
+            <div class="p-4 bg-slate-900/60 border-t border-slate-700 flex justify-end">
+                <button onclick="closePlayerModal()" class="px-4 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs font-semibold text-white transition">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Bảng Phím Tắt (Shortcuts Modal) -->
+    <div id="shortcutsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full shadow-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-white flex items-center gap-2">
+                    <i class="fa-regular fa-keyboard text-violet-400"></i> Phím Tắt Tiện Ích
+                </h3>
+                <button onclick="toggleShortcutsModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-2.5 text-xs text-slate-300">
+                <div class="flex justify-between items-center"><span class="text-slate-400">Tab Báo Cáo</span><kbd class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-mono">1</kbd></div>
+                <div class="flex justify-between items-center"><span class="text-slate-400">Tab Đăng Ký</span><kbd class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-mono">2</kbd></div>
+                <div class="flex justify-between items-center"><span class="text-slate-400">Tab Tạo Tài Sản</span><kbd class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-mono">3</kbd></div>
+                <div class="flex justify-between items-center"><span class="text-slate-400">Tab Gán Tài Sản</span><kbd class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-mono">4</kbd></div>
+                <div class="flex justify-between items-center"><span class="text-slate-400">Tìm Kiếm Nhanh</span><kbd class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-mono">/</kbd> hoặc <kbd class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-mono">Ctrl + K</kbd></div>
+                <div class="flex justify-between items-center"><span class="text-slate-400">Xóa Bộ Lọc / Đóng Modal</span><kbd class="px-2 py-0.5 bg-slate-900 border border-slate-700 rounded font-mono">Esc</kbd></div>
+            </div>
+            <button onclick="toggleShortcutsModal()" class="w-full py-2 rounded-lg bg-violet-600 hover:bg-violet-500 font-semibold text-xs text-white transition">Đã Hiểu</button>
+        </div>
+    </div>
+
+    <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-800 no-print">
+        Hệ Thống BATTLEGAME &bull; Developing Microsoft Azure Solutions SET01
+    </footer>
+
+    <!-- App Logic Script -->
+    <script>
+        const API_BASE = window.location.origin;
+        let reportData = [];
+        let allPlayers = [];
+        let allAssets = [];
+        let filteredData = [];
+        let sortConfig = { column: 'no', asc: true };
+        let activeTierFilter = 'all';
+
+        // Phân trang
+        let currentPage = 1;
+        let pageSize = 10;
+
+        // Âm thanh thông báo
+        let soundEnabled = true;
+
+        function playBeep(type = 'success') {
+            if (!soundEnabled) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                if (type === 'success') {
+                    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+                    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08); // A5
+                } else {
+                    osc.frequency.setValueAtTime(300, ctx.currentTime);
+                    osc.frequency.setValueAtTime(200, ctx.currentTime + 0.1);
+                }
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.25);
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high';
+                showToast("Đã bật âm thanh hiệu ứng!");
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-slate-500';
+                showToast("Đã tắt âm thanh hiệu ứng!");
+            }
+        }
+
+        // Dữ liệu mẫu auto-fill
+        const samplePlayers = [
+            { name: "Valkyrie_X", fullName: "Trần Bảo Long", age: "24", level: 18, email: "valkyrie@gamemail.com" },
+            { name: "ThunderGod", fullName: "Lê Minh Tuấn", age: "26", level: 25, email: "tuanto@gamemail.com" },
+            { name: "DarkKnight", fullName: "Nguyễn Hoàng Nam", age: "21", level: 9, email: "nam.dark@gamemail.com" },
+            { name: "FrostMage", fullName: "Phạm Quỳnh Chi", age: "19", level: 4, email: "chi.frost@gamemail.com" },
+            { name: "SolarFlare", fullName: "Hoàng Thảo My", age: "22", level: 12, email: "solar@gamemail.com" },
+            { name: "PhoenixRider", fullName: "Vũ Hải Đăng", age: "23", level: 15, email: "dang.rider@gamemail.com" }
+        ];
+
+        const sampleAssets = [
+            { name: "Cung Băng Tuyết", level: 7 },
+            { name: "Kiếm Ánh Sáng Muramasa", level: 16 },
+            { name: "Gậy Phép Tối Thượng", level: 22 },
+            { name: "Thần Thú Phượng Hoàng", level: 10 },
+            { name: "Áo Choàng Bóng Đêm", level: 5 },
+            { name: "Khiên Thần Titan", level: 14 },
+            { name: "Huyết Đao Vô Song", level: 20 }
+        ];
+
+        // Toast thông báo
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast-enter pointer-events-auto p-3.5 rounded-xl shadow-2xl flex items-center gap-3 text-sm font-medium border ${
+                type === 'success' 
+                    ? 'bg-emerald-950/90 text-emerald-200 border-emerald-500/40' 
+                    : 'bg-rose-950/90 text-rose-200 border-rose-500/40'
+            }`;
+            toast.innerHTML = `
+                <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-exclamation text-rose-400'} text-base"></i>
+                <span class="flex-1">${msg}</span>
+                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white text-xs ml-2"><i class="fa-solid fa-xmark"></i></button>
+            `;
+            container.appendChild(toast);
+            playBeep(type);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.25s ease';
+                setTimeout(() => toast.remove(), 250);
+            }, 3500);
+        }
+
+        // Chuyển Tab
+        function switchTab(tab) {
+            ['report', 'register', 'asset', 'assign'].forEach(t => {
+                const sec = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tabBtn-${t}`);
+                if (t === tab) {
+                    sec.classList.remove('hidden');
+                    btn.className = "tab-btn px-4 py-2 rounded-xl font-medium text-sm flex items-center gap-2 bg-violet-600 text-white shadow-lg shadow-violet-600/30 transition";
+                } else {
+                    sec.classList.add('hidden');
+                    btn.className = "tab-btn px-4 py-2 rounded-xl font-medium text-sm flex items-center gap-2 bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition";
+                }
+            });
+
+            if (tab === 'assign') {
+                loadDropdownOptions();
+            } else if (tab === 'register') {
+                setTimeout(() => document.getElementById('regPlayerName')?.focus(), 80);
+            } else if (tab === 'asset') {
+                setTimeout(() => document.getElementById('astName')?.focus(), 80);
+            }
+        }
+
+        // Tải dữ liệu Báo Cáo
+        async function loadReportData() {
+            const tbody = document.getElementById('reportTableBody');
+            const icon = document.getElementById('refreshIcon');
+            if (icon) icon.classList.add('fa-spin');
+
+            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400"><i class="fa-solid fa-circle-notch fa-spin text-2xl text-violet-400 mb-2"></i><p>Đang tải dữ liệu báo cáo...</p></td></tr>`;
+
+            try {
+                const res = await fetch(`${API_BASE}/api/getassetsbyplayer`);
+                if (!res.ok) throw new Error(`Lỗi HTTP ${res.status}`);
+                reportData = await res.json();
+                applyFilterAndSort();
+                document.getElementById('totalReportCount').innerText = reportData.length;
+                loadDashboardStats();
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-rose-400"><i class="fa-solid fa-triangle-exclamation text-3xl mb-2"></i><p class="font-semibold">Lỗi tải dữ liệu: ${err.message}</p></td></tr>`;
+            } finally {
+                if (icon) icon.classList.remove('fa-spin');
+            }
+        }
+
+        // Huy hiệu Cấp bậc game
+        function getLevelBadge(level) {
+            if (level >= 20) {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 shadow-sm shadow-rose-500/20"><i class="fa-solid fa-crown text-[10px] text-amber-300"></i> Cấp ${level}</span>`;
+            } else if (level >= 10) {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-violet-500/20 text-violet-300 border border-violet-500/30"><i class="fa-solid fa-star text-[10px] text-yellow-400"></i> Cấp ${level}</span>`;
+            } else if (level >= 5) {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30"><i class="fa-solid fa-shield text-[10px]"></i> Cấp ${level}</span>`;
+            } else {
+                return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-700/20 text-amber-300 border border-amber-600/30"><i class="fa-solid fa-seedling text-[10px]"></i> Cấp ${level}</span>`;
+            }
+        }
+
+        // Lọc theo Tier Cấp bậc
+        function setTierFilter(tier) {
+            activeTierFilter = tier;
+            ['all', 'rookie', 'warrior', 'master'].forEach(t => {
+                const btn = document.getElementById(`tier-${t}`);
+                if (t === tier) {
+                    btn.className = "tier-chip px-2.5 py-1 rounded-lg bg-violet-600 text-white font-medium transition";
+                } else {
+                    btn.className = "tier-chip px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition";
+                }
+            });
+            currentPage = 1;
+            applyFilterAndSort();
+        }
+
+        // Sắp xếp
+        function sortBy(col) {
+            if (sortConfig.column === col) {
+                sortConfig.asc = !sortConfig.asc;
+            } else {
+                sortConfig.column = col;
+                sortConfig.asc = true;
+            }
+
+            ['no', 'playerName', 'level', 'age', 'assetName'].forEach(c => {
+                const icon = document.getElementById(`sortIcon-${c}`);
+                if (!icon) return;
+                if (c === col) {
+                    icon.className = sortConfig.asc 
+                        ? 'fa-solid fa-sort-up text-[10px] text-violet-400' 
+                        : 'fa-solid fa-sort-down text-[10px] text-violet-400';
+                } else {
+                    icon.className = 'fa-solid fa-sort text-[10px] text-slate-500';
+                }
+            });
+
+            applyFilterAndSort();
+        }
+
+        // Áp dụng Lọc & Sắp xếp tổng hợp
+        function applyFilterAndSort() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            filteredData = reportData.filter(item => {
+                // Lọc Tier
+                if (activeTierFilter === 'rookie' && item.level >= 5) return false;
+                if (activeTierFilter === 'warrior' && (item.level < 5 || item.level >= 10)) return false;
+                if (activeTierFilter === 'master' && item.level < 10) return false;
+
+                // Lọc Search Query
+                if (query) {
+                    const matchName = item.playerName && item.playerName.toLowerCase().includes(query);
+                    const matchAsset = item.assetName && item.assetName.toLowerCase().includes(query);
+                    const matchAge = item.age && item.age.toLowerCase().includes(query);
+                    const matchLevel = item.level && item.level.toString().includes(query);
+                    return matchName || matchAsset || matchAge || matchLevel;
+                }
+                return true;
+            });
+
+            // Sắp xếp
+            const { column, asc } = sortConfig;
+            filteredData.sort((a, b) => {
+                let vA = a[column];
+                let vB = b[column];
+
+                if (column === 'no' || column === 'level') {
+                    vA = Number(vA) || 0;
+                    vB = Number(vB) || 0;
+                    return asc ? vA - vB : vB - vA;
+                } else {
+                    vA = (vA || '').toString().toLowerCase();
+                    vB = (vB || '').toString().toLowerCase();
+                    return asc ? vA.localeCompare(vB) : vB.localeCompare(vA);
+                }
+            });
+
+            renderTable();
+        }
+
+        // Phân trang
+        function changePageSize() {
+            pageSize = parseInt(document.getElementById('pageSizeSelect').value) || 10;
+            currentPage = 1;
+            renderTable();
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+        }
+
+        // Render Bảng Dữ Liệu
+        function renderTable() {
+            const tbody = document.getElementById('reportTableBody');
+            const footerCount = document.getElementById('footerCountText');
+
+            if (!filteredData || filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400"><i class="fa-solid fa-inbox text-3xl mb-2 text-slate-500"></i><p class="font-medium">Không tìm thấy bản ghi nào phù hợp.</p></td></tr>`;
+                footerCount.innerText = `Đang hiển thị 0 bản ghi`;
+                updatePaginationControls(0, 0);
+                return;
+            }
+
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIdx = (currentPage - 1) * pageSize;
+            const endIdx = Math.min(startIdx + pageSize, filteredData.length);
+            const pageSlice = filteredData.slice(startIdx, endIdx);
+
+            footerCount.innerText = `Hiển thị ${startIdx + 1} - ${endIdx} / ${filteredData.length} bản ghi (Tổng ${reportData.length})`;
+            updatePaginationControls(currentPage, totalPages);
+
+            tbody.innerHTML = pageSlice.map(item => `
+                <tr class="hover:bg-slate-800/60 transition group border-b border-slate-800">
+                    <td class="px-6 py-3.5 text-center font-bold text-violet-400">${item.no}</td>
+                    <td class="px-6 py-3.5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-600/30 to-indigo-500/30 border border-violet-500/20 text-violet-300 flex items-center justify-center text-xs font-bold shadow-sm">
+                                    ${(item.playerName || 'P').substring(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <span class="font-semibold text-white tracking-wide hover:text-violet-300 cursor-pointer" onclick="inspectPlayer('${item.playerName}')">${item.playerName}</span>
+                                </div>
+                            </div>
+                            <button onclick="copyText('${item.playerName}')" title="Sao chép tên" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-slate-300 text-xs px-1.5 py-0.5 rounded transition">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="px-6 py-3.5 text-center">
+                        ${getLevelBadge(item.level)}
+                    </td>
+                    <td class="px-6 py-3.5 text-center text-slate-300 font-mono text-xs">${item.age || '-'}</td>
+                    <td class="px-6 py-3.5 font-semibold text-emerald-300">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-gem text-emerald-400 text-sm"></i>
+                                <span>${item.assetName}</span>
+                            </div>
+                            <button onclick="copyText('${item.assetName}')" title="Sao chép tên tài sản" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-slate-300 text-xs px-1.5 py-0.5 rounded transition">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="px-6 py-3.5 text-center no-print">
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="inspectPlayer('${item.playerName}')" title="Xem hồ sơ chi tiết" class="p-1.5 rounded-lg bg-slate-700 hover:bg-violet-600 text-slate-300 hover:text-white text-xs transition">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="quickAssign('${item.playerName}')" title="Gán thêm tài sản" class="p-1.5 rounded-lg bg-slate-700 hover:bg-indigo-600 text-slate-300 hover:text-white text-xs transition">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Cập nhật nút phân trang
+        function updatePaginationControls(curr, total) {
+            const container = document.getElementById('pageNumbers');
+            const prev = document.getElementById('prevPageBtn');
+            const next = document.getElementById('nextPageBtn');
+
+            if (!container) return;
+            prev.disabled = curr <= 1;
+            next.disabled = curr >= total || total === 0;
+
+            let html = '';
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= curr - 1 && i <= curr + 1)) {
+                    html += `<button onclick="changePage(${i})" class="px-2.5 py-1 rounded text-xs font-semibold ${
+                        i === curr ? 'bg-violet-600 text-white' : 'bg-slate-800 hover:bg-slate-700 text-slate-400'
+                    }">${i}</button>`;
+                } else if (i === curr - 2 || i === curr + 2) {
+                    html += `<span class="px-1 text-slate-500 text-xs">...</span>`;
+                }
+            }
+            container.innerHTML = html;
+        }
+
+        // Sao chép Text
+        function copyText(txt) {
+            navigator.clipboard.writeText(txt);
+            showToast(`Đã sao chép "${txt}" vào bộ nhớ tạm!`);
+        }
+
+        // Tìm kiếm Input
+        function handleSearchInput() {
+            const val = document.getElementById('searchInput').value;
+            const clearBtn = document.getElementById('clearSearchBtn');
+            if (val) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            currentPage = 1;
+            applyFilterAndSort();
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            input.value = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            currentPage = 1;
+            applyFilterAndSort();
+            input.focus();
+        }
+
+        // Xuất file CSV (UTF-8 BOM)
+        function exportToCSV() {
+            if (!filteredData || filteredData.length === 0) {
+                showToast("Không có dữ liệu để xuất!", "error");
+                return;
+            }
+
+            const headers = ["STT", "Ten Nguoi Choi", "Cap Do", "Tuoi", "Ten Tai San"];
+            const rows = filteredData.map(item => [
+                item.no,
+                `"${(item.playerName || '').replace(/"/g, '""')}"`,
+                item.level,
+                `"${item.age || ''}"`,
+                `"${(item.assetName || '').replace(/"/g, '""')}"`
+            ]);
+
+            const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\r\n");
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `BaoCao_TaiSan_NguoiChoi_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Đã xuất báo cáo CSV thành công!");
+        }
+
+        // Thống kê Dashboard
+        async function loadDashboardStats() {
+            try {
+                const [pRes, aRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/players`),
+                    fetch(`${API_BASE}/api/assets`)
+                ]);
+                if (pRes.ok) {
+                    allPlayers = await pRes.json();
+                    document.getElementById('totalPlayersCount').innerText = allPlayers.length;
+                    if (allPlayers.length > 0) {
+                        const avg = Math.round(allPlayers.reduce((acc, cur) => acc + (cur.level || 0), 0) / allPlayers.length);
+                        document.getElementById('avgLevelCount').innerText = avg;
+                    }
+                }
+                if (aRes.ok) {
+                    allAssets = await aRes.json();
+                    document.getElementById('totalAssetsCount').innerText = allAssets.length;
+                }
+            } catch (e) {
+                console.warn(e);
+            }
+        }
+
+        // Điều chỉnh Level với nút +/-
+        function adjustLevel(delta) {
+            const input = document.getElementById('regLevel');
+            let val = parseInt(input.value) || 1;
+            val = Math.max(1, Math.min(100, val + delta));
+            input.value = val;
+            document.getElementById('levelDisplayBadge').innerText = 'Cấp ' + val;
+        }
+
+        function adjustAssetLevel(delta) {
+            const input = document.getElementById('astLevelRequire');
+            let val = parseInt(input.value) || 1;
+            val = Math.max(1, Math.min(100, val + delta));
+            input.value = val;
+            document.getElementById('assetLevelBadge').innerText = 'Yêu cầu Cấp ' + val;
+        }
+
+        function updateCharCount(inputId, countId) {
+            const len = document.getElementById(inputId).value.length;
+            document.getElementById(countId).innerText = `${len}/64`;
+        }
+
+        function resetRegisterForm() {
+            document.getElementById('registerPlayerForm').reset();
+            document.getElementById('regLevel').value = 1;
+            document.getElementById('levelDisplayBadge').innerText = 'Cấp 1';
+            document.getElementById('playerNameCount').innerText = '0/64';
+            showToast("Đã làm trống form đăng ký!");
+        }
+
+        function resetAssetForm() {
+            document.getElementById('createAssetForm').reset();
+            document.getElementById('astLevelRequire').value = 1;
+            document.getElementById('assetLevelBadge').innerText = 'Yêu cầu Cấp 1';
+            document.getElementById('assetNameCount').innerText = '0/64';
+            showToast("Đã làm trống form tạo tài sản!");
+        }
+
+        // Auto-fill nhanh
+        function autoFillPlayer() {
+            const random = samplePlayers[Math.floor(Math.random() * samplePlayers.length)];
+            const suffix = Math.floor(100 + Math.random() * 900);
+            document.getElementById('regPlayerName').value = `${random.name}_${suffix}`;
+            document.getElementById('regFullName').value = random.fullName;
+            document.getElementById('regAge').value = random.age;
+            document.getElementById('regLevel').value = random.level;
+            document.getElementById('levelDisplayBadge').innerText = 'Cấp ' + random.level;
+            document.getElementById('regEmail').value = `${random.name.toLowerCase()}${suffix}@gamemail.com`;
+            updateCharCount('regPlayerName', 'playerNameCount');
+            showToast("Đã điền thông tin người chơi mẫu!");
+        }
+
+        function autoFillAsset() {
+            const random = sampleAssets[Math.floor(Math.random() * sampleAssets.length)];
+            const suffix = Math.floor(1 + Math.random() * 99);
+            document.getElementById('astName').value = `${random.name} +${suffix}`;
+            document.getElementById('astLevelRequire').value = random.level;
+            document.getElementById('assetLevelBadge').innerText = 'Yêu cầu Cấp ' + random.level;
+            updateCharCount('astName', 'assetNameCount');
+            showToast("Đã điền thông tin tài sản mẫu!");
+        }
+
+        // Xử lý đăng ký người chơi (Yêu cầu 1)
+        async function handleRegisterPlayer(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitPlayer');
+            const btnText = document.getElementById('btnSubmitPlayerText');
+            const btnIcon = document.getElementById('btnSubmitPlayerIcon');
+            btn.disabled = true;
+            btnText.innerText = 'Đang xử lý...';
+            btnIcon.className = 'fa-solid fa-spinner fa-spin';
+
+            const payload = {
+                playerName: document.getElementById('regPlayerName').value.trim(),
+                fullName: document.getElementById('regFullName').value.trim() || null,
+                age: document.getElementById('regAge').value.trim() || null,
+                level: parseInt(document.getElementById('regLevel').value) || 1,
+                email: document.getElementById('regEmail').value.trim() || null
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/api/registerplayer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || 'Có lỗi xảy ra khi đăng ký');
+                }
+
+                showToast(`Đăng ký người chơi "${payload.playerName}" thành công!`);
+                resetRegisterForm();
+                switchTab('report');
+                loadReportData();
+            } catch (err) {
+                showToast(`Thất bại: ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = 'Xác Nhận Đăng Ký';
+                btnIcon.className = 'fa-solid fa-paper-plane';
+            }
+        }
+
+        // Xử lý tạo mới tài sản (Yêu cầu 2)
+        async function handleCreateAsset(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitAsset');
+            const btnText = document.getElementById('btnSubmitAssetText');
+            const btnIcon = document.getElementById('btnSubmitAssetIcon');
+            btn.disabled = true;
+            btnText.innerText = 'Đang tạo...';
+            btnIcon.className = 'fa-solid fa-spinner fa-spin';
+
+            const payload = {
+                assetName: document.getElementById('astName').value.trim(),
+                levelRequire: parseInt(document.getElementById('astLevelRequire').value) || 1
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/api/createasset`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || 'Có lỗi xảy ra khi tạo tài sản');
+                }
+
+                showToast(`Tạo tài sản "${payload.assetName}" thành công!`);
+                resetAssetForm();
+                switchTab('report');
+                loadReportData();
+            } catch (err) {
+                showToast(`Thất bại: ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = 'Xác Nhận Tạo Tài Sản';
+                btnIcon.className = 'fa-solid fa-plus-circle';
+            }
+        }
+
+        // Tải dropdown người chơi và tài sản
+        async function loadDropdownOptions() {
+            try {
+                const [pRes, aRes] = await Promise.all([
+                    fetch(`${API_BASE}/api/players`),
+                    fetch(`${API_BASE}/api/assets`)
+                ]);
+
+                if (pRes.ok) {
+                    allPlayers = await pRes.json();
+                    const pSelect = document.getElementById('assignPlayerSelect');
+                    pSelect.innerHTML = '<option value="">-- Vui lòng chọn người chơi --</option>' +
+                        allPlayers.map(p => `<option value="${p.playerId}" data-level="${p.level}">${p.playerName} (Cấp ${p.level})</option>`).join('');
+                }
+
+                if (aRes.ok) {
+                    allAssets = await aRes.json();
+                    const aSelect = document.getElementById('assignAssetSelect');
+                    aSelect.innerHTML = '<option value="">-- Vui lòng chọn tài sản --</option>' +
+                        allAssets.map(a => `<option value="${a.assetId}" data-req="${a.levelRequire}">${a.assetName} (Cấp yêu cầu: ${a.levelRequire})</option>`).join('');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Cảnh báo khi Cấp người chơi < Cấp yêu cầu của tài sản
+        function checkLevelRequirementWarning() {
+            const pSelect = document.getElementById('assignPlayerSelect');
+            const aSelect = document.getElementById('assignAssetSelect');
+            const warnBox = document.getElementById('levelWarningBox');
+            const warnText = document.getElementById('levelWarningText');
+
+            const pOpt = pSelect.selectedOptions[0];
+            const aOpt = aSelect.selectedOptions[0];
+
+            if (pOpt && aOpt && pOpt.value && aOpt.value) {
+                const playerLevel = parseInt(pOpt.getAttribute('data-level')) || 1;
+                const assetReq = parseInt(aOpt.getAttribute('data-req')) || 1;
+
+                if (playerLevel < assetReq) {
+                    warnText.innerHTML = `<strong>Cảnh báo:</strong> Cấp người chơi (${playerLevel}) nhỏ hơn cấp yêu cầu của tài sản (${assetReq}). Nhân vật có thể chưa đủ điều kiện trang bị!`;
+                    warnBox.classList.remove('hidden');
+                    return;
+                }
+            }
+            warnBox.classList.add('hidden');
+        }
+
+        // Xử lý gán tài sản cho người chơi
+        async function handleAssignAsset(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitAssign');
+            const btnText = document.getElementById('btnSubmitAssignText');
+            const btnIcon = document.getElementById('btnSubmitAssignIcon');
+            btn.disabled = true;
+            btnText.innerText = 'Đang gán...';
+            btnIcon.className = 'fa-solid fa-spinner fa-spin';
+
+            const payload = {
+                playerId: document.getElementById('assignPlayerSelect').value,
+                assetId: document.getElementById('assignAssetSelect').value
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/api/assignasset`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Có lỗi xảy ra khi gán tài sản');
+
+                showToast('Gán tài sản cho người chơi thành công!');
+                document.getElementById('assignAssetForm').reset();
+                document.getElementById('levelWarningBox').classList.add('hidden');
+                switchTab('report');
+                loadReportData();
+            } catch (err) {
+                showToast(`Thất bại: ${err.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = 'Xác Nhận Gán Tài Sản';
+                btnIcon.className = 'fa-solid fa-check-double';
+            }
+        }
+
+        // Quick Assign từ bảng báo cáo
+        function quickAssign(playerName) {
+            switchTab('assign');
+            setTimeout(() => {
+                const pSelect = document.getElementById('assignPlayerSelect');
+                for (let i = 0; i < pSelect.options.length; i++) {
+                    if (pSelect.options[i].text.includes(playerName)) {
+                        pSelect.selectedIndex = i;
+                        checkLevelRequirementWarning();
+                        break;
+                    }
+                }
+            }, 200);
+        }
+
+        // Xem hồ sơ người chơi chi tiết (Player Inspector Modal)
+        function inspectPlayer(playerName) {
+            const playerObj = allPlayers.find(p => p.playerName.toLowerCase() === playerName.toLowerCase());
+            const assetsOfPlayer = reportData.filter(r => r.playerName.toLowerCase() === playerName.toLowerCase());
+
+            const content = document.getElementById('playerModalContent');
+            content.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-indigo-500/20">
+                        ${(playerName || 'P').substring(0, 2).toUpperCase()}
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-white">${playerName}</h4>
+                        <p class="text-xs text-slate-400">${playerObj?.fullName || 'Chưa cập nhật tên thật'}</p>
+                        <div class="mt-1 flex items-center gap-2">
+                            ${getLevelBadge(playerObj?.level || 1)}
+                            <span class="text-xs text-slate-400">Tuổi: ${playerObj?.age || '-'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/60 space-y-2 text-xs">
+                    <div class="flex justify-between"><span class="text-slate-400">Email:</span> <span class="text-slate-200 font-mono">${playerObj?.email || 'Chưa có'}</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Player ID:</span> <span class="text-slate-400 font-mono text-[11px]">${playerObj?.playerId || 'N/A'}</span></div>
+                </div>
+
+                <div>
+                    <h5 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-box-open text-violet-400"></i> Tài Sản Đang Sở Hữu (${assetsOfPlayer.length})
+                    </h5>
+                    <div class="max-h-40 overflow-y-auto space-y-1.5 pr-1">
+                        ${assetsOfPlayer.length > 0 
+                            ? assetsOfPlayer.map(a => `
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-900/40 border border-slate-700/40 text-xs">
+                                    <span class="font-semibold text-emerald-300"><i class="fa-solid fa-gem text-emerald-400 mr-1.5"></i>${a.assetName}</span>
+                                    <span class="text-[10px] text-slate-500">Đã kích hoạt</span>
+                                </div>
+                            `).join('')
+                            : '<p class="text-xs text-slate-500 italic py-2">Người chơi này chưa có tài sản nào.</p>'
+                        }
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('playerModal').classList.remove('hidden');
+        }
+
+        function closePlayerModal() {
+            document.getElementById('playerModal').classList.add('hidden');
+        }
+
+        function toggleShortcutsModal() {
+            const m = document.getElementById('shortcutsModal');
+            m.classList.toggle('hidden');
+        }
+
+        // Phím tắt toàn cục
+        window.addEventListener('keydown', (e) => {
+            const activeTag = document.activeElement.tagName.toLowerCase();
+            if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
+                if (e.key === 'Escape') {
+                    if (document.activeElement.id === 'searchInput') clearSearch();
+                    else document.activeElement.blur();
+                }
+                return;
+            }
+
+            if (e.key === 'Escape') {
+                closePlayerModal();
+                document.getElementById('shortcutsModal').classList.add('hidden');
+            } else if (e.key === '1') switchTab('report');
+            else if (e.key === '2') switchTab('register');
+            else if (e.key === '3') switchTab('asset');
+            else if (e.key === '4') switchTab('assign');
+            else if (e.key === '/' || (e.ctrlKey && e.key.toLowerCase() === 'k')) {
+                e.preventDefault();
+                switchTab('report');
+                document.getElementById('searchInput')?.focus();
+            } else if (e.key.toLowerCase() === 'p') {
+                window.print();
+            }
+        });
+
+        // Khởi tạo
+        window.addEventListener('DOMContentLoaded', () => {
+            loadReportData();
+        });
+    </script>
+</body>
+</html>
