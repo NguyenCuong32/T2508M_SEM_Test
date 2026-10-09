@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#090d12">
+    <title>Battle Game | Arsenal Command</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/app.js" defer></script>
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="./" aria-label="Battle Game home"><span class="brand-mark" aria-hidden="true">B<span>G</span></span><span>BATTLE<span class="brand-light">GAME</span></span></a>
+        <nav aria-label="Main navigation"><a href="#report-card" class="nav-active">ARSENAL <span>01</span></a><a href="#summary">INTEL <span>02</span></a></nav>
+        <div class="workspace"><span class="tiny-cross" aria-hidden="true">✛</span> PLAYER OPERATIONS</div>
+    </header>
+    <main>
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-grid" aria-hidden="true"></div>
+            <div class="hero-content">
+                <p class="eyebrow"><span class="signal" aria-hidden="true"></span> BATTLE GAME COMMAND CENTER</p>
+                <h1 id="hero-title">KNOW YOUR<br><span>ARSENAL.</span></h1>
+                <p class="intro">Every player has a story. Every asset is an advantage.<br>Track the gear. Read the field. Stay ahead.</p>
+                <a class="hero-link" href="#report-card">EXPLORE PLAYER INVENTORY <span aria-hidden="true">↗</span></a>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+                <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+                <span class="art-coordinate">BG / ARMORY DIVISION</span>
+                <svg class="sentinel" viewBox="0 0 500 500" fill="none">
+                    <defs>
+                        <linearGradient id="armor" x1="120" y1="110" x2="380" y2="420" gradientUnits="userSpaceOnUse"><stop stop-color="#53676b"/><stop offset=".42" stop-color="#24353c"/><stop offset="1" stop-color="#0b151c"/></linearGradient>
+                        <linearGradient id="edge" x1="150" y1="140" x2="350" y2="360" gradientUnits="userSpaceOnUse"><stop stop-color="#aac1b6"/><stop offset="1" stop-color="#24353c"/></linearGradient>
+                        <linearGradient id="visor" x1="160" y1="230" x2="344" y2="260" gradientUnits="userSpaceOnUse"><stop stop-color="#739633"/><stop offset=".5" stop-color="#e1ff89"/><stop offset="1" stop-color="#a8dd50"/></linearGradient>
+                        <filter id="glow"><feGaussianBlur stdDeviation="7"/></filter>
+                    </defs>
+                    <path d="M72 454L103 378L193 337H307L397 378L428 454" fill="url(#armor)" stroke="#54656a"/>
+                    <path d="M103 378L173 397L195 454H72ZM397 378L327 397L305 454H428Z" fill="#1c2c34" stroke="#526368"/>
+                    <path d="M181 355L215 384H285L319 355L306 320H194Z" fill="#0c171d" stroke="#4b5f63"/>
+                    <path d="M153 180L186 129L250 106L314 129L347 180L357 278L319 344L279 373H221L181 344L143 278Z" fill="url(#armor)" stroke="url(#edge)" stroke-width="2"/>
+                    <path d="M250 107V192L179 211L153 180L186 129Z" fill="#637675" fill-opacity=".2"/>
+                    <path d="M250 107L265 130L279 201L250 192L221 201L235 130Z" fill="#13252c" stroke="#516467"/>
+                    <path d="M154 208L191 221L250 211L309 221L346 208L332 270L283 282L250 270L217 282L168 270Z" fill="#060e13" stroke="#819282" stroke-width="2"/>
+                    <path d="M167 229L215 239L250 230L285 239L333 229L322 251L282 262L250 253L218 262L178 251Z" fill="url(#visor)" filter="url(#glow)" opacity=".7"/>
+                    <path d="M167 229L215 239L250 230L285 239L333 229L322 251L282 262L250 253L218 262L178 251Z" fill="url(#visor)"/>
+                    <path d="M250 272L274 290L283 338L250 358L217 338L226 290Z" fill="#1c3038" stroke="#607278"/>
+                    <path d="M239 292H261M235 303H265M232 314H268M230 325H270" stroke="#080f15" stroke-width="5"/>
+                    <path d="M151 272L180 287L211 343L183 325ZM349 272L320 287L289 343L317 325Z" fill="#6b7f79" fill-opacity=".4"/>
+                    <path d="M195 147L174 180M305 147L326 180M124 395L144 404M356 404L376 395" stroke="#c4ee76" stroke-width="4"/>
+                    <path d="M192 414L221 400H279L308 414L287 454H213Z" fill="#15252c" stroke="#476063"/>
+                    <path d="M234 416H266L250 436Z" fill="#c3f272"/>
+                    <path d="M139 217L131 227V265L145 282M361 217L369 227V265L355 282" stroke="#536c71" stroke-width="8"/>
+                </svg>
+                <div class="art-caption"><span>SENTINEL</span><span>ARSENAL COMMAND / BG</span></div>
+                <span class="art-marker marker-left">+</span><span class="art-marker marker-right">+</span>
+            </div>
+            <div class="hero-bottom"><span>PLAYER ASSET REPORT</span><span>YOUR INVENTORY. YOUR ADVANTAGE.</span><span aria-hidden="true">↓</span></div>
+        </section>
+        <section class="summary" id="summary" aria-label="Report summary">
+            <article class="stat"><span class="stat-index">01 /</span><div><span class="stat-label">ASSET ASSIGNMENTS</span><strong id="assignment-count">—</strong><span class="stat-detail">Equipment across the roster</span></div><span class="stat-symbol" aria-hidden="true">◈</span></article>
+            <article class="stat"><span class="stat-index">02 /</span><div><span class="stat-label">HIGHEST PLAYER LEVEL</span><strong id="highest-level">—</strong><span class="stat-detail">Peak level in this report</span></div><span class="stat-symbol" aria-hidden="true">⌁</span></article>
+            <article class="stat stat-sync"><span class="stat-index">03 /</span><div><span class="stat-label">LAST SYNCHRONIZED</span><strong id="last-updated">—</strong><span class="stat-detail" id="sync-detail">Waiting for first refresh</span></div></article>
+        </section>
+        <section class="report-card" aria-labelledby="report-title" aria-busy="true" id="report-card">
+            <div class="card-heading"><div><p class="eyebrow">THE ROSTER / EQUIPMENT INTEL</p><h2 id="report-title">PLAYER INVENTORY<span class="title-dot">.</span></h2></div><button id="refresh-button" type="button"><span class="refresh-icon" aria-hidden="true">↻</span> Refresh Data</button></div>
+            <div class="report-meta"><span><span class="meta-square" aria-hidden="true"></span> PLAYER ASSET REPORT</span><span class="status-badge" id="status-badge">Connecting</span></div>
+            <div id="status-message" class="status-message" role="status" aria-live="polite">Loading player asset data…</div>
+            <div class="table-scroll" tabindex="0" role="region" aria-label="Player asset report table">
+                <table><thead><tr><th scope="col">No</th><th scope="col">Player Name</th><th scope="col">Level</th><th scope="col">Age</th><th scope="col">Asset Name</th></tr></thead><tbody id="report-body"></tbody></table>
+            </div>
+            <div class="card-footer"><span id="row-count">0 assignments</span><span><span class="footer-cross" aria-hidden="true">+</span> END OF INVENTORY</span></div>
+        </section>
+        <footer class="page-footer"><span>BATTLE<span>GAME</span> <small>ARSENAL COMMAND</small></span><span>GEAR UP. STAND OUT.</span></footer>
+    </main>
+</body>
+</html>
