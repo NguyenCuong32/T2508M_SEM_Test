@@ -1,0 +1,17 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+
+# Azure Functions
+local.settings.json
+.vscode/
+.idea/
