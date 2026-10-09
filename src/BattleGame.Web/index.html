@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Game - Cổng Quản Lý BATTLEGAME Azure</title>
+    <!-- Google Fonts: Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <!-- Background Soft Glows -->
+    <div class="bg-gradient-glow blob-1"></div>
+    <div class="bg-gradient-glow blob-2"></div>
+    <div class="bg-gradient-glow blob-3"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="navbar glass-card">
+            <div class="brand">
+                <div class="brand-logo">
+                    <img src="https://coderent.vn/storage/settings/W1eZIYHw3GbDliCzdgDukyIMBJcUhh7hhuEJGNCL.png"
+                        alt="BATTLEGAME Logo" class="brand-logo-img">
+                </div>
+            </div>
+
+            <div class="nav-controls">
+                <div class="api-status-badge" id="apiStatusBadge" style="display: none">
+                    <span class="status-dot online"></span>
+                    <span id="apiStatusText">Đã kết nối Azure Functions</span>
+                </div>
+                <button class="btn btn-outline-sm" id="btnToggleApiMode">
+                    <i class="fa-solid fa-server"></i> Cấu hình API
+                </button>
+            </div>
+        </header>
+
+        <!-- API Connection Settings Modal / Bar -->
+        <div class="api-config-bar glass-card hidden" id="apiConfigBar">
+            <div class="config-content">
+                <label for="apiUrlInput"><i class="fa-solid fa-link"></i> Đường dẫn Azure Function Base URL:</label>
+                <input type="text" id="apiUrlInput" value="http://localhost:7071/api"
+                    placeholder="http://localhost:7071/api">
+                <button class="btn btn-primary-sm" id="btnSaveApiUrl">Lưu & Kiểm Tra</button>
+            </div>
+        </div>
+
+        <!-- Main Navigation Tabs -->
+        <nav class="tabs-nav glass-card">
+            <button class="tab-btn active" data-tab="tab-report">
+                <i class="fa-solid fa-table-list"></i> Báo Cáo Tài Sản Người Chơi
+            </button>
+            <button class="tab-btn" data-tab="tab-register-player">
+                <i class="fa-solid fa-user-plus"></i> Đăng Ký Người Chơi
+            </button>
+            <button class="tab-btn" data-tab="tab-create-asset">
+                <i class="fa-solid fa-shield-halved"></i> Tạo Tài Sản Mới
+            </button>
+            <button class="tab-btn" data-tab="tab-assign">
+                <i class="fa-solid fa-link"></i> Gán Tài Sản Cho Người Chơi
+            </button>
+        </nav>
+
+        <!-- Toast Notifications Container -->
+        <div id="toastContainer" class="toast-container"></div>
+
+        <!-- Tab 1: Player Asset Report -->
+        <section id="tab-report" class="tab-content active">
+            <div class="card glass-card main-report-card">
+                <div class="card-header">
+                    <div class="header-info">
+                        <h2><i class="fa-solid fa-chart-pie"></i> Báo Cáo Tài Sản Người Chơi</h2>
+                        <p>Bảng tổng hợp dữ liệu kết nối giữa các bảng <code>Player</code>, <code>PlayerAsset</code>, và
+                            <code>Asset</code> trong cơ sở dữ liệu <code>BATTLEGAME</code>.
+                        </p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="searchInput" placeholder="Tìm kiếm người chơi, cấp độ, tài sản...">
+                        </div>
+                        <button class="btn btn-secondary" id="btnRefreshReport">
+                            <i class="fa-solid fa-rotate"></i> Làm mới
+                        </button>
+                        <button class="btn btn-outline" id="btnExportCsv">
+                            <i class="fa-solid fa-file-csv"></i> Xuất file CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="reportTable">
+                        <thead>
+                            <tr>
+                                <th width="80">STT</th>
+                                <th>Tên người chơi</th>
+                                <th width="130">Cấp độ</th>
+                                <th width="110">Tuổi</th>
+                                <th>Tên tài sản</th>
+                                <th width="130">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <div class="footer-stats" id="tableStatsInfo">
+                        Đang hiển thị 0 bản ghi
+                    </div>
+                    <div class="badge-legend">
+                        <span class="legend-item"><span class="dot hero"></span> Anh hùng</span>
+                        <span class="legend-item"><span class="dot equipment"></span> Trang bị</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: Register Player -->
+        <section id="tab-register-player" class="tab-content">
+            <div class="grid-2col">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-user-astronaut"></i> Đăng Ký Người Chơi</h2>
+                    </div>
+                    <form id="formRegisterPlayer" class="form-layout">
+                        <div class="form-group">
+                            <label for="regPlayerName">Tên người chơi <span class="req">*</span></label>
+                            <div class="input-icon">
+                                <i class="fa-solid fa-user"></i>
+                                <input type="text" id="regPlayerName" required placeholder="Ví dụ: Player 1">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regFullName">Họ và tên đầy đủ</label>
+                            <div class="input-icon">
+                                <i class="fa-solid fa-id-card"></i>
+                                <input type="text" id="regFullName" placeholder="Ví dụ: Nguyễn Văn A">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="regAge">Tuổi</label>
+                                <div class="input-icon">
+                                    <i class="fa-solid fa-cake-candles"></i>
+                                    <input type="text" id="regAge" placeholder="20">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="regLevel">Cấp độ hiện tại</label>
+                                <div class="input-icon">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    <input type="number" id="regLevel" value="1" min="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regEmail">Địa chỉ Email</label>
+                            <div class="input-icon">
+                                <i class="fa-solid fa-envelope"></i>
+                                <input type="email" id="regEmail" placeholder="player1@battlegame.com">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fa-solid fa-paper-plane"></i> Gửi Yêu Cầu Đăng Ký
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card glass-card info-card">
+                    <h3><i class="fa-solid fa-code"></i> Quy Cách Cấu Trúc API Endpoint</h3>
+                    <div class="endpoint-badge post">POST /api/registerplayer</div>
+                    <pre class="json-code"><code>{
+  "playerName": "Player 1",
+  "fullName": "Nguyen Van A",
+  "age": "20",
+  "level": 10,
+  "email": "player1@battlegame.com"
+}</code></pre>
+                    <div class="info-box">
+                        <i class="fa-solid fa-database"></i> Thêm trực tiếp thông tin người chơi mới vào bảng
+                        <code>Player</code> trong cơ sở dữ liệu MySQL / SQL Server.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: Create Asset -->
+        <section id="tab-create-asset" class="tab-content">
+            <div class="grid-2col">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-gem"></i> Tạo Tài Sản Mới</h2>
+                    </div>
+                    <form id="formCreateAsset" class="form-layout">
+                        <div class="form-group">
+                            <label for="assetName">Tên tài sản <span class="req">*</span></label>
+                            <div class="input-icon">
+                                <i class="fa-solid fa-shield"></i>
+                                <input type="text" id="assetName" required placeholder="Ví dụ: Hero 1, Kiếm Thần">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="levelRequire">Cấp độ yêu cầu tối thiểu</label>
+                            <div class="input-icon">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="number" id="levelRequire" value="1" min="1">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fa-solid fa-paper-plane"></i> Tạo Tài Sản Mới (POST /api/createasset)
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card glass-card info-card">
+                    <h3><i class="fa-solid fa-code"></i> Quy Cách Cấu Trúc API Endpoint</h3>
+                    <div class="endpoint-badge post">POST /api/createasset</div>
+                    <pre class="json-code"><code>{
+  "assetName": "Hero 1",
+  "levelRequire": 5
+}</code></pre>
+                    <div class="info-box">
+                        <i class="fa-solid fa-database"></i> Thêm trực tiếp thông tin tài sản mới (Hero, vũ khí, vật
+                        phẩm...) vào bảng <code>Asset</code> trong cơ sở dữ liệu MySQL / SQL Server.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: Assign Asset -->
+        <section id="tab-assign" class="tab-content">
+            <div class="grid-2col">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-link"></i> Liên Kết Tài Sản Với Người Chơi</h2>
+                    </div>
+                    <form id="formAssignAsset" class="form-layout">
+                        <div class="form-group">
+                            <label for="selectPlayer">Chọn người chơi <span class="req">*</span></label>
+                            <select id="selectPlayer" required>
+                                <option value="">Đang tải danh sách người chơi...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="selectAsset">Chọn tài sản / hero <span class="req">*</span></label>
+                            <select id="selectAsset" required>
+                                <option value="">Đang tải danh sách tài sản...</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fa-solid fa-link"></i> Gán Tài Sản Cho Người Chơi
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card glass-card info-card">
+                    <h3><i class="fa-solid fa-diagram-project"></i> Sơ Đồ Quan Hệ Bảng CSDL</h3>
+                    <div class="er-diagram">
+                        <div class="er-box">Player</div>
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        <div class="er-box highlight">PlayerAsset</div>
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        <div class="er-box">Asset</div>
+                    </div>
+                    <p>Liên kết người chơi với anh hùng hoặc trang bị sở hữu. Kết quả sẽ tự động cập nhật ngay trên Báo
+                        Cáo Tài Sản Người Chơi.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Main JavaScript App -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BattleGame.Core/BattleGame.Core.csproj" />
+    <Project Path="src/BattleGame.Functions/BattleGame.Functions.csproj" />
+    <Project Path="src/BattleGame.Infrastructure/BattleGame.Infrastructure.csproj" />
+  </Folder>
+</Solution>

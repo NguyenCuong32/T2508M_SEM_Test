@@ -1,0 +1,16 @@
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\bin\Debug\net8.0\BattleGame.Infrastructure.deps.json
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\bin\Debug\net8.0\BattleGame.Infrastructure.dll
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\bin\Debug\net8.0\BattleGame.Infrastructure.pdb
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\bin\Debug\net8.0\BattleGame.Core.dll
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\bin\Debug\net8.0\BattleGame.Core.pdb
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\BattleGame.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\BattleGame.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\BattleGame.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\BattleGame.Infrastructure.AssemblyInfo.cs
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\BattleGame.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\BattleGame.Infrastructure.sourcelink.json
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\BattleGa.DA3D92D3.Up2Date
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\BattleGame.Infrastructure.dll
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\refint\BattleGame.Infrastructure.dll
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\BattleGame.Infrastructure.pdb
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Infrastructure\obj\Debug\net8.0\ref\BattleGame.Infrastructure.dll

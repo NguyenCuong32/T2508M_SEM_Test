@@ -1,0 +1,12 @@
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\bin\Debug\net8.0\BattleGame.Core.deps.json
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\bin\Debug\net8.0\BattleGame.Core.dll
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\bin\Debug\net8.0\BattleGame.Core.pdb
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\obj\Debug\net8.0\BattleGame.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\obj\Debug\net8.0\BattleGame.Core.AssemblyInfoInputs.cache
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\obj\Debug\net8.0\BattleGame.Core.AssemblyInfo.cs
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\obj\Debug\net8.0\BattleGame.Core.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\obj\Debug\net8.0\BattleGame.Core.sourcelink.json
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\obj\Debug\net8.0\BattleGame.Core.dll
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\obj\Debug\net8.0\refint\BattleGame.Core.dll
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\obj\Debug\net8.0\BattleGame.Core.pdb
+C:\Users\Admin\Downloads\T2508M_SEM_Test\src\BattleGame.Core\obj\Debug\net8.0\ref\BattleGame.Core.dll
