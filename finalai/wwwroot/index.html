@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunrise Hotel - AI Booking Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Top Luxury Navbar -->
+  <header class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm" style="background: linear-gradient(135deg, #0a2540 0%, #17324d 100%) !important;">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <i class="bi bi-sunset-fill text-warning fs-3"></i>
+        <div>
+          <span class="fs-4 text-white">SUNRISE HOTEL</span>
+          <span class="brand-badge ms-2">NHA TRANG</span>
+          <div class="small text-white-50" style="font-size: 0.72rem; font-family: 'Inter', sans-serif;">
+            25 Trần Phú, Nha Trang • 5-Star Beachfront Luxury
+          </div>
+        </div>
+      </a>
+      <div class="d-flex align-items-center gap-3">
+        <a href="/swagger" target="_blank" class="btn btn-outline-light btn-sm rounded-pill px-3">
+          <i class="bi bi-file-earmark-code me-1"></i> Swagger API
+        </a>
+        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
+          <i class="bi bi-cpu me-1"></i> Powered by Gemini AI
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container-fluid px-4 py-4">
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-pills mb-4 bg-white p-2 rounded-3 shadow-sm" id="hotelTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="report-tab" data-bs-toggle="pill" data-bs-target="#report-pane" type="button" role="tab">
+          <i class="bi bi-table me-2"></i>5. Báo cáo Đặt phòng (Report)
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="ask-tab" data-bs-toggle="pill" data-bs-target="#ask-pane" type="button" role="tab">
+          <i class="bi bi-question-circle me-2"></i>1. Hỏi đáp Lễ tân (Ask Hotel)
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="nlp-tab" data-bs-toggle="pill" data-bs-target="#nlp-pane" type="button" role="tab">
+          <i class="bi bi-magic me-2"></i>2. Đặt phòng Tự nhiên (Parse Booking)
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="assistant-tab" data-bs-toggle="pill" data-bs-target="#assistant-pane" type="button" role="tab">
+          <i class="bi bi-robot me-2"></i>3. Trợ lý Function Calling (Chat)
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="info-tab" data-bs-toggle="pill" data-bs-target="#info-pane" type="button" role="tab">
+          <i class="bi bi-info-circle me-2"></i>Thông tin Khách sạn
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="hotelTabContent">
+      
+      <!-- TAB 1: REQUIREMENT 4 & 5 - BOOKING REPORT -->
+      <div class="tab-pane fade show active" id="report-pane" role="tabpanel">
+        <!-- Stat Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div class="stat-icon stat-icon-blue">
+                <i class="bi bi-journal-check"></i>
+              </div>
+              <div>
+                <div class="text-muted small">Tổng đơn Confirmed</div>
+                <h3 class="mb-0 fw-bold" id="stat-total-bookings">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div class="stat-icon stat-icon-gold">
+                <i class="bi bi-moon-stars"></i>
+              </div>
+              <div>
+                <div class="text-muted small">Tổng số đêm lưu trú</div>
+                <h3 class="mb-0 fw-bold" id="stat-total-nights">0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="stat-card d-flex align-items-center gap-3">
+              <div class="stat-icon stat-icon-green">
+                <i class="bi bi-cash-stack"></i>
+              </div>
+              <div>
+                <div class="text-muted small">Tổng doanh thu dự tính</div>
+                <h3 class="mb-0 fw-bold text-success" id="stat-total-revenue">0 VND</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="card card-luxury">
+          <div class="card-header-luxury d-flex justify-content-between align-items-center">
+            <div class="fw-semibold fs-5">
+              <i class="bi bi-funnel me-2"></i>Bộ lọc Báo cáo theo Khoảng thời gian (Requirement 4 & 5)
+            </div>
+            <span class="small text-white-50">GET /api/reports/bookings?from=...&to=...</span>
+          </div>
+          <div class="card-body p-4">
+            <form id="filterForm" class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label for="fromDate" class="form-label fw-semibold text-secondary">
+                  <i class="bi bi-calendar-event me-1"></i> Từ ngày (Check-in From)
+                </label>
+                <input type="date" class="form-control form-control-lg" id="fromDate">
+              </div>
+              <div class="col-md-4">
+                <label for="toDate" class="form-label fw-semibold text-secondary">
+                  <i class="bi bi-calendar-check me-1"></i> Đến ngày (Check-in To)
+                </label>
+                <input type="date" class="form-control form-control-lg" id="toDate">
+              </div>
+              <div class="col-md-4 d-flex gap-2">
+                <button type="button" class="btn btn-primary btn-lg flex-grow-1" id="btnFilter">
+                  <i class="bi bi-filter me-1"></i> Lọc dữ liệu
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-lg" id="btnResetFilter" title="Xem tất cả">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Table Card -->
+        <div class="card card-luxury">
+          <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold text-primary">
+              <i class="bi bi-card-checklist me-2"></i>Danh sách Đơn Đặt Phòng Confirmed
+            </h5>
+            <button class="btn btn-sm btn-outline-primary" id="btnRefreshReport">
+              <i class="bi bi-arrow-clockwise me-1"></i> Làm mới
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-custom table-hover mb-0 align-middle">
+              <thead>
+                <tr>
+                  <th scope="col" style="width: 60px;" class="text-center">No</th>
+                  <th scope="col">Room number</th>
+                  <th scope="col">Room type</th>
+                  <th scope="col">Guest name</th>
+                  <th scope="col">Checkin</th>
+                  <th scope="col">Checkout</th>
+                  <th scope="col" class="text-center">Nights</th>
+                  <th scope="col" class="text-end">Total price</th>
+                  <th scope="col" class="text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="reportTableBody">
+                <tr>
+                  <td colspan="9" class="text-center py-4 text-muted">
+                    <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+                    Đang tải dữ liệu báo cáo...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: REQUIREMENT 1 - ASK HOTEL -->
+      <div class="tab-pane fade" id="ask-pane" role="tabpanel">
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="card card-luxury">
+              <div class="card-header-luxury">
+                <div class="fw-semibold fs-5">
+                  <i class="bi bi-chat-quote me-2"></i>Requirement 1: API askhotel (POST /api/ai/ask)
+                </div>
+                <div class="small text-white-50">Lễ tân thông minh chỉ trả lời về khách sạn Sunrise Hotel và từ chối các câu hỏi ngoài lề.</div>
+              </div>
+              <div class="card-body p-4">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Câu hỏi của khách hàng (question):</label>
+                  <textarea class="form-control" id="askQuestionInput" rows="3" placeholder="Nhập câu hỏi về khách sạn... Ví dụ: Giờ nhận phòng và ăn sáng từ mấy giờ?"></textarea>
+                </div>
+
+                <div class="mb-4">
+                  <span class="text-muted small me-2">Gợi ý thử nghiệm:</span>
+                  <div class="d-flex flex-wrap gap-2 mt-2">
+                    <button class="suggestion-chip" onclick="setAskQuestion('Khách sạn có hồ bơi không và ở tầng mấy?')">
+                      🏊 Hồ bơi ở đâu?
+                    </button>
+                    <button class="suggestion-chip" onclick="setAskQuestion('Mấy giờ nhận phòng và có ăn sáng miễn phí không?')">
+                      🍳 Giờ check-in & ăn sáng?
+                    </button>
+                    <button class="suggestion-chip" onclick="setAskQuestion('Phòng Suite có được đưa đón sân bay miễn phí không?')">
+                      🚗 Đưa đón sân bay Suite?
+                    </button>
+                    <button class="suggestion-chip" onclick="setAskQuestion('Địa chỉ khách sạn ở đâu và giá các loại phòng?')">
+                      📍 Địa chỉ & bảng giá phòng?
+                    </button>
+                    <button class="suggestion-chip text-danger" onclick="setAskQuestion('Hãy viết cho tôi một hàm Python tính số nguyên tố.')">
+                      ❌ Thử hỏi lập trình (sẽ bị từ chối)
+                    </button>
+                    <button class="suggestion-chip text-danger" onclick="setAskQuestion('Khách sạn Sheraton ở Đà Nẵng giá bao nhiêu?')">
+                      ❌ Thử hỏi khách sạn khác (sẽ bị từ chối)
+                    </button>
+                  </div>
+                </div>
+
+                <button class="btn btn-primary btn-lg" id="btnAskSubmit">
+                  <i class="bi bi-send-fill me-1"></i> Gửi câu hỏi đến Lễ tân
+                </button>
+
+                <hr class="my-4">
+
+                <div>
+                  <h6 class="fw-bold text-secondary">
+                    <i class="bi bi-chat-square-text me-1"></i> Phản hồi từ Lễ tân AI:
+                  </h6>
+                  <div class="p-3 bg-light rounded-3 border mt-2 min-vh-20" id="askResponseBox">
+                    <span class="text-muted fst-italic">Phản hồi sẽ xuất hiện ở đây sau khi bạn gửi câu hỏi...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card card-luxury">
+              <div class="card-header bg-white py-3 fw-bold">
+                <i class="bi bi-info-circle text-primary me-2"></i>Quy tắc Lễ tân (System Instruction)
+              </div>
+              <div class="card-body small">
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                  <li><strong>Địa chỉ:</strong> 25 Trần Phú, Nha Trang</li>
+                  <li><strong>Check-in:</strong> từ 14:00</li>
+                  <li><strong>Check-out:</strong> trước 12:00</li>
+                  <li><strong>Ăn sáng:</strong> Miễn phí 6:30 - 9:30</li>
+                  <li><strong>Hồ bơi:</strong> Tầng 5</li>
+                  <li><strong>Đón sân bay:</strong> Miễn phí cho phòng Suite</li>
+                  <li class="border-top pt-2"><strong>Single:</strong> 600.000 VNĐ (tối đa 1 khách)</li>
+                  <li><strong>Double:</strong> 950.000 VNĐ (tối đa 2 khách)</li>
+                  <li><strong>Suite:</strong> 2.200.000 VNĐ (tối đa 4 khách)</li>
+                  <li class="border-top pt-2 text-danger"><strong>Từ chối:</strong> Bất kỳ câu hỏi nào không liên quan đến Sunrise Hotel!</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: REQUIREMENT 2 - PARSE BOOKING -->
+      <div class="tab-pane fade" id="nlp-pane" role="tabpanel">
+        <div class="row">
+          <div class="col-lg-7">
+            <div class="card card-luxury">
+              <div class="card-header-luxury">
+                <div class="fw-semibold fs-5">
+                  <i class="bi bi-cpu me-2"></i>Requirement 2: API parsebooking (POST /api/bookings/parse)
+                </div>
+                <div class="small text-white-50">Nhận diện câu đặt phòng tự nhiên -> JSON Mode -> Kiểm tra phòng trống -> Tạo đơn Confirmed.</div>
+              </div>
+              <div class="card-body p-4">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Câu yêu cầu đặt phòng (text):</label>
+                  <textarea class="form-control" id="parseTextInput" rows="4" placeholder="Ví dụ: Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người"></textarea>
+                </div>
+
+                <div class="mb-4">
+                  <span class="text-muted small me-2">Mẫu thử theo đề bài & thực tế:</span>
+                  <div class="d-flex flex-wrap gap-2 mt-2">
+                    <button class="suggestion-chip" onclick="setParseText('Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người')">
+                      📝 Mẫu đề bài (Phòng đôi 2 người)
+                    </button>
+                    <button class="suggestion-chip" onclick="setParseText('Tôi là Phạm Minh Quân, sđt 0988112233, cần đặt phòng đơn từ ngày 10/12/2026 đến ngày 13/12/2026 cho 1 người')">
+                      📝 Phòng đơn (Single) 3 đêm
+                    </button>
+                    <button class="suggestion-chip" onclick="setParseText('Mình là Hoàng Yến, sđt 0918765432, muốn book 1 phòng Suite từ 28/12/2026 đến 30/12/2026 cho 4 người')">
+                      📝 Phòng Suite 4 người
+                    </button>
+                  </div>
+                </div>
+
+                <button class="btn btn-primary btn-lg" id="btnParseSubmit">
+                  <i class="bi bi-lightning-charge-fill me-1"></i> Xử lý & Tạo Đặt Phòng
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <!-- Output 1: JSON Schema Extracted -->
+            <div class="card card-luxury mb-3">
+              <div class="card-header bg-dark text-white py-2 fw-semibold d-flex justify-content-between">
+                <span><i class="bi bi-braces me-1 text-warning"></i> Gemini JSON Structured Output</span>
+                <span class="badge bg-secondary">Response Schema</span>
+              </div>
+              <div class="card-body p-2">
+                <pre class="json-viewer mb-0" id="jsonExtractedViewer">// JSON trả về từ Gemini sẽ hiển thị ở đây...</pre>
+              </div>
+            </div>
+
+            <!-- Output 2: Backend DB Result -->
+            <div class="card card-luxury">
+              <div class="card-header bg-white py-2 fw-semibold border-bottom">
+                <i class="bi bi-check-circle-fill text-success me-1"></i> Kết quả Lưu Trữ Database
+              </div>
+              <div class="card-body p-3" id="bookingResultCard">
+                <div class="text-muted fst-italic small">Chưa có kết quả đặt phòng.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: REQUIREMENT 3 - FUNCTION CALLING ASSISTANT -->
+      <div class="tab-pane fade" id="assistant-pane" role="tabpanel">
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="card card-luxury">
+              <div class="card-header-luxury d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-semibold fs-5">
+                    <i class="bi bi-robot me-2"></i>Requirement 3: API bookingassistant (POST /api/assistant/chat)
+                  </div>
+                  <div class="small text-white-50">Tương tác thông minh bằng Function Calling với các hàm C# của hệ thống.</div>
+                </div>
+                <button class="btn btn-sm btn-outline-light" id="btnClearChat">
+                  <i class="bi bi-trash"></i> Xóa lịch sử
+                </button>
+              </div>
+
+              <!-- Chat Message Area -->
+              <div class="chat-box" id="chatContainer">
+                <div class="chat-bubble chat-bubble-ai">
+                  Xin chào quý khách! Tôi là trợ lý ảo của khách sạn Sunrise Hotel. Tôi có thể hỗ trợ quý khách:
+                  <ul class="mb-0 mt-2 ps-3">
+                    <li>Kiểm tra phòng trống & giá phòng (CheckAvailability)</li>
+                    <li>Tra cứu đơn đặt phòng qua số điện thoại (GetBookingsByPhone)</li>
+                    <li>Hủy đơn đặt phòng theo mã (CancelBooking)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Suggestions -->
+              <div class="p-3 bg-white border-top">
+                <div class="text-muted small mb-2">Câu hỏi mẫu thử nghiệm Function Calling:</div>
+                <div class="d-flex flex-wrap gap-2">
+                  <button class="suggestion-chip" onclick="sendAssistantSample('Còn phòng Suite nào trống từ 24/12/2026 đến 26/12/2026 không?')">
+                    🔍 Còn phòng Suite trống 24/12 đến 26/12 không?
+                  </button>
+                  <button class="suggestion-chip" onclick="sendAssistantSample('Tra cứu lịch sử đặt phòng của số điện thoại 0901234567')">
+                    📞 Tra cứu sđt 0901234567
+                  </button>
+                  <button class="suggestion-chip" onclick="sendAssistantSample('Hủy giúp tôi booking số 3')">
+                    ❌ Hủy giúp tôi booking số 3
+                  </button>
+                </div>
+              </div>
+
+              <!-- Input Area -->
+              <div class="p-3 bg-light border-top">
+                <form id="chatForm" class="d-flex gap-2">
+                  <input type="text" class="form-control form-control-lg" id="chatMessageInput" placeholder="Nhập câu hỏi hoặc yêu cầu hỗ trợ...">
+                  <button type="submit" class="btn btn-primary btn-lg px-4" id="btnSendChat">
+                    <i class="bi bi-send"></i>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card card-luxury">
+              <div class="card-header bg-white py-3 fw-bold">
+                <i class="bi bi-gear-wide-connected text-primary me-2"></i>Các hàm C# (Function Calling)
+              </div>
+              <div class="card-body small">
+                <div class="mb-3">
+                  <span class="badge bg-primary-subtle text-primary mb-1">CheckAvailability</span>
+                  <div class="text-secondary">Tham số: <code>roomType</code>, <code>checkIn</code>, <code>checkOut</code></div>
+                  <div class="text-muted">Kiểm tra các phòng không bị trùng lịch Confirmed trong DB và trả về giá niêm yết.</div>
+                </div>
+                <hr>
+                <div class="mb-3">
+                  <span class="badge bg-success-subtle text-success mb-1">GetBookingsByPhone</span>
+                  <div class="text-secondary">Tham số: <code>phone</code></div>
+                  <div class="text-muted">Tìm kiếm toàn bộ các đơn đặt phòng theo số điện thoại khách hàng.</div>
+                </div>
+                <hr>
+                <div>
+                  <span class="badge bg-danger-subtle text-danger mb-1">CancelBooking</span>
+                  <div class="text-secondary">Tham số: <code>bookingId</code></div>
+                  <div class="text-muted">Cập nhật trường <code>Status</code> của đơn đặt phòng thành <code>Cancelled</code>.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card card-luxury">
+              <div class="card-header bg-white py-3 fw-bold">
+                <i class="bi bi-clock-history text-secondary me-2"></i>Nhật ký gọi hàm (Function Logs)
+              </div>
+              <div class="card-body p-2" id="functionLogsContainer" style="max-height: 250px; overflow-y: auto;">
+                <div class="text-muted small fst-italic p-2">Chưa có lệnh gọi hàm nào được thực thi.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: HOTEL GENERAL INFO -->
+      <div class="tab-pane fade" id="info-pane" role="tabpanel">
+        <div class="card card-luxury">
+          <div class="card-header-luxury">
+            <h5 class="mb-0 fw-bold">Tổng quan Khách sạn Sunrise Hotel Nha Trang</h5>
+          </div>
+          <div class="card-body p-4">
+            <div class="row g-4">
+              <div class="col-md-6">
+                <h6 class="fw-bold text-primary"><i class="bi bi-building me-2"></i>Thông tin chung</h6>
+                <table class="table table-sm table-borderless">
+                  <tr><th style="width: 160px;">Địa chỉ:</th><td>25 Trần Phú, Nha Trang</td></tr>
+                  <tr><th>Giờ nhận phòng:</th><td>Từ 14:00</td></tr>
+                  <tr><th>Giờ trả phòng:</th><td>Trước 12:00</td></tr>
+                  <tr><th>Buffet sáng:</th><td>Miễn phí từ 6:30 - 9:30 hàng ngày</td></tr>
+                  <tr><th>Hồ bơi ngoài trời:</th><td>Tầng 5 (hướng biển)</td></tr>
+                  <tr><th>Đưa đón sân bay:</th><td>Miễn phí cho khách đặt phòng <strong>Suite</strong></td></tr>
+                </table>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-bold text-primary"><i class="bi bi-door-open me-2"></i>Danh mục Phòng & Giá niêm yết</h6>
+                <table class="table table-bordered table-sm align-middle">
+                  <thead class="table-light">
+                    <tr><th>Mã</th><th>Số phòng</th><th>Loại phòng</th><th>Số khách</th><th>Giá/đêm</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1</td><td>101</td><td>Single</td><td>1</td><td>600.000 VND</td></tr>
+                    <tr><td>2</td><td>102</td><td>Single</td><td>1</td><td>600.000 VND</td></tr>
+                    <tr><td>3</td><td>201</td><td>Double</td><td>2</td><td>950.000 VND</td></tr>
+                    <tr><td>4</td><td>202</td><td>Double</td><td>2</td><td>950.000 VND</td></tr>
+                    <tr><td>5</td><td>301</td><td>Suite</td><td>4</td><td>2.200.000 VND</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="bg-white py-3 border-top mt-5 text-center text-muted small">
+    <div class="container">
+      Sunrise Hotel AI Assistant • Generative AI for .NET Developers with Google AI (Set02) • ASP.NET Core 8 & Google Gemini
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

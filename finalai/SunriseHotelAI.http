@@ -1,0 +1,55 @@
+@SunriseHotelAI_HostAddress = http://localhost:5021
+
+### 1. Ask Hotel (Req 1)
+POST {{SunriseHotelAI_HostAddress}}/api/ai/ask
+Content-Type: application/json
+
+{
+  "question": "Mấy giờ nhận phòng và khách sạn có hồ bơi không?"
+}
+
+### 1. Ask Hotel - Unrelated Question (Req 1 Polite Refusal)
+POST {{SunriseHotelAI_HostAddress}}/api/ai/ask
+Content-Type: application/json
+
+{
+  "question": "Hãy giải thích định lý Pythagoras và viết code Python."
+}
+
+### 2. Parse Booking (Req 2)
+POST {{SunriseHotelAI_HostAddress}}/api/bookings/parse
+Content-Type: application/json
+
+{
+  "text": "Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người"
+}
+
+### 3. Assistant Chat - Check Availability (Req 3 Function Calling)
+POST {{SunriseHotelAI_HostAddress}}/api/assistant/chat
+Content-Type: application/json
+
+{
+  "message": "Còn phòng Suite nào trống từ 24/12/2026 đến 26/12/2026 không?"
+}
+
+### 3. Assistant Chat - Get Bookings by Phone (Req 3 Function Calling)
+POST {{SunriseHotelAI_HostAddress}}/api/assistant/chat
+Content-Type: application/json
+
+{
+  "message": "Tra cứu đơn đặt phòng của số điện thoại 0901234567"
+}
+
+### 3. Assistant Chat - Cancel Booking (Req 3 Function Calling)
+POST {{SunriseHotelAI_HostAddress}}/api/assistant/chat
+Content-Type: application/json
+
+{
+  "message": "Hủy giúp tôi booking số 3"
+}
+
+### 4. Get Booking Report (Req 4)
+GET {{SunriseHotelAI_HostAddress}}/api/reports/bookings
+
+### 4. Get Booking Report with Date Filter (Req 4)
+GET {{SunriseHotelAI_HostAddress}}/api/reports/bookings?from=2026-11-20&to=2026-11-23

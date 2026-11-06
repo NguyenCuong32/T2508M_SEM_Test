@@ -1,0 +1,225 @@
+{
+  "info": {
+    "_postman_id": "sunrise-hotel-ai-collection-v1",
+    "name": "Sunrise Hotel AI Booking Assistant API",
+    "description": "Postman Collection for Sunrise Hotel AI Assistant (Set02 Practical Test) covering all 4 APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Ask Hotel (Req 1)",
+      "item": [
+        {
+          "name": "POST /api/ai/ask - Valid Hotel Question",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Mấy giờ nhận phòng và khách sạn có hồ bơi không?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/ask",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "ask"]
+            },
+            "description": "Ask receptionist about hotel check-in time and swimming pool."
+          }
+        },
+        {
+          "name": "POST /api/ai/ask - Unrelated Question (Polite Refusal)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Hãy viết cho tôi một bài thơ về mùa thu hoặc giải thích định lý Pythagoras.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/ask",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "ask"]
+            },
+            "description": "Tests system instruction compliance: receptionist must refuse unrelated questions politely."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Parse Booking (Req 2)",
+      "item": [
+        {
+          "name": "POST /api/bookings/parse - Exam Sample Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/parse",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "parse"]
+            },
+            "description": "Extracts structured JSON via Gemini and creates a Confirmed booking in database."
+          }
+        },
+        {
+          "name": "POST /api/bookings/parse - Suite Room Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Mình tên là Hoàng Yến, số điện thoại 0918765432, cần đặt 1 phòng Suite từ ngày 28/12/2026 đến ngày 31/12/2026 cho 3 người\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/parse",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "parse"]
+            },
+            "description": "Parses Suite booking and calculates total price."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Booking Assistant Chat (Req 3 - Function Calling)",
+      "item": [
+        {
+          "name": "POST /api/assistant/chat - Check Availability",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Còn phòng Suite nào trống từ 24/12/2026 đến 26/12/2026 không?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "chat"]
+            },
+            "description": "Gemini calls CheckAvailability function and returns natural language answer."
+          }
+        },
+        {
+          "name": "POST /api/assistant/chat - Get Bookings by Phone",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Tra cứu giúp tôi các đơn đặt phòng của số điện thoại 0901234567\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "chat"]
+            },
+            "description": "Gemini calls GetBookingsByPhone function and lists matching bookings."
+          }
+        },
+        {
+          "name": "POST /api/assistant/chat - Cancel Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Hủy giúp tôi booking số 3\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "chat"]
+            },
+            "description": "Gemini calls CancelBooking function and changes booking status to Cancelled."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Booking Report (Req 4)",
+      "item": [
+        {
+          "name": "GET /api/reports/bookings - All Confirmed Bookings",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reports", "bookings"]
+            },
+            "description": "Returns confirmed bookings table matching Requirement 4 format."
+          }
+        },
+        {
+          "name": "GET /api/reports/bookings - Filter by Date Range",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/bookings?from=2026-11-20&to=2026-11-23",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reports", "bookings"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-11-20"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-11-23"
+                }
+              ]
+            },
+            "description": "Filter confirmed bookings between 2026-11-20 and 2026-11-23."
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5021",
+      "type": "string"
+    }
+  ]
+}
