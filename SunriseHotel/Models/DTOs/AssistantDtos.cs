@@ -1,8 +1,15 @@
 namespace SunriseHotel.Models.DTOs;
 
+public class ChatHistoryItem
+{
+    public string Role { get; set; } = string.Empty;
+    public string Text { get; set; } = string.Empty;
+}
+
 public class AssistantChatRequest
 {
     public string Message { get; set; } = string.Empty;
+    public List<ChatHistoryItem>? History { get; set; }
 }
 
 public class AssistantChatResponse

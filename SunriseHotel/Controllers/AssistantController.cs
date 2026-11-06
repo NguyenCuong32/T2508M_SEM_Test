@@ -26,7 +26,7 @@ public class AssistantController : ControllerBase
 
         try
         {
-            var response = await _geminiService.ChatWithAssistantAsync(request.Message);
+            var response = await _geminiService.ChatWithAssistantAsync(request.Message, request.History);
             return Ok(response);
         }
         catch (InvalidOperationException ex)

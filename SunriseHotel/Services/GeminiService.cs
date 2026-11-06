@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using SunriseHotel.Models;
 using SunriseHotel.Models.DTOs;
 
 namespace SunriseHotel.Services;
@@ -293,7 +294,7 @@ Quy tắc:
         return FallbackParseBooking(text);
     }
 
-    public async Task<AssistantChatResponse> ChatWithAssistantAsync(string message)
+    public async Task<AssistantChatResponse> ChatWithAssistantAsync(string message, List<ChatHistoryItem>? history = null)
     {
         if (string.IsNullOrWhiteSpace(message))
         {
@@ -302,24 +303,47 @@ Quy tắc:
 
         using var scope = _serviceProvider.CreateScope();
         var bookingService = scope.ServiceProvider.GetRequiredService<IBookingService>();
+        var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
+
+        var allRooms = await roomService.GetAllRoomsAsync();
+        var roomsText = string.Join("\n", allRooms.Select(r =>
+            $"- Phòng {r.RoomNumber}: Hạng {r.RoomType}, Giá niêm yết: {r.PricePerNight:N0} VND/đêm, Sức chứa: {r.MaxGuests} người" +
+            (r.RoomType == "Suite" ? " (Có xe đưa đón sân bay Nội Bài miễn phí, đây là phòng cao cấp nhất và đắt nhất khách sạn)" : "")));
+
+        var todayStr = DateTime.Now.ToString("dd/MM/yyyy");
+        var todayIso = DateTime.Now.ToString("yyyy-MM-dd");
+        var tomorrowIso = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
 
         var apiKey = ResolveApiKey();
         if (!string.IsNullOrWhiteSpace(apiKey))
         {
             try
             {
-                var systemPrompt = @"Bạn là trợ lý ảo AI thông minh và tận tâm của Sunrise Hotel tại 25 Trần Phú, Hà Nội.
-Nhiệm vụ của bạn là hỗ trợ khách hàng kiểm tra tình trạng phòng trống, tra cứu lịch sử đặt phòng bằng số điện thoại, và hỗ trợ hủy đặt phòng theo mã đặt phòng.
-Bạn có quyền sử dụng 3 công cụ sau khi cần thiết:
-1. CheckAvailability: Kiểm tra danh sách các phòng còn trống và giá theo loại phòng (Single, Double, Suite) và khoảng ngày check-in đến check-out (định dạng YYYY-MM-DD).
-2. GetBookingsByPhone: Tra cứu danh sách booking của khách hàng theo số điện thoại.
-3. CancelBooking: Hủy đặt phòng theo mã bookingId.
+                var systemPrompt = $@"Bạn là trợ lý ảo AI thông minh, chu đáo và lịch sự của khách sạn Sunrise Hotel (Địa chỉ: 25 Trần Phú, Hà Nội).
+Thời gian hệ thống hiện tại: Hôm nay là ngày {todayStr} (Định dạng chuẩn YYYY-MM-DD: {todayIso}).
 
-Quy tắc thực hiện:
-- Khi khách hỏi phòng trống, hãy xác định loại phòng và ngày nhận/trả phòng rồi gọi hàm CheckAvailability. Nếu thiếu thông tin ngày, hãy hỏi khách nhẹ nhàng.
-- Khi khách hỏi thông tin đặt phòng của họ, hãy gọi GetBookingsByPhone với số điện thoại khách cung cấp.
-- Khi khách yêu cầu hủy booking (ví dụ: 'Hủy giúp tôi booking số 3'), hãy gọi hàm CancelBooking với bookingId tương ứng.
-- Sau khi nhận được kết quả từ hàm, hãy trả lời khách hàng bằng tiếng Việt một cách tự nhiên, rõ ràng, lịch sự và chu đáo.";
+DANH SÁCH TOÀN BỘ PHÒNG VÀ GIÁ ĐƯỢC ĐỌC TRỰC TIẾP TỪ CƠ SỞ DỮ LIỆU MYSQL (BẢNG ROOM):
+{roomsText}
+
+THÔNG TIN QUAN TRỌNG VỀ GIÁ & QUY ĐỊNH KHÁCH SẠN:
+- Phòng rẻ nhất: Hạng Single (phòng 101, 102) có giá 600.000 VND/đêm.
+- Phòng tiêu chuẩn: Hạng Double (phòng 201, 202) có giá 950.000 VND/đêm.
+- Phòng đắt nhất và cao cấp nhất: Hạng Suite (phòng 301) có giá 2.200.000 VND/đêm, miễn phí dịch vụ đưa đón sân bay Nội Bài.
+- Giờ nhận phòng (check-in): từ 14:00. Giờ trả phòng (check-out): trước 12:00. Bữa sáng miễn phí: 6:30 - 9:30 hàng ngày.
+
+CÁC HÀM CÔNG CỤ C# TRUY VẤN VÀ CẬP NHẬT CSDL THỰC TẾ (FUNCTION CALLING):
+1. CheckAvailability(roomType, checkIn, checkOut):
+   - Kiểm tra phòng trống thực tế trong CSDL và tính giá cho khoảng ngày từ checkIn đến checkOut (định dạng YYYY-MM-DD).
+   - Nếu khách hỏi về 'hôm nay' để đặt phòng hoặc kiểm tra trống, mặc định checkIn = '{todayIso}', checkOut = '{tomorrowIso}'.
+   - Nếu trước đó khách đang hỏi về một loại phòng (ví dụ phòng Suite) và ở câu tiếp theo khách cung cấp ngày (ví dụ '06-11-2026' hay '06/11/2026 đến 08/11/2026'), hãy tổng hợp ngữ cảnh và gọi hàm CheckAvailability với loại phòng đó.
+2. GetBookingsByPhone(phone): Tra cứu toàn bộ lịch sử booking đã đặt trong CSDL theo số điện thoại khách hàng cung cấp.
+3. CancelBooking(bookingId): Hủy booking trong CSDL theo mã bookingId.
+
+QUY TẮC ĐỐI THOẠI BẮT BUỘC:
+- DUY TRÌ NGỮ CẢNH: Đây là một cuộc trò chuyện liên tục. Hãy đọc kỹ lịch sử trao đổi trước đó để hiểu khách đang tiếp tục câu chuyện gì (ví dụ khách vừa cung cấp ngày sau khi bạn hỏi ngày checkout). Tuyệt đối không đối xử với câu trả lời của khách như một chủ đề hoàn toàn mới tách biệt.
+- Trả lời về giá niêm yết: Khi khách hỏi về giá niêm yết, giá phòng hôm nay, phòng nào đắt nhất hay rẻ nhất, hãy trả lời ngay thông tin từ bảng Room ở trên một cách chính xác và nhiệt tình, sau đó hỏi khách có muốn kiểm tra tình trạng trống trong ngày cụ thể không.
+- Khi khách muốn kiểm tra phòng trống hoặc đặt phòng, hãy gọi hàm CheckAvailability.
+- Khi nhận được kết quả từ hàm C#, hãy giải thích rõ ràng và tự nhiên bằng tiếng Việt.";
 
                 var toolsDeclaration = new JsonArray
                 {
@@ -375,14 +399,64 @@ Quy tắc thực hiện:
                     }
                 };
 
-                var contents = new JsonArray
+                var contents = new JsonArray();
+                if (history != null && history.Count > 0)
                 {
-                    new JsonObject
+                    string? lastRole = null;
+                    foreach (var item in history)
+                    {
+                        if (string.IsNullOrWhiteSpace(item.Text)) continue;
+                        var r = (item.Role?.ToLower() == "assistant" || item.Role?.ToLower() == "model") ? "model" : "user";
+                        if (contents.Count == 0 && r != "user") continue;
+
+                        if (r == lastRole && contents.Count > 0)
+                        {
+                            var prevObj = contents[contents.Count - 1] as JsonObject;
+                            var partsArr = prevObj?["parts"] as JsonArray;
+                            if (partsArr != null && partsArr.Count > 0)
+                            {
+                                var prevText = partsArr[0]?["text"]?.ToString() ?? string.Empty;
+                                partsArr[0] = new JsonObject { ["text"] = prevText + "\n" + item.Text };
+                            }
+                        }
+                        else
+                        {
+                            contents.Add(new JsonObject
+                            {
+                                ["role"] = r,
+                                ["parts"] = new JsonArray { new JsonObject { ["text"] = item.Text } }
+                            });
+                            lastRole = r;
+                        }
+                    }
+
+                    if (contents.Count > 0 && lastRole == "user")
+                    {
+                        var prevObj = contents[contents.Count - 1] as JsonObject;
+                        var partsArr = prevObj?["parts"] as JsonArray;
+                        if (partsArr != null && partsArr.Count > 0)
+                        {
+                            var prevText = partsArr[0]?["text"]?.ToString() ?? string.Empty;
+                            partsArr[0] = new JsonObject { ["text"] = prevText + "\n" + message };
+                        }
+                    }
+                    else
+                    {
+                        contents.Add(new JsonObject
+                        {
+                            ["role"] = "user",
+                            ["parts"] = new JsonArray { new JsonObject { ["text"] = message } }
+                        });
+                    }
+                }
+                else
+                {
+                    contents.Add(new JsonObject
                     {
                         ["role"] = "user",
                         ["parts"] = new JsonArray { new JsonObject { ["text"] = message } }
-                    }
-                };
+                    });
+                }
 
                 var initialPayload = new JsonObject
                 {
@@ -416,6 +490,8 @@ Quy tắc thực hiện:
                         var rType = functionArgs["roomType"]?.ToString() ?? string.Empty;
                         var cIn = functionArgs["checkIn"]?.ToString() ?? string.Empty;
                         var cOut = functionArgs["checkOut"]?.ToString() ?? string.Empty;
+                        if (string.IsNullOrWhiteSpace(cIn)) cIn = todayIso;
+                        if (string.IsNullOrWhiteSpace(cOut)) cOut = tomorrowIso;
                         toolExecutionResult = await bookingService.CheckAvailabilityAsync(rType, cIn, cOut);
                     }
                     else if (functionName.Equals("GetBookingsByPhone", StringComparison.OrdinalIgnoreCase))
@@ -463,16 +539,9 @@ Quy tắc thực hiện:
                         }
                     };
 
-                    var secondContents = new JsonArray
-                    {
-                        new JsonObject
-                        {
-                            ["role"] = "user",
-                            ["parts"] = new JsonArray { new JsonObject { ["text"] = message } }
-                        },
-                        modelTurn,
-                        functionTurn
-                    };
+                    var secondContents = JsonNode.Parse(contents.ToJsonString()) as JsonArray ?? new JsonArray();
+                    secondContents.Add(modelTurn);
+                    secondContents.Add(functionTurn);
 
                     var secondPayload = new JsonObject
                     {
@@ -500,7 +569,7 @@ Quy tắc thực hiện:
             }
         }
 
-        return await FallbackAssistantChatAsync(message, bookingService);
+        return await FallbackAssistantChatAsync(message, bookingService, allRooms, history);
     }
 
     private async Task<JsonNode> SendGeminiRequestWithRetryAsync(JsonObject payload, string apiKey)
@@ -734,9 +803,41 @@ Quy tắc thực hiện:
         return dto;
     }
 
-    private async Task<AssistantChatResponse> FallbackAssistantChatAsync(string message, IBookingService bookingService)
+    private async Task<AssistantChatResponse> FallbackAssistantChatAsync(
+        string message,
+        IBookingService bookingService,
+        List<Room>? rooms = null,
+        List<ChatHistoryItem>? history = null)
     {
         var lower = message.ToLower();
+
+        if (lower.Contains("đắt nhất") || lower.Contains("cao nhất") || (lower.Contains("giá") && lower.Contains("suite")))
+        {
+            var suite = rooms?.FirstOrDefault(r => r.RoomType == "Suite");
+            var priceText = suite != null ? $"{suite.PricePerNight:N0} VND" : "2.200.000 VND";
+            return new AssistantChatResponse
+            {
+                Response = $"Dạ chào Quý khách! Hiện tại khách sạn Sunrise Hotel có hạng phòng cao cấp và đắt nhất là **Phòng Suite (phòng 301)** với giá niêm yết là **{priceText}/đêm** (dành cho tối đa 4 khách và có xe đưa đón sân bay Nội Bài miễn phí). Quý khách muốn kiểm tra phòng trống cho ngày nào ạ?"
+            };
+        }
+
+        if (lower.Contains("rẻ nhất") || lower.Contains("thấp nhất"))
+        {
+            var single = rooms?.FirstOrDefault(r => r.RoomType == "Single");
+            var priceText = single != null ? $"{single.PricePerNight:N0} VND" : "600.000 VND";
+            return new AssistantChatResponse
+            {
+                Response = $"Dạ chào Quý khách! Hạng phòng tiết kiệm nhất của khách sạn là **Phòng Single (Đơn - phòng 101, 102)** với giá niêm yết là **{priceText}/đêm** (dành cho 1 khách, gồm bữa sáng miễn phí) ạ."
+            };
+        }
+
+        if (lower.Contains("bảng giá") || (lower.Contains("giá") && lower.Contains("phòng")))
+        {
+            return new AssistantChatResponse
+            {
+                Response = "Dạ bảng giá niêm yết các hạng phòng tại Sunrise Hotel như sau:\n- Phòng Single: 600.000 VND/đêm (phòng 101, 102)\n- Phòng Double: 950.000 VND/đêm (phòng 201, 202)\n- Phòng Suite: 2.200.000 VND/đêm (phòng 301, miễn phí đón sân bay Nội Bài).\nQuý khách muốn đặt hoặc kiểm tra phòng trống ngày nào ạ?"
+            };
+        }
 
         if (lower.Contains("hello") || lower.Contains("xin chào") || lower.Contains("chào") || lower.Contains("khoe") || lower.Contains("khỏe") || lower.Contains("hi ") || lower.Equals("hi"))
         {

@@ -404,6 +404,25 @@ function handleSendChat() {
     var msg = input.value.trim();
     if (!msg) return;
 
+    var historyPayload = [];
+    try {
+        var rawHistory = localStorage.getItem("sunrise_hotel_chat_history");
+        if (rawHistory) {
+            var parsedHistory = JSON.parse(rawHistory);
+            if (Array.isArray(parsedHistory)) {
+                historyPayload = parsedHistory
+                    .filter(function (m) { return m && m.text; })
+                    .map(function (m) {
+                        return {
+                            role: m.role === "assistant" ? "model" : "user",
+                            text: m.text
+                        };
+                    })
+                    .slice(-10);
+            }
+        }
+    } catch (e) { }
+
     appendChatMessage("user", msg);
     input.value = "";
 
@@ -413,7 +432,7 @@ function handleSendChat() {
     fetch("/api/assistant/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg })
+        body: JSON.stringify({ message: msg, history: historyPayload })
     })
         .then(function (res) {
             return res.text().then(function (text) {
