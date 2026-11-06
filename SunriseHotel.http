@@ -1,0 +1,128 @@
+@HostAddress = http://localhost:5013
+
+### ============================================================================
+### XÁC THỰC BẢO MẬT: LẤY JWT TOKEN ĐỂ TEST SWAGGER / API
+### ============================================================================
+
+### 0. Lấy JWT Token mẫu (Dùng để dán vào Authorize trên Swagger UI)
+# @name login
+POST {{HostAddress}}/api/auth/token
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password123"
+}
+
+### Lưu token từ request trên vào biến
+@authToken = {{login.response.body.token}}
+
+
+### ============================================================================
+### YÊU CẦU 1: API askhotel (POST /api/ai/ask)
+### AI Lễ tân trả lời thông tin khách sạn hoặc từ chối lịch sự câu hỏi ngoài lề
+### ============================================================================
+
+### 1.1 Hỏi thông tin giờ check-in và giờ ăn sáng (kèm JWT Bearer)
+POST {{HostAddress}}/api/ai/ask
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "question": "Chào bạn, cho tôi hỏi giờ check-in, check-out và giờ phục vụ ăn sáng của khách sạn là lúc mấy giờ?"
+}
+
+### 1.2 Hỏi về dịch vụ phòng Suite và vị trí hồ bơi
+POST {{HostAddress}}/api/ai/ask
+Content-Type: application/json
+
+{
+  "question": "Tôi muốn đặt phòng Suite thì có được đưa đón sân bay miễn phí không, và hồ bơi nằm ở tầng mấy?"
+}
+
+### 1.3 Test trường hợp từ chối lịch sự câu hỏi ngoài lề (toán học / không liên quan)
+POST {{HostAddress}}/api/ai/ask
+Content-Type: application/json
+
+{
+  "question": "Giải giúp tôi phương trình toán học x^2 - 4x + 4 = 0 được không?"
+}
+
+
+### ============================================================================
+### YÊU CẦU 2: API parsebooking (POST /api/bookings/parse)
+### Gemini JSON Mode trích xuất dữ liệu, kiểm tra phòng trống và tự động lưu DB
+### ============================================================================
+
+### 2.1 Bóc tách đặt phòng Đôi (Double)
+POST {{HostAddress}}/api/bookings/parse
+Content-Type: application/json
+
+{
+  "text": "Tôi là Hoàng Đức Thịnh, sđt 0918889999, muốn đặt 1 phòng đôi từ 2026-11-20 đến 2026-11-23 cho 2 người"
+}
+
+### 2.2 Bóc tách đặt phòng VIP (Suite)
+POST {{HostAddress}}/api/bookings/parse
+Content-Type: application/json
+
+{
+  "text": "Tôi là Lê Thanh Hằng, số điện thoại 0934567890, cần đặt một phòng VIP Suite từ ngày 2026-12-01 đến ngày 2026-12-04 cho 3 người"
+}
+
+### 2.3 Bóc tách đặt phòng Đơn (Single)
+POST {{HostAddress}}/api/bookings/parse
+Content-Type: application/json
+
+{
+  "text": "Mình là Đỗ Quốc Huy, sđt 0987112233 muốn thuê một phòng đơn từ 2026-11-28 đến 2026-11-30 cho 1 người"
+}
+
+
+### ============================================================================
+### YÊU CẦU 3: API bookingassistant (POST /api/assistant/chat)
+### Trợ lý AI thực thi Function Calling (CheckAvailability, GetBookingsByPhone, CancelBooking)
+### ============================================================================
+
+### 3.1 Function 1: CheckAvailability - Kiểm tra phòng trống
+POST {{HostAddress}}/api/assistant/chat
+Content-Type: application/json
+
+{
+  "message": "Còn phòng Suite nào trống từ 2026-12-24 đến 2026-12-26 không và giá bao nhiêu một đêm?"
+}
+
+### 3.2 Function 2: GetBookingsByPhone - Tra cứu đơn đặt phòng theo SĐT khách
+POST {{HostAddress}}/api/assistant/chat
+Content-Type: application/json
+
+{
+  "message": "Kiểm tra giúp tôi các đơn đặt phòng của số điện thoại 0901234567 với"
+}
+
+### 3.3 Function 3: CancelBooking - Hủy đơn đặt phòng theo BookingId
+POST {{HostAddress}}/api/assistant/chat
+Content-Type: application/json
+
+{
+  "message": "Hủy giúp tôi đơn đặt phòng số 3"
+}
+
+
+### ============================================================================
+### YÊU CẦU 4: API getbookingreport (GET /api/reports/bookings)
+### Báo cáo danh sách đơn đặt phòng đã xác nhận (Confirmed)
+### ============================================================================
+
+### 4.1 Lấy toàn bộ danh sách đơn đặt phòng Confirmed
+GET {{HostAddress}}/api/reports/bookings
+Accept: application/json
+
+### 4.2 Lọc đơn đặt phòng theo khoảng ngày (chuẩn yyyy-MM-dd)
+GET {{HostAddress}}/api/reports/bookings?from=2026-11-20&to=2026-11-23
+Accept: application/json
+
+### 4.3 Lọc đơn đặt phòng theo khoảng ngày (chuẩn dd/MM/yyyy)
+GET {{HostAddress}}/api/reports/bookings?from=20/11/2026&to=25/11/2026
+Accept: application/json
+

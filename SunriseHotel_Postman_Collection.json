@@ -1,0 +1,288 @@
+{
+  "info": {
+    "_postman_id": "a983b723-5e92-482f-8703-9df212bce221",
+    "name": "Sunrise Hotel - AI Booking & Management API",
+    "description": "Bộ sưu tập kiểm thử toàn diện 4 API Endpoints theo đề thi Practical Exam: Generative AI for .NET Developers with Google AI - SET02 (Sunrise Hotel).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5013",
+      "type": "string"
+    },
+    {
+      "key": "jwtToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Xác thực: Lấy JWT Token (POST /api/auth/token)",
+      "item": [
+        {
+          "name": "0.1 Tạo JWT Token cho Swagger / API",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/token",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "token"]
+            },
+            "description": "Lấy JWT Bearer token để xác thực trên Swagger UI (Authorize) hoặc thêm vào Authorization header."
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. Yêu cầu 1: askhotel (POST /api/ai/ask)",
+      "item": [
+        {
+          "name": "1.1 Hỏi thông tin phòng & giờ check-in/out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Cho tôi hỏi giờ nhận phòng (check-in), giờ trả phòng (check-out) và giờ ăn sáng của khách sạn?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/ask",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "ask"]
+            },
+            "description": "Gemini đóng vai lễ tân trả lời thông tin của Sunrise Hotel."
+          }
+        },
+        {
+          "name": "1.2 Hỏi về hồ bơi và đưa đón sân bay hạng Suite",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Phòng Suite có được miễn phí đón sân bay không và hồ bơi của khách sạn nằm ở tầng mấy?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/ask",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "ask"]
+            }
+          }
+        },
+        {
+          "name": "1.3 Test từ chối câu hỏi ngoài lề",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Ai là tổng thống hiện tại của nước Mỹ?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/ask",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "ask"]
+            },
+            "description": "Lễ tân phải từ chối lịch sự và hướng dẫn khách hỏi về Sunrise Hotel."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Yêu cầu 2: parsebooking (POST /api/bookings/parse)",
+      "item": [
+        {
+          "name": "2.1 Bóc tách đặt phòng Đôi (Double)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Tôi là Hoàng Đức Thịnh, sđt 0918889999, muốn đặt 1 phòng đôi từ 2026-11-20 đến 2026-11-23 cho 2 người\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/parse",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "parse"]
+            },
+            "description": "Gemini JSON Mode trích xuất dữ liệu, kiểm tra phòng trống, tính tổng tiền và lưu vào SQL Server."
+          }
+        },
+        {
+          "name": "2.2 Bóc tách đặt phòng VIP (Suite)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Tôi là Lê Thanh Hằng, số điện thoại 0934567890, cần đặt một phòng VIP Suite từ ngày 2026-12-01 đến ngày 2026-12-04 cho 3 người\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/bookings/parse",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "bookings", "parse"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Yêu cầu 3: bookingassistant (POST /api/assistant/chat)",
+      "item": [
+        {
+          "name": "3.1 Function 1: CheckAvailability - Kiểm tra phòng trống",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Còn phòng Suite nào trống từ 2026-12-24 đến 2026-12-26 không?\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "chat"]
+            },
+            "description": "Gemini tự động gọi hàm CheckAvailability(roomType='Suite', checkIn='2026-12-24', checkOut='2026-12-26')."
+          }
+        },
+        {
+          "name": "3.2 Function 2: GetBookingsByPhone - Tra cứu theo SĐT",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Tra cứu các đơn đặt phòng của số điện thoại 0901234567\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "chat"]
+            },
+            "description": "Gemini tự động gọi hàm GetBookingsByPhone(phone='0901234567')."
+          }
+        },
+        {
+          "name": "3.3 Function 3: CancelBooking - Hủy đặt phòng",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Hủy giúp tôi đơn đặt phòng số 3\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/assistant/chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "assistant", "chat"]
+            },
+            "description": "Gemini tự động gọi hàm CancelBooking(bookingId=3)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Yêu cầu 4: getbookingreport (GET /api/reports/bookings)",
+      "item": [
+        {
+          "name": "4.1 Lấy toàn bộ danh sách đặt phòng Confirmed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reports", "bookings"]
+            }
+          }
+        },
+        {
+          "name": "4.2 Lọc đặt phòng theo khoảng ngày (from & to)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reports/bookings?from=2026-11-20&to=2026-11-23",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reports", "bookings"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-11-20"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-11-23"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+

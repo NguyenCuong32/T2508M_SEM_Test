@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Hotel - AI Lễ Tân Khách Sạn</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Hotel CSS (Border-Radius: 8px) -->
+    <link href="/css/hotel.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-luxury sticky-top shadow-sm">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/index.html">
+                <div class="brand-icon-box">
+                    <i class="bi bi-building fs-5"></i>
+                </div>
+                <div>
+                    <div class="brand-title">SUNRISE HOTEL</div>
+                    <div class="brand-sub">NHA TRANG LUXURY ★★★★★</div>
+                </div>
+            </a>
+            <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury" href="/index.html">
+                            <i class="bi bi-table"></i> Báo Cáo Đặt Phòng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury active" href="/ask.html">
+                            <i class="bi bi-chat-quote-fill"></i> AI Lễ Tân
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury" href="/parse.html">
+                            <i class="bi bi-lightning-charge-fill"></i> Bóc Tách Đặt Phòng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury" href="/assistant.html">
+                            <i class="bi bi-robot"></i> Trợ Lý Function Calling
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="/swagger" target="_blank" class="btn btn-outline-light btn-sm fw-semibold">
+                        <i class="bi bi-file-earmark-code me-1"></i> Swagger API
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid px-lg-5 py-4">
+
+        <!-- Page Hero -->
+        <div class="page-hero">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="hero-tag mb-3">
+                        <i class="bi bi-stars"></i> Yêu Cầu 1: POST /api/ai/ask
+                    </div>
+                    <h1 class="h2 fw-bold mb-2">Quầy AI Lễ Tân Khách Sạn Sunrise</h1>
+                    <p class="text-white text-opacity-75 mb-0" style="font-size: 0.95rem;">
+                        Nhân viên lễ tân số hỗ trợ tư vấn 24/7 với Google Gemini, chuẩn phong cách hiếu khách 5 sao và từ chối khéo léo các câu hỏi không liên quan.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <span class="badge bg-white text-dark p-2 px-3 fw-semibold shadow-sm" style="border-radius: 8px;">
+                        <i class="bi bi-shield-lock-fill text-success me-1"></i> System Instruction Enforced
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+
+            <!-- CỘT TRÁI (4 COLS): BẢNG THÔNG TIN KHÁCH SẠN NIÊM YẾT -->
+            <div class="col-lg-4">
+                <div class="card card-luxury h-100">
+                    <div class="card-header-luxury d-flex align-items-center gap-2">
+                        <i class="bi bi-info-circle-fill text-warning fs-5"></i>
+                        <h6 class="fw-bold mb-0 text-dark">Sổ Tay Thông Tin Lễ Tân</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.05em;">Khách sạn & Vị trí</span>
+                            <div class="d-flex align-items-start gap-2 mt-2">
+                                <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+                                <div>
+                                    <div class="fw-bold text-dark">Sunrise Hotel Nha Trang</div>
+                                    <div class="text-muted small">25 Trần Phú, Nha Trang, Khánh Hòa</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-3 opacity-25">
+
+                        <div class="mb-3">
+                            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.05em;">Thời gian quy định</span>
+                            <ul class="list-unstyled mt-2 small">
+                                <li class="mb-2 d-flex justify-content-between">
+                                    <span class="text-muted"><i class="bi bi-box-arrow-in-right text-success me-1"></i> Giờ nhận phòng:</span>
+                                    <strong class="text-dark">Từ 14:00</strong>
+                                </li>
+                                <li class="mb-2 d-flex justify-content-between">
+                                    <span class="text-muted"><i class="bi bi-box-arrow-left text-danger me-1"></i> Giờ trả phòng:</span>
+                                    <strong class="text-dark">Trước 12:00</strong>
+                                </li>
+                                <li class="d-flex justify-content-between">
+                                    <span class="text-muted"><i class="bi bi-cup-hot text-warning me-1"></i> Bữa sáng miễn phí:</span>
+                                    <strong class="text-dark">6:30 - 9:30 mỗi ngày</strong>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <hr class="my-3 opacity-25">
+
+                        <div class="mb-3">
+                            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.05em;">Tiện ích đặc quyền</span>
+                            <ul class="list-unstyled mt-2 small">
+                                <li class="mb-2">
+                                    <i class="bi bi-water text-primary me-2"></i>
+                                    <strong>Hồ bơi vô cực:</strong> Nằm ở tầng 5 view biển
+                                </li>
+                                <li>
+                                    <i class="bi bi-airplane text-success me-2"></i>
+                                    <strong>Đón sân bay miễn phí:</strong> Áp dụng cho hạng phòng <strong>Suite</strong>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <hr class="my-3 opacity-25">
+
+                        <div>
+                            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.05em;">Bảng giá niêm yết</span>
+                            <div class="mt-2">
+                                <div class="p-2 px-3 bg-light mb-2 d-flex justify-content-between align-items-center" style="border-radius: 8px;">
+                                    <div>
+                                        <span class="badge badge-single me-1">Single</span>
+                                        <small class="text-muted">(Tối đa 1 khách)</small>
+                                    </div>
+                                    <strong class="text-dark">600.000 VND</strong>
+                                </div>
+                                <div class="p-2 px-3 bg-light mb-2 d-flex justify-content-between align-items-center" style="border-radius: 8px;">
+                                    <div>
+                                        <span class="badge badge-double me-1">Double</span>
+                                        <small class="text-muted">(Tối đa 2 khách)</small>
+                                    </div>
+                                    <strong class="text-dark">950.000 VND</strong>
+                                </div>
+                                <div class="p-2 px-3 bg-light d-flex justify-content-between align-items-center" style="border-radius: 8px;">
+                                    <div>
+                                        <span class="badge badge-suite me-1">Suite</span>
+                                        <small class="text-muted">(Tối đa 4 khách)</small>
+                                    </div>
+                                    <strong class="text-dark">2.200.000 VND</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI (8 COLS): KHUNG HỎI ĐÁP VỚI LỄ TÂN SỐ -->
+            <div class="col-lg-8">
+                <div class="card card-luxury h-100 d-flex flex-column">
+                    <div class="card-header-luxury d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-2 bg-warning bg-opacity-10 text-warning" style="border-radius: 8px;">
+                                <i class="bi bi-person-badge fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">Lễ Tân Sunrise Hotel (AI Online)</h6>
+                                <small class="text-success"><i class="bi bi-dot"></i> Đang sẵn sàng phục vụ</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary px-3" style="border-radius: 8px;" onclick="clearChat()">
+                            <i class="bi bi-trash3 me-1"></i> Xóa lịch sử
+                        </button>
+                    </div>
+
+                    <div class="card-body p-4 d-flex flex-column flex-grow-1">
+
+                        <!-- Câu hỏi gợi ý nhanh -->
+                        <div class="mb-3">
+                            <span class="text-muted small fw-semibold d-block mb-2">
+                                <i class="bi bi-hand-index-thumb me-1"></i> Chọn nhanh câu hỏi mẫu:
+                            </span>
+                            <div class="d-flex flex-wrap gap-1">
+                                <span class="sample-chip" onclick="askPredefined('Khách sạn có giờ nhận phòng và trả phòng như thế nào?')">
+                                    <i class="bi bi-clock"></i> Giờ check-in & check-out?
+                                </span>
+                                <span class="sample-chip" onclick="askPredefined('Bữa sáng buffet của khách sạn phục vụ vào khung giờ nào?')">
+                                    <i class="bi bi-egg-fried"></i> Khung giờ ăn sáng?
+                                </span>
+                                <span class="sample-chip" onclick="askPredefined('Phòng Suite có được miễn phí đón sân bay không và hồ bơi ở tầng mấy?')">
+                                    <i class="bi bi-water"></i> Hồ bơi & Đón sân bay Suite?
+                                </span>
+                                <span class="sample-chip" onclick="askPredefined('Giá phòng Double một đêm là bao nhiêu tiền?')">
+                                    <i class="bi bi-tag"></i> Giá phòng Double?
+                                </span>
+                                <span class="sample-chip border-danger text-danger" onclick="askPredefined('Giải giúp tôi phương trình bậc 2: 2x^2 + 5x - 7 = 0?')">
+                                    <i class="bi bi-shield-x"></i> Test từ chối ngoài lề
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Vùng stream tin nhắn trò chuyện -->
+                        <div class="chat-stream-box flex-grow-1 mb-3" id="chat-stream">
+                            <div class="msg-bubble-box msg-bot-box">
+                                <div class="fw-bold text-warning mb-1 d-flex align-items-center gap-1">
+                                    <i class="bi bi-building"></i> Lễ tân Sunrise Hotel
+                                </div>
+                                Dạ kính chào Quý khách! Em là nhân viên lễ tân của khách sạn Sunrise Hotel (25 Trần Phú, Nha Trang). Em rất hân hạnh được hỗ trợ giải đáp mọi thắc mắc của Quý khách về phòng nghỉ, giá dịch vụ và các tiện ích tại khách sạn mình ạ!
+                            </div>
+                        </div>
+
+                        <!-- Ô nhập liệu gửi câu hỏi -->
+                        <div class="input-group shadow-sm border" style="border-radius: 8px;">
+                            <input type="text" id="ask-input" class="form-control border-0 px-3 py-2 fs-6" placeholder="Nhập câu hỏi của Quý khách cho lễ tân khách sạn...">
+                            <button id="btn-send-ask" class="btn btn-gold-luxury px-4 d-flex align-items-center gap-2">
+                                <span>Gửi</span>
+                                <i class="bi bi-send-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 text-muted small mt-auto">
+        <div class="container-fluid px-lg-5 text-center">
+            <p class="mb-1 fw-semibold text-dark">SUNRISE HOTEL NHA TRANG LUXURY &copy; 2026</p>
+            <p class="mb-0 text-secondary">
+                25 Trần Phú, Nha Trang, Khánh Hòa | Yêu cầu 1: API askhotel (POST /api/ai/ask)
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const chatStream = document.getElementById('chat-stream');
+        const askInput = document.getElementById('ask-input');
+        const btnSendAsk = document.getElementById('btn-send-ask');
+
+        function appendMessage(role, text) {
+            const bubble = document.createElement('div');
+            bubble.className = `msg-bubble-box msg-${role}-box`;
+            if (role === 'user') {
+                bubble.innerHTML = `
+                    <div class="fw-semibold text-warning-emphasis mb-1 small text-end"><i class="bi bi-person-fill"></i> Quý khách</div>
+                    <div style="white-space: pre-line;">${escapeHtml(text)}</div>
+                `;
+            } else {
+                bubble.innerHTML = `
+                    <div class="fw-bold text-warning mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-building"></i> Lễ tân Sunrise Hotel
+                    </div>
+                    <div style="white-space: pre-line;">${text}</div>
+                `;
+            }
+            chatStream.appendChild(bubble);
+            chatStream.scrollTop = chatStream.scrollHeight;
+            return bubble;
+        }
+
+        async function submitQuestion(questionText) {
+            const question = questionText || askInput.value.trim();
+            if (!question) return;
+
+            appendMessage('user', question);
+            askInput.value = '';
+
+            const loadingBubble = appendMessage('bot', `
+                <div class="d-flex align-items-center gap-2 text-muted">
+                    <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+                    <span>Lễ tân đang chuẩn bị câu trả lời...</span>
+                </div>
+            `);
+
+            btnSendAsk.disabled = true;
+
+            try {
+                const res = await fetch('/api/ai/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.message || 'Lỗi kết nối từ máy chủ.');
+                }
+
+                loadingBubble.innerHTML = `
+                    <div class="fw-bold text-warning mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-building"></i> Lễ tân Sunrise Hotel
+                    </div>
+                    <div style="white-space: pre-line;">${data.answer}</div>
+                `;
+            } catch (err) {
+                loadingBubble.innerHTML = `
+                    <div class="text-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        <strong>Không thể phản hồi:</strong> ${err.message}
+                    </div>
+                `;
+            } finally {
+                btnSendAsk.disabled = false;
+                chatStream.scrollTop = chatStream.scrollHeight;
+            }
+        }
+
+        function askPredefined(text) {
+            askInput.value = text;
+            submitQuestion(text);
+        }
+
+        function clearChat() {
+            chatStream.innerHTML = `
+                <div class="msg-bubble-box msg-bot-box">
+                    <div class="fw-bold text-warning mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-building"></i> Lễ tân Sunrise Hotel
+                    </div>
+                    Dạ kính chào Quý khách! Em là nhân viên lễ tân của khách sạn Sunrise Hotel (25 Trần Phú, Nha Trang). Em rất hân hạnh được hỗ trợ giải đáp mọi thắc mắc của Quý khách về phòng nghỉ, giá dịch vụ và các tiện ích tại khách sạn mình ạ!
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.innerText = text;
+            return div.innerHTML;
+        }
+
+        btnSendAsk.addEventListener('click', () => submitQuestion());
+        askInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submitQuestion();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Hotel - Quản Lý & Báo Cáo Đặt Phòng</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Hotel CSS (Border-Radius: 8px) -->
+    <link href="/css/hotel.css" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-luxury sticky-top shadow-sm">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/index.html">
+                <div class="brand-icon-box">
+                    <i class="bi bi-building fs-5"></i>
+                </div>
+                <div>
+                    <div class="brand-title">SUNRISE HOTEL</div>
+                    <div class="brand-sub">NHA TRANG LUXURY ★★★★★</div>
+                </div>
+            </a>
+            <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury active" href="/index.html">
+                            <i class="bi bi-table"></i> Báo Cáo Đặt Phòng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury" href="/ask.html">
+                            <i class="bi bi-chat-quote-fill"></i> AI Lễ Tân
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury" href="/parse.html">
+                            <i class="bi bi-lightning-charge-fill"></i> Bóc Tách Đặt Phòng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury" href="/assistant.html">
+                            <i class="bi bi-robot"></i> Trợ Lý Function Calling
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="/swagger" target="_blank" class="btn btn-outline-light btn-sm fw-semibold">
+                        <i class="bi bi-file-earmark-code me-1"></i> Swagger API
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container-fluid px-lg-5 py-4">
+
+        <!-- Page Hero Banner -->
+        <div class="page-hero">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="hero-tag mb-3">
+                        <i class="bi bi-geo-alt-fill"></i> 25 Trần Phú, Phường Lộc Thọ, Nha Trang, Khánh Hòa
+                    </div>
+                    <h1 class="h2 fw-bold mb-2">Báo Cáo & Quản Lý Đặt Phòng Khách Sạn</h1>
+                    <p class="text-white text-opacity-75 mb-0" style="font-size: 0.95rem;">
+                        Giải pháp quản lý vận hành chuyên nghiệp kết hợp ASP.NET Core Web API, Entity Framework Core (SQL Server) và Google Gemini AI.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <div class="bg-black bg-opacity-25 p-3 border border-white border-opacity-10 d-inline-block text-start" style="border-radius: 8px;">
+                        <div class="text-white-50 small mb-1">Trạng thái kết nối</div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge bg-success" style="border-radius: 6px;"><i class="bi bi-database-check me-1"></i> SQL Server: SUNRISEHOTEL</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-warning text-dark" style="border-radius: 6px;"><i class="bi bi-cpu-fill me-1"></i> Google Gemini AI: Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 Feature Navigation Cards (Dẫn tới 3 trang AI riêng biệt) -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card card-luxury h-100 p-3" style="border-left: 4px solid var(--gold-500);">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="p-2 text-warning" style="background: rgba(184, 138, 36, 0.1); border-radius: 8px;">
+                                <i class="bi bi-chat-quote-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">1. AI Lễ Tân Khách Sạn</h6>
+                                <small class="text-muted">POST /api/ai/ask</small>
+                            </div>
+                        </div>
+                        <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-25">Yêu cầu 1</span>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Tư vấn giờ nhận/trả phòng, ăn sáng miễn phí, giá phòng, đón sân bay và từ chối khéo léo câu hỏi ngoài lề.
+                    </p>
+                    <a href="/ask.html" class="btn btn-sm btn-outline-dark fw-semibold mt-auto" style="border-radius: 8px;">
+                        Mở trang AI Lễ Tân <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-luxury h-100 p-3" style="border-left: 4px solid #2563eb;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="p-2 text-primary" style="background: rgba(37, 99, 235, 0.1); border-radius: 8px;">
+                                <i class="bi bi-lightning-charge-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">2. Bóc Tách Đặt Phòng</h6>
+                                <small class="text-muted">POST /api/bookings/parse</small>
+                            </div>
+                        </div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">Yêu cầu 2</span>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Trích xuất JSON Mode qua schema, kiểm tra trùng lịch phòng trống và tự động tạo đơn Booking mới vào DB.
+                    </p>
+                    <a href="/parse.html" class="btn btn-sm btn-outline-primary fw-semibold mt-auto" style="border-radius: 8px;">
+                        Mở trang Bóc Tách <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-luxury h-100 p-3" style="border-left: 4px solid #16a34a;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="p-2 text-success" style="background: rgba(22, 163, 74, 0.1); border-radius: 8px;">
+                                <i class="bi bi-robot fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">3. Trợ Lý Function Calling</h6>
+                                <small class="text-muted">POST /api/assistant/chat</small>
+                            </div>
+                        </div>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Yêu cầu 3</span>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Thực thi 3 tool: Kiểm tra phòng trống, tra cứu đơn theo SĐT và hỗ trợ hủy đơn đặt phòng bằng ngôn ngữ tự nhiên.
+                    </p>
+                    <a href="/assistant.html" class="btn btn-sm btn-outline-success fw-semibold mt-auto" style="border-radius: 8px;">
+                        Mở trang Trợ Lý AI <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Đơn Đã Xác Nhận</span>
+                            <h3 class="fw-bold text-dark mb-0 mt-1" id="stat-total-bookings">--</h3>
+                            <small class="text-success fw-medium"><i class="bi bi-check2-circle me-1"></i>Status = Confirmed</small>
+                        </div>
+                        <div class="kpi-icon" style="background: #eff6ff; color: #1d4ed8;">
+                            <i class="bi bi-journal-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Tổng Doanh Thu</span>
+                            <h3 class="fw-bold text-success mb-0 mt-1" id="stat-total-revenue">--</h3>
+                            <small class="text-muted">Số đêm × Giá phòng</small>
+                        </div>
+                        <div class="kpi-icon" style="background: #f0fdf4; color: #15803d;">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Quy Mô Phòng</span>
+                            <h3 class="fw-bold text-dark mb-0 mt-1">5 Phòng</h3>
+                            <small class="text-muted">Single (2) | Double (2) | Suite (1)</small>
+                        </div>
+                        <div class="kpi-icon" style="background: #fffbeb; color: #b45309;">
+                            <i class="bi bi-door-open"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="kpi-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.75rem;">Giờ Nhận / Trả Phòng</span>
+                            <h4 class="fw-bold text-dark mb-0 mt-1">14:00 / 12:00</h4>
+                            <small class="text-muted">Ăn sáng: 6:30 - 9:30 | Hồ bơi T5</small>
+                        </div>
+                        <div class="kpi-icon" style="background: #f8fafc; color: #475569; border: 1px solid #e2e8f0;">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BẢNG BÁO CÁO ĐẶT PHÒNG KHÁCH SẠN (YÊU CẦU 4 & 5) -->
+        <div class="card card-luxury mb-5">
+            <div class="card-header-luxury d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div>
+                    <h5 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+                        <i class="bi bi-table text-primary"></i>
+                        <span>Báo Cáo Chi Tiết Đặt Phòng (Yêu Cầu 4)</span>
+                    </h5>
+                    <p class="text-muted small mb-0">
+                        Endpoint: <code>GET /api/reports/bookings?from=...&to=...</code> (Lọc các đơn có Status == "Confirmed")
+                    </p>
+                </div>
+
+                <!-- Bộ lọc ngày -->
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <div class="input-group input-group-sm" style="width: auto;">
+                        <span class="input-group-text bg-light text-muted fw-medium"><i class="bi bi-calendar3 me-1"></i> Từ ngày</span>
+                        <input type="date" id="filter-from" class="form-control">
+                    </div>
+                    <div class="input-group input-group-sm" style="width: auto;">
+                        <span class="input-group-text bg-light text-muted fw-medium"><i class="bi bi-calendar3 me-1"></i> Đến ngày</span>
+                        <input type="date" id="filter-to" class="form-control">
+                    </div>
+                    <button id="btn-filter-report" class="btn btn-sm btn-navy-luxury px-3">
+                        <i class="bi bi-funnel-fill me-1"></i> Lọc dữ liệu
+                    </button>
+                    <button id="btn-reset-report" class="btn btn-sm btn-outline-secondary px-3" style="border-radius: 8px;">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Xem tất cả
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Body -->
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-luxury align-middle">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 70px;">No</th>
+                                <th class="text-center" style="width: 140px;">Room number</th>
+                                <th style="width: 140px;">Room type</th>
+                                <th>Guest name</th>
+                                <th class="text-center" style="width: 130px;">Check-in</th>
+                                <th class="text-center" style="width: 130px;">Check-out</th>
+                                <th class="text-center" style="width: 110px;">Nights</th>
+                                <th class="text-end pe-4" style="width: 180px;">Total price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-table-body">
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <div class="spinner-border text-primary spinner-border-sm me-2"></div> Đang tải dữ liệu từ cơ sở dữ liệu...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer of Table -->
+            <div class="card-footer bg-light px-4 py-3 d-flex flex-wrap justify-content-between align-items-center text-muted small border-top" style="border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+                <div id="report-summary-text">
+                    Đang nạp dữ liệu...
+                </div>
+                <div>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">
+                        <i class="bi bi-shield-check me-1"></i> Dữ liệu đồng bộ trực tiếp từ SQL Server
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 text-muted small mt-auto">
+        <div class="container-fluid px-lg-5 text-center">
+            <p class="mb-1 fw-semibold text-dark">SUNRISE HOTEL NHA TRANG LUXURY &copy; 2026</p>
+            <p class="mb-0 text-secondary">
+                25 Trần Phú, Nha Trang, Khánh Hòa | Hệ thống Đặt phòng tích hợp Generative AI (SET02)
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script nạp dữ liệu Báo Cáo -->
+    <script>
+        const reportTableBody = document.getElementById('report-table-body');
+        const filterFrom = document.getElementById('filter-from');
+        const filterTo = document.getElementById('filter-to');
+        const btnFilterReport = document.getElementById('btn-filter-report');
+        const btnResetReport = document.getElementById('btn-reset-report');
+        const statTotalBookings = document.getElementById('stat-total-bookings');
+        const statTotalRevenue = document.getElementById('stat-total-revenue');
+        const reportSummaryText = document.getElementById('report-summary-text');
+
+        async function loadReport(from = '', to = '') {
+            reportTableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <div class="spinner-border text-primary spinner-border-sm me-2"></div> Đang tải dữ liệu từ máy chủ...
+                    </td>
+                </tr>
+            `;
+
+            let url = '/api/reports/bookings';
+            const params = new URLSearchParams();
+            if (from) params.append('from', from);
+            if (to) params.append('to', to);
+            if (params.toString()) url += `?${params.toString()}`;
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || 'Lỗi khi truy vấn báo cáo.');
+                }
+
+                const data = await res.json();
+                renderReportTable(data);
+            } catch (err) {
+                reportTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-danger">
+                            <i class="bi bi-exclamation-triangle-fill fs-3 d-block mb-2"></i>
+                            <strong>Không thể nạp dữ liệu:</strong> ${err.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function renderReportTable(items) {
+            if (!items || items.length === 0) {
+                reportTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary opacity-50"></i>
+                            Không có đơn đặt phòng nào phù hợp trong khoảng thời gian này.
+                        </td>
+                    </tr>
+                `;
+                statTotalBookings.innerText = '0';
+                statTotalRevenue.innerText = '0 VND';
+                reportSummaryText.innerText = 'Không có kết quả nào được tìm thấy.';
+                return;
+            }
+
+            let totalRev = 0;
+            let rowsHtml = '';
+
+            items.forEach(item => {
+                totalRev += (item.totalPrice || 0);
+
+                let badgeClass = 'badge-double';
+                if (item.roomType === 'Suite') badgeClass = 'badge-suite';
+                if (item.roomType === 'Single') badgeClass = 'badge-single';
+
+                rowsHtml += `
+                    <tr>
+                        <td class="text-center fw-bold text-muted">${item.no}</td>
+                        <td class="text-center">
+                            <span class="badge bg-dark bg-opacity-75 font-monospace px-2 py-1">${item.roomNumber}</span>
+                        </td>
+                        <td>
+                            <span class="badge ${badgeClass}">${item.roomType}</span>
+                        </td>
+                        <td class="fw-semibold text-dark">
+                            <i class="bi bi-person-fill text-secondary me-1"></i> ${item.guestName}
+                        </td>
+                        <td class="text-center text-muted fw-medium">${item.checkIn}</td>
+                        <td class="text-center text-muted fw-medium">${item.checkOut}</td>
+                        <td class="text-center">
+                            <span class="badge bg-light text-dark border px-2 py-1">${item.nights} đêm</span>
+                        </td>
+                        <td class="text-end pe-4 fw-bold text-success">${item.totalPriceFormatted} VND</td>
+                    </tr>
+                `;
+            });
+
+            reportTableBody.innerHTML = rowsHtml;
+            statTotalBookings.innerText = items.length;
+            statTotalRevenue.innerText = new Intl.NumberFormat('vi-VN').format(totalRev) + ' VND';
+            reportSummaryText.innerHTML = `Hiển thị <strong>${items.length}</strong> đơn đặt phòng đã xác nhận. Tổng doanh thu tạm tính: <strong class="text-success">${new Intl.NumberFormat('vi-VN').format(totalRev)} VND</strong>`;
+        }
+
+        btnFilterReport.addEventListener('click', () => {
+            loadReport(filterFrom.value, filterTo.value);
+        });
+
+        btnResetReport.addEventListener('click', () => {
+            filterFrom.value = '';
+            filterTo.value = '';
+            loadReport();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReport();
+        });
+    </script>
+</body>
+</html>

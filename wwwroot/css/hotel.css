@@ -1,0 +1,363 @@
+/* ==========================================================================
+   SUNRISE HOTEL - ENTERPRISE LUXURY DESIGN SYSTEM
+   Corner Radius: 8px (Clean & Professional Modern Architecture)
+   ========================================================================== */
+
+:root {
+    /* Color Palette */
+    --navy-950: #060c18;
+    --navy-900: #0c1527;
+    --navy-800: #132238;
+    --navy-700: #1b2e4b;
+    --navy-600: #253d62;
+
+    --gold-600: #a1781c;
+    --gold-500: #b88a24;
+    --gold-400: #d4a342;
+    --gold-100: #fef8eb;
+    --gold-50: #fffdfa;
+
+    --slate-50: #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
+
+    /* Corner Radius strictly 8px */
+    --radius: 8px;
+    --radius-sm: 6px;
+
+    /* Professional Subtle Elevation */
+    --shadow-card: 0 1px 3px rgba(12, 21, 39, 0.05), 0 4px 12px rgba(12, 21, 39, 0.04);
+    --shadow-hover: 0 4px 6px -1px rgba(12, 21, 39, 0.08), 0 10px 24px -3px rgba(12, 21, 39, 0.08);
+}
+
+/* Global Reset & Base Typography */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: #f8fafc;
+    color: var(--slate-800);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Enforce 8px corner radius on common Bootstrap components */
+.card,
+.btn,
+.form-control,
+.form-select,
+.input-group,
+.input-group-text,
+.badge,
+.alert,
+.modal-content,
+.dropdown-menu,
+.nav-pills .nav-link,
+.table-responsive {
+    border-radius: var(--radius) !important;
+}
+
+/* Navbar */
+.navbar-luxury {
+    background-color: var(--navy-900);
+    border-bottom: 1px solid rgba(212, 163, 66, 0.25);
+    padding: 0.75rem 0;
+}
+
+.brand-icon-box {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, rgba(212, 163, 66, 0.15) 0%, rgba(212, 163, 66, 0.05) 100%);
+    border: 1px solid rgba(212, 163, 66, 0.35);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-400);
+}
+
+.brand-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #ffffff;
+    line-height: 1.1;
+}
+
+.brand-sub {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    color: var(--gold-400);
+}
+
+.nav-link-luxury {
+    color: #94a3b8 !important;
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.45rem 0.95rem !important;
+    border-radius: var(--radius) !important;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.nav-link-luxury:hover {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.nav-link-luxury.active {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, var(--gold-600) 0%, var(--gold-500) 100%) !important;
+    box-shadow: 0 2px 8px rgba(184, 138, 36, 0.35);
+}
+
+/* Page Hero */
+.page-hero {
+    background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 60%, var(--navy-700) 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius) !important;
+    padding: 1.75rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 16px rgba(12, 21, 39, 0.1);
+}
+
+.hero-tag {
+    background: rgba(212, 163, 66, 0.12);
+    border: 1px solid rgba(212, 163, 66, 0.3);
+    color: var(--gold-400);
+    padding: 0.3rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border-radius: var(--radius);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* Professional Cards */
+.card-luxury {
+    background: #ffffff;
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-card);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-luxury:hover {
+    border-color: var(--slate-300);
+    box-shadow: var(--shadow-hover);
+}
+
+.card-header-luxury {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--slate-100);
+    padding: 1rem 1.25rem;
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+}
+
+/* Metric KPI Cards */
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius) !important;
+    padding: 1.15rem 1.25rem;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Luxury & Enterprise Buttons */
+.btn-gold-luxury {
+    background: linear-gradient(135deg, var(--gold-600) 0%, var(--gold-500) 100%);
+    color: #ffffff;
+    border: 1px solid rgba(212, 163, 66, 0.4);
+    border-radius: var(--radius) !important;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.55rem 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.btn-gold-luxury:hover {
+    background: linear-gradient(135deg, #8f6a16 0%, #a1781c 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(184, 138, 36, 0.3);
+}
+
+.btn-navy-luxury {
+    background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 100%);
+    color: #ffffff;
+    border: 1px solid var(--navy-700);
+    border-radius: var(--radius) !important;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.55rem 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.btn-navy-luxury:hover {
+    background: linear-gradient(135deg, var(--navy-800) 0%, var(--navy-700) 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(12, 21, 39, 0.2);
+}
+
+/* Badges for Room Types */
+.badge-suite {
+    background-color: #f5f3ff;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+    font-weight: 600;
+    border-radius: var(--radius) !important;
+    padding: 0.35rem 0.65rem;
+}
+
+.badge-double {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-weight: 600;
+    border-radius: var(--radius) !important;
+    padding: 0.35rem 0.65rem;
+}
+
+.badge-single {
+    background-color: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    font-weight: 600;
+    border-radius: var(--radius) !important;
+    padding: 0.35rem 0.65rem;
+}
+
+/* Chips / Tags */
+.sample-chip {
+    background: #ffffff;
+    border: 1px solid var(--slate-300);
+    color: var(--slate-700);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius) !important;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 2px;
+}
+
+.sample-chip:hover {
+    background-color: var(--gold-50);
+    border-color: var(--gold-400);
+    color: var(--gold-600);
+}
+
+/* Chat & Stream Containers */
+.chat-stream-box {
+    height: 480px;
+    overflow-y: auto;
+    padding: 1.25rem;
+    background-color: var(--slate-50);
+    border: 1px solid var(--slate-200);
+    border-radius: var(--radius) !important;
+}
+
+.msg-bubble-box {
+    max-width: 82%;
+    padding: 0.85rem 1.15rem;
+    border-radius: var(--radius) !important;
+    margin-bottom: 1rem;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.msg-user-box {
+    background-color: var(--navy-900);
+    color: #ffffff;
+    margin-left: auto;
+    border: 1px solid var(--navy-700);
+}
+
+.msg-bot-box {
+    background-color: #ffffff;
+    color: var(--slate-800);
+    border: 1px solid var(--slate-200);
+    border-left: 3px solid var(--gold-500);
+    margin-right: auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.tool-badge-box {
+    background-color: var(--navy-900);
+    color: var(--gold-400);
+    border: 1px solid rgba(212, 163, 66, 0.4);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius) !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.4rem;
+    font-family: monospace;
+}
+
+/* Data Table Clean Styling */
+.table-luxury {
+    margin-bottom: 0;
+}
+
+.table-luxury thead th {
+    background-color: #f8fafc;
+    color: var(--slate-600);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    border-bottom: 1px solid var(--slate-200);
+    padding: 0.85rem 1rem;
+}
+
+.table-luxury tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--slate-100);
+    font-size: 0.88rem;
+}
+
+.table-luxury tbody tr:hover {
+    background-color: #fbfdff;
+}
+
+/* Footer */
+footer {
+    background-color: #ffffff;
+    border-top: 1px solid var(--slate-200);
+}

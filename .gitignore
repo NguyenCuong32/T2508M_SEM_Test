@@ -16,9 +16,14 @@
 **/dist-ssr/
 *.local
 
-# Environment & Settings
-local.settings.json.bak
+# Environment, Secrets & API Keys (DO NOT UPLOAD)
 .env
-.env.local
+.env.*
+*.key
+*.ps1
+*secrets*.json
+appsettings.Production.json
+test_models.ps1
+*.local
 .DS_Store
 Thumbs.db

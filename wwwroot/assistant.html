@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Hotel - Trợ Lý Ảo Function Calling</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Custom Hotel CSS (Border-Radius: 8px) -->
+    <link href="/css/hotel.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-luxury sticky-top shadow-sm">
+        <div class="container-fluid px-lg-5">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/index.html">
+                <div class="brand-icon-box">
+                    <i class="bi bi-building fs-5"></i>
+                </div>
+                <div>
+                    <div class="brand-title">SUNRISE HOTEL</div>
+                    <div class="brand-sub">NHA TRANG LUXURY ★★★★★</div>
+                </div>
+            </a>
+            <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury" href="/index.html">
+                            <i class="bi bi-table"></i> Báo Cáo Đặt Phòng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury" href="/ask.html">
+                            <i class="bi bi-chat-quote-fill"></i> AI Lễ Tân
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury" href="/parse.html">
+                            <i class="bi bi-lightning-charge-fill"></i> Bóc Tách Đặt Phòng
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-luxury active" href="/assistant.html">
+                            <i class="bi bi-robot"></i> Trợ Lý Function Calling
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="/swagger" target="_blank" class="btn btn-outline-light btn-sm fw-semibold">
+                        <i class="bi bi-file-earmark-code me-1"></i> Swagger API
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid px-lg-5 py-4">
+
+        <!-- Page Hero -->
+        <div class="page-hero">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="hero-tag mb-3">
+                        <i class="bi bi-robot"></i> Yêu Cầu 3: POST /api/assistant/chat
+                    </div>
+                    <h1 class="h2 fw-bold mb-2">Trợ Lý Ảo Tương Tác Function Calling</h1>
+                    <p class="text-white text-opacity-75 mb-0" style="font-size: 0.95rem;">
+                        Tự động điều phối và gọi 3 Tools trong C#: Kiểm tra phòng trống, tra cứu đơn theo SĐT và hủy đặt
+                        phòng trực tiếp trong SQL Server.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <span class="badge bg-white text-dark p-2 px-3 fw-semibold shadow-sm" style="border-radius: 8px;">
+                        <i class="bi bi-tools text-success me-1"></i> 3 Function Declarations Active
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+
+            <!-- CỘT TRÁI (4 COLS): BẢNG ĐIỀU KHIỂN & GIẢI THÍCH 3 TOOLS -->
+            <div class="col-lg-4">
+                <div class="card card-luxury h-100">
+                    <div class="card-header-luxury d-flex align-items-center gap-2">
+                        <i class="bi bi-cpu text-success fs-5"></i>
+                        <h6 class="fw-bold mb-0 text-dark">Danh Sách 3 Tools Tích Hợp</h6>
+                    </div>
+                    <div class="card-body p-4">
+
+                        <!-- Tool 1 -->
+                        <div class="p-3 bg-light mb-3 border" style="border-radius: 8px;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-primary font-monospace" style="border-radius: 6px;">Tool 1:
+                                    CheckAvailability</span>
+                                <small class="text-success"><i class="bi bi-check-circle-fill"></i> Read DB</small>
+                            </div>
+                            <small class="text-muted d-block">
+                                Kiểm tra danh sách các phòng còn trống theo loại phòng (Single, Double, Suite) và khoảng
+                                ngày yêu cầu kèm giá.
+                            </small>
+                        </div>
+
+                        <!-- Tool 2 -->
+                        <div class="p-3 bg-light mb-3 border" style="border-radius: 8px;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-info text-dark font-monospace" style="border-radius: 6px;">Tool 2:
+                                    GetBookingsByPhone</span>
+                                <small class="text-success"><i class="bi bi-check-circle-fill"></i> Read DB</small>
+                            </div>
+                            <small class="text-muted d-block">
+                                Truy vấn danh sách tất cả các đơn đặt phòng của khách hàng theo số điện thoại (liên kết
+                                bảng Room &amp; Booking).
+                            </small>
+                        </div>
+
+                        <!-- Tool 3 -->
+                        <div class="p-3 bg-light mb-4 border" style="border-radius: 8px;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-danger font-monospace" style="border-radius: 6px;">Tool 3:
+                                    CancelBooking</span>
+                                <small class="text-danger"><i class="bi bi-pencil-fill"></i> Write DB</small>
+                            </div>
+                            <small class="text-muted d-block">
+                                Tìm đơn đặt phòng theo mã <code>bookingId</code> và cập nhật trạng thái trong SQL Server
+                                thành <strong>Cancelled</strong>.
+                            </small>
+                        </div>
+
+                        <hr class="my-3 opacity-25">
+
+                        <!-- Câu lệnh mẫu để test Function Calling -->
+                        <span class="text-muted small text-uppercase fw-bold d-block mb-2"
+                            style="font-size: 0.75rem; letter-spacing: 0.05em;">
+                            <i class="bi bi-magic text-warning me-1"></i> Câu lệnh mẫu kích hoạt Tool:
+                        </span>
+                        <div class="d-flex flex-column gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm text-start p-2 px-3"
+                                style="border-radius: 8px;"
+                                onclick="sendPrompt('Còn phòng Suite nào trống từ 2026-12-24 đến 2026-12-26 không?')">
+                                <div class="fw-semibold text-dark small"><i class="bi bi-search text-primary me-1"></i>
+                                    Gọi Tool 1: Kiểm tra phòng trống</div>
+                                <small class="text-muted">"Còn phòng Suite nào trống từ 24/12 đến 26/12 không?"</small>
+                            </button>
+
+                            <button type="button" class="btn btn-outline-secondary btn-sm text-start p-2 px-3"
+                                style="border-radius: 8px;"
+                                onclick="sendPrompt('Tra cứu các đơn đặt phòng của số điện thoại 0901234567')">
+                                <div class="fw-semibold text-dark small"><i
+                                        class="bi bi-telephone-inbound text-info me-1"></i> Gọi Tool 2: Tra cứu theo SĐT
+                                </div>
+                                <small class="text-muted">"Tra cứu các đơn đặt phòng của SĐT 0901234567"</small>
+                            </button>
+
+                            <button type="button" class="btn btn-outline-danger btn-sm text-start p-2 px-3"
+                                style="border-radius: 8px;" onclick="sendPrompt('Hủy giúp tôi đơn đặt phòng số 3')">
+                                <div class="fw-semibold text-danger small"><i
+                                        class="bi bi-x-circle text-danger me-1"></i> Gọi Tool 3: Hủy đơn đặt phòng</div>
+                                <small class="text-muted">"Hủy giúp tôi đơn đặt phòng số 3"</small>
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI (8 COLS): KHUNG CHAT TRỢ LÝ THÔNG MINH -->
+            <div class="col-lg-8">
+                <div class="card card-luxury h-100 d-flex flex-column">
+                    <div class="card-header-luxury d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-2 text-success"
+                                style="background: rgba(22, 163, 74, 0.1); border-radius: 8px;">
+                                <i class="bi bi-robot fs-5"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">Sunrise AI Assistant (Function Calling)</h6>
+                                <small class="text-muted">Tự động gọi API &amp; CSDL theo ngữ cảnh hội thoại</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary px-3" style="border-radius: 8px;"
+                            onclick="resetAssistantChat()">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Làm mới hội thoại
+                        </button>
+                    </div>
+
+                    <div class="card-body p-4 d-flex flex-column flex-grow-1">
+
+                        <!-- Stream tin nhắn -->
+                        <div class="chat-stream-box flex-grow-1 mb-3" id="assistant-chat-stream">
+                            <div class="msg-bubble-box msg-bot-box">
+                                <div class="fw-bold text-success mb-1 d-flex align-items-center gap-1">
+                                    <i class="bi bi-robot"></i> Sunrise Hotel Assistant
+                                </div>
+                                Xin chào Quý khách! Em là trợ lý ảo AI thông minh của Sunrise Hotel. Em có thể trực tiếp
+                                tra cứu phòng trống trong CSDL, tra cứu lịch sử đặt phòng qua số điện thoại hoặc hỗ trợ
+                                Quý khách hủy đơn đặt phòng một cách nhanh chóng. Quý khách cần em hỗ trợ điều gì hôm
+                                nay ạ?
+                            </div>
+                        </div>
+
+                        <!-- Ô nhập lệnh -->
+                        <div class="input-group shadow-sm border" style="border-radius: 8px;">
+                            <input type="text" id="assistant-input" class="form-control border-0 px-3 py-2 fs-6"
+                                placeholder="Nhập câu lệnh hoặc yêu cầu (ví dụ: 'Còn phòng Suite nào trống từ 2026-12-24 đến 2026-12-26 không?')...">
+                            <button id="btn-send-assistant"
+                                class="btn btn-navy-luxury px-4 d-flex align-items-center gap-2">
+                                <span>Gửi</span>
+                                <i class="bi bi-send-fill text-warning"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 text-muted small mt-auto">
+        <div class="container-fluid px-lg-5 text-center">
+            <p class="mb-1 fw-semibold text-dark">SUNRISE HOTEL NHA TRANG LUXURY &copy; 2026</p>
+            <p class="mb-0 text-secondary">
+                25 Trần Phú, Nha Trang, Khánh Hòa | Yêu cầu 3: API bookingassistant (POST /api/assistant/chat)
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const chatStream = document.getElementById('assistant-chat-stream');
+        const assistantInput = document.getElementById('assistant-input');
+        const btnSend = document.getElementById('btn-send-assistant');
+
+        function appendBubble(role, content, executedFunctions = []) {
+            const bubble = document.createElement('div');
+            bubble.className = `msg-bubble-box msg-${role}-box`;
+
+            let toolBadge = '';
+            if (executedFunctions && executedFunctions.length > 0) {
+                toolBadge = `
+                    <div class="mb-2">
+                        <span class="tool-badge-box">
+                            <i class="bi bi-gear-wide-connected text-warning"></i> Gemini đã gọi C# Tool: <strong>${executedFunctions.join(', ')}</strong>
+                        </span>
+                    </div>
+                `;
+            }
+
+            if (role === 'user') {
+                bubble.innerHTML = `
+                    <div class="fw-semibold text-warning-emphasis mb-1 small text-end"><i class="bi bi-person-fill"></i> Quý khách</div>
+                    <div style="white-space: pre-line;">${escapeHtml(content)}</div>
+                `;
+            } else {
+                bubble.innerHTML = `
+                    <div class="fw-bold text-success mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-robot"></i> Sunrise Hotel Assistant
+                    </div>
+                    ${toolBadge}
+                    <div style="white-space: pre-line;">${content}</div>
+                `;
+            }
+
+            chatStream.appendChild(bubble);
+            chatStream.scrollTop = chatStream.scrollHeight;
+            return bubble;
+        }
+
+        async function sendUserMessage(msgText) {
+            const message = msgText || assistantInput.value.trim();
+            if (!message) return;
+
+            appendBubble('user', message);
+            assistantInput.value = '';
+
+            const loadingBubble = appendBubble('bot', `
+                <div class="d-flex align-items-center gap-2 text-muted">
+                    <div class="spinner-border spinner-border-sm text-success" role="status"></div>
+                    <span>Trợ lý đang phân tích yêu cầu và kiểm tra cơ sở dữ liệu...</span>
+                </div>
+            `);
+
+            btnSend.disabled = true;
+
+            try {
+                const res = await fetch('/api/assistant/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.message || 'Lỗi xử lý từ máy chủ.');
+                }
+
+                let toolBadge = '';
+                if (data.executedFunctions && data.executedFunctions.length > 0) {
+                    toolBadge = `
+                        <div class="mb-2">
+                            <span class="tool-badge-box">
+                                <i class="bi bi-gear-wide-connected text-warning"></i> Gemini đã gọi C# Tool: <strong>${data.executedFunctions.join(', ')}</strong>
+                            </span>
+                        </div>
+                    `;
+                }
+
+                loadingBubble.innerHTML = `
+                    <div class="fw-bold text-success mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-robot"></i> Sunrise Hotel Assistant
+                    </div>
+                    ${toolBadge}
+                    <div style="white-space: pre-line;">${data.answer}</div>
+                `;
+            } catch (err) {
+                loadingBubble.innerHTML = `
+                    <div class="text-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        <strong>Lỗi:</strong> ${err.message}
+                    </div>
+                `;
+            } finally {
+                btnSend.disabled = false;
+                chatStream.scrollTop = chatStream.scrollHeight;
+            }
+        }
+
+        function sendPrompt(text) {
+            assistantInput.value = text;
+            sendUserMessage(text);
+        }
+
+        function resetAssistantChat() {
+            chatStream.innerHTML = `
+                <div class="msg-bubble-box msg-bot-box">
+                    <div class="fw-bold text-success mb-1 d-flex align-items-center gap-1">
+                        <i class="bi bi-robot"></i> Sunrise Hotel Assistant
+                    </div>
+                    Xin chào Quý khách! Em là trợ lý ảo AI thông minh của Sunrise Hotel. Em có thể trực tiếp tra cứu phòng trống trong CSDL, tra cứu lịch sử đặt phòng qua số điện thoại hoặc hỗ trợ Quý khách hủy đơn đặt phòng một cách nhanh chóng. Quý khách cần em hỗ trợ điều gì hôm nay ạ?
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.innerText = text;
+            return div.innerHTML;
+        }
+
+        btnSend.addEventListener('click', () => sendUserMessage());
+        assistantInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendUserMessage();
+            }
+        });
+    </script>
+</body>
+
+</html>
