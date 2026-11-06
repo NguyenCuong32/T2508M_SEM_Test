@@ -1,0 +1,42 @@
+@{
+    var assistantPage = ViewContext.RouteData.Values["action"]?.ToString() == "Assistant";
+}
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#132722">
+    <title>@ViewData["Title"] · Sunrise Hotel</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true">
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Đến nội dung chính</a>
+    <header class="masthead">
+        <nav class="shell nav" aria-label="Điều hướng chính">
+            <a class="brand" href="/">
+                <svg class="brand-mark" aria-hidden="true"><use href="/images/icons.svg#sunrise"></use></svg>
+                <span>Sunrise <span class="brand-accent">Hotel</span><small>NHA TRANG</small></span>
+            </a>
+            <div class="nav-links">
+                <a href="/" aria-current="@(!assistantPage ? "page" : null)">
+                    <svg class="icon" aria-hidden="true"><use href="/images/icons.svg#report"></use></svg>
+                    Báo cáo
+                </a>
+                <a href="/assistant" aria-current="@(assistantPage ? "page" : null)">
+                    <svg class="icon" aria-hidden="true"><use href="/images/icons.svg#bell"></use></svg>
+                    Trợ lý
+                </a>
+            </div>
+        </nav>
+    </header>
+    <main id="main-content">
+        @RenderBody()
+    </main>
+    <footer class="shell footer">
+        <span class="footer-brand">Sunrise Hotel</span>
+        <span><svg class="icon" aria-hidden="true"><use href="/images/icons.svg#pin"></use></svg>25 Trần Phú, Nha Trang</span>
+    </footer>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

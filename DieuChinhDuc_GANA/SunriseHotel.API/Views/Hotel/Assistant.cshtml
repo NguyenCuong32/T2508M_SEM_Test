@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Trợ lý khách sạn";
+    ViewData["Eyebrow"] = "DỊCH VỤ KHÁCH HÀNG";
+    ViewData["Description"] = "Hỏi lễ tân, gửi yêu cầu đặt phòng hoặc tra cứu kỳ lưu trú tại Sunrise Hotel.";
+}
+
+<partial name="_HotelHero" />
+
+<div class="shell page-content">
+    <div class="assistant-grid">
+        <form class="panel ai-form" data-url="/api/ai/ask" data-field="question">
+            <div class="card-heading">
+                <span class="icon-tile" aria-hidden="true"><svg class="icon"><use href="/images/icons.svg#bell"></use></svg></span>
+                <h2>Hỏi lễ tân</h2>
+                <p>Tìm hiểu về tiện ích, giờ nhận phòng và các dịch vụ của khách sạn.</p>
+            </div>
+            <label>Câu hỏi<textarea required maxlength="2000" placeholder="Ví dụ: Hồ bơi ở tầng mấy?"></textarea></label>
+            <button type="submit" class="button">Gửi câu hỏi<svg class="icon" aria-hidden="true"><use href="/images/icons.svg#arrow"></use></svg></button>
+            <p class="answer" role="status"></p>
+        </form>
+        <form class="panel ai-form" data-url="/api/bookings/parse" data-field="text">
+            <div class="card-heading">
+                <span class="icon-tile" aria-hidden="true"><svg class="icon"><use href="/images/icons.svg#key"></use></svg></span>
+                <h2>Đặt phòng</h2>
+                <p>Gửi họ tên, số điện thoại, loại phòng, ngày lưu trú và số khách.</p>
+            </div>
+            <label>Yêu cầu đặt phòng<textarea required maxlength="2000" placeholder="Ví dụ: Tôi là Nguyễn Văn An, SĐT 0901234567, đặt phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người."></textarea></label>
+            <button type="submit" class="button">Xác nhận đặt phòng<svg class="icon" aria-hidden="true"><use href="/images/icons.svg#arrow"></use></svg></button>
+            <p class="answer" role="status"></p>
+        </form>
+        <form class="panel ai-form" data-url="/api/assistant/chat" data-field="message">
+            <div class="card-heading">
+                <span class="icon-tile" aria-hidden="true"><svg class="icon"><use href="/images/icons.svg#chat"></use></svg></span>
+                <h2>Quản lý đặt phòng</h2>
+                <p>Kiểm tra phòng còn trống, tìm đơn theo số điện thoại hoặc yêu cầu hủy.</p>
+            </div>
+            <label>Tin nhắn<textarea required maxlength="2000" placeholder="Ví dụ: Còn phòng Suite nào trống từ 24/12/2026 đến 26/12/2026 không?"></textarea></label>
+            <button type="submit" class="button">Gửi tin nhắn<svg class="icon" aria-hidden="true"><use href="/images/icons.svg#arrow"></use></svg></button>
+            <p class="answer" role="status"></p>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/assistant.js" asp-append-version="true" defer></script>
+}

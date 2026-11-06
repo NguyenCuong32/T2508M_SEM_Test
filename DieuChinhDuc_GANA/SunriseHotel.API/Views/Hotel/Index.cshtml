@@ -1,0 +1,111 @@
+@model BookingReportView
+@using System.Globalization
+@{
+    ViewData["Title"] = "Báo cáo đặt phòng";
+    ViewData["Eyebrow"] = "QUẢN LÝ KHÁCH SẠN";
+    ViewData["Description"] = "Theo dõi các đơn đã xác nhận theo ngày nhận phòng.";
+    var locale = CultureInfo.GetCultureInfo("vi-VN");
+    var from = Model.From?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    var to = Model.To?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    var empty = Model.Rows.Count == 0;
+}
+
+<partial name="_HotelHero" />
+
+<div class="shell page-content">
+    @if (Model.Error is null)
+    {
+        <ul class="summary" aria-label="Tổng quan trong khoảng ngày đã chọn">
+            <li class="summary-item">
+                <span class="icon-tile" aria-hidden="true"><svg class="icon"><use href="/images/icons.svg#key"></use></svg></span>
+                <span class="summary-label">Đơn đã xác nhận</span>
+                <strong class="summary-value">@Model.Rows.Count.ToString("N0", locale)</strong>
+            </li>
+            <li class="summary-item">
+                <span class="icon-tile" aria-hidden="true"><svg class="icon"><use href="/images/icons.svg#moon"></use></svg></span>
+                <span class="summary-label">Tổng số đêm</span>
+                <strong class="summary-value">@Model.Rows.Sum(row => (long)row.Nights).ToString("N0", locale)</strong>
+            </li>
+            <li class="summary-item">
+                <span class="icon-tile" aria-hidden="true"><svg class="icon"><use href="/images/icons.svg#wallet"></use></svg></span>
+                <span class="summary-label">Tổng tiền đặt phòng</span>
+                <strong class="summary-value">@Model.Rows.Sum(row => row.TotalPrice).ToString("N0", locale) <span class="unit">VND</span></strong>
+            </li>
+        </ul>
+    }
+
+    <section class="panel filter-panel" aria-labelledby="filter-title">
+        <div class="filter-heading">
+            <span class="icon-tile" aria-hidden="true"><svg class="icon"><use href="/images/icons.svg#calendar"></use></svg></span>
+            <div>
+                <h2 id="filter-title">Khoảng ngày</h2>
+                <p>Lọc theo ngày nhận phòng</p>
+            </div>
+        </div>
+        <form action="/" method="get" class="filters">
+            <label for="from">Từ ngày<input id="from" type="date" name="from" value="@from"></label>
+            <label for="to">Đến ngày<input id="to" type="date" name="to" value="@to"></label>
+            <div class="filter-actions">
+                <button type="submit" class="button"><svg class="icon" aria-hidden="true"><use href="/images/icons.svg#filter"></use></svg>Lọc báo cáo</button>
+                <a class="reset" href="/">Bỏ lọc</a>
+            </div>
+        </form>
+        @if (Model.Error is not null)
+        {
+            <p class="error filter-error" role="alert">@Model.Error</p>
+        }
+    </section>
+
+    <section class="panel report @(empty ? "is-empty" : null)" aria-labelledby="report-title">
+        <div class="report-heading">
+            <div>
+                <h2 id="report-title">Đơn đã xác nhận</h2>
+                <p>Chi tiết phòng và kỳ lưu trú của khách</p>
+            </div>
+            <span class="badge">@Model.Rows.Count đơn</span>
+        </div>
+        @if (!empty)
+        {
+            <p class="table-hint">Vuốt ngang để xem đầy đủ thông tin.</p>
+        }
+        <div class="table-wrap" tabindex="@(empty ? null : "0")" role="region" aria-label="Bảng đơn đã xác nhận">
+            <table aria-labelledby="report-title">
+                <thead>
+                    <tr>
+                        <th scope="col">STT</th>
+                        <th scope="col">Số phòng</th>
+                        <th scope="col">Loại phòng</th>
+                        <th scope="col">Tên khách</th>
+                        <th scope="col">Nhận phòng</th>
+                        <th scope="col">Trả phòng</th>
+                        <th scope="col" class="number">Số đêm</th>
+                        <th scope="col" class="number">Tổng tiền (VND)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td>@row.No</td>
+                        <td><span class="room-number">@row.RoomNumber</span></td>
+                        <td>@row.RoomType</td>
+                        <td>@row.GuestName</td>
+                        <td class="date-cell">@row.CheckIn.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
+                        <td class="date-cell">@row.CheckOut.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</td>
+                        <td class="number">@row.Nights</td>
+                        <td class="number amount">@row.TotalPrice.ToString("N0", locale)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        @if (empty)
+        {
+            <div class="empty">
+                <span class="icon-tile" aria-hidden="true"><svg class="icon"><use href="/images/icons.svg#calendar"></use></svg></span>
+                <strong>@(Model.Error is null ? "Chưa có đơn đặt phòng" : "Khoảng ngày chưa hợp lệ")</strong>
+                <p>@(Model.Error is null ? "Không có đơn đã xác nhận trong khoảng ngày này." : "Điều chỉnh bộ lọc để xem báo cáo.")</p>
+            </div>
+        }
+    </section>
+</div>

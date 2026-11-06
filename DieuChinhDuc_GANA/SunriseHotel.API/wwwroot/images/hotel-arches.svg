@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" fill="none">
+  <defs>
+    <linearGradient id="metal" x1="46" y1="334" x2="600" y2="42" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#b48a55" stop-opacity="0"/>
+      <stop offset=".42" stop-color="#bd9765" stop-opacity=".72"/>
+      <stop offset=".72" stop-color="#f6d8a1"/>
+      <stop offset="1" stop-color="#d0a872" stop-opacity=".38"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="430" y1="84" x2="430" y2="216" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e8be83" stop-opacity=".66"/>
+      <stop offset="1" stop-color="#bd8750" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".65" cy=".54" r=".52">
+      <stop stop-color="#8f744a" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#8f744a" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="window">
+      <path d="M303 317V158a126 126 0 0 1 252 0v159z"/>
+    </clipPath>
+  </defs>
+  <path fill="url(#glow)" d="M0 0h640v360H0z"/>
+  <g clip-path="url(#window)">
+    <circle cx="429" cy="150" r="63" fill="url(#sun)"/>
+    <g stroke="#e8be83" stroke-opacity=".43">
+      <path d="M323 197h212m-226 11h241m-247 11h252m-252 13h252m-252 15h252m-252 18h252m-252 21h252"/>
+    </g>
+    <path d="M302 317v-44l36-31 35 28 36-37 49 45 33-23 64 37v25Z" fill="#203b31" fill-opacity=".92"/>
+    <path d="m303 273 35-31 35 28 36-37 49 45 33-23 64 37" stroke="#d8ae79" stroke-opacity=".64"/>
+    <path d="M303 298c51 9 75-4 117-4 50 0 62 14 135 6m-252 13c51 9 75-4 117-4 50 0 62 14 135 6" stroke="#d8ae79" stroke-opacity=".55"/>
+  </g>
+  <g stroke="url(#metal)" stroke-width="1.1">
+    <path d="M303 321V158a126 126 0 0 1 252 0v163"/>
+    <path d="M291 333V158a138 138 0 0 1 276 0v175"/>
+    <path d="M279 345V158a150 150 0 0 1 300 0v187"/>
+    <path d="M267 345V158a162 162 0 0 1 324 0v187"/>
+    <path d="M175 345V223a52 52 0 0 1 104 0m-116 122V223a64 64 0 0 1 104-50m-116 172V223a76 76 0 0 1 116-65"/>
+    <path d="M579 223a52 52 0 0 1 104 0v122m-92-172a64 64 0 0 1 104 50v122m-104-187a76 76 0 0 1 116 65v122"/>
+    <path d="M64 321h576M45 333h595M20 345h620"/>
+  </g>
+  <path d="M614 86v22m-11-11h22M219 107v16m-8-8h16m22-71v10m-5-5h10" stroke="#e8be83" stroke-opacity=".55"/>
+</svg>
