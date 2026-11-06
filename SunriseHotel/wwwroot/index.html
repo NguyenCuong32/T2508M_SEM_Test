@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Hotel - Hệ Thống Đặt Phòng & Trợ Lý AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar-drawer" id="sidebarDrawer">
+        <div class="sidebar-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <img src="images/logo.png"
+                    onerror="this.src='https://coderent.vn/storage/settings/YfEwVsPubmDolpSAhDLDc5DKuDdRCZZccY3M9yfO.png'"
+                    alt="Logo" style="height: 32px; width: auto; border-radius: 4px;">
+            </div>
+            <button class="sidebar-close-btn" id="btnCloseSidebar">&times;</button>
+        </div>
+
+        <nav class="sidebar-nav-list">
+            <button class="sidebar-nav-item active" data-tab="tabReport">
+                <span>📊</span> Báo Cáo Đặt Phòng
+            </button>
+            <button class="sidebar-nav-item" data-tab="tabAsk">
+                <span>💬</span> Hỏi Đáp Khách Sạn
+            </button>
+            <button class="sidebar-nav-item" data-tab="tabParse">
+                <span>✍️</span> Đặt Phòng Câu Thoại
+            </button>
+            <button class="sidebar-nav-item" data-tab="tabAssistant">
+                <span>🤖</span> Trợ Lý AI Chatbot
+            </button>
+            <button class="sidebar-nav-item" data-tab="tabRooms">
+                <span>🏨</span> Danh Mục Phòng & CSDL
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div style="font-size: 11px; color: #5f6368;">HỆ THỐNG & CƠ SỞ DỮ LIỆU</div>
+            <span class="status-badge success">
+                <span class="status-dot"></span>
+                MySQL (Laragon)
+            </span>
+            <span class="status-badge warning" id="sidebarApiStatusBadge">
+                <span class="status-dot warning"></span>
+                <span id="sidebarApiStatusText">Gemini: Đang kiểm tra...</span>
+            </span>
+            <button class="btn-secondary" id="btnOpenConfigSidebar" style="justify-content: center;">Cài đặt API
+                Key</button>
+            <a href="/swagger" target="_blank" class="btn-secondary" style="justify-content: center;">Swagger UI</a>
+        </div>
+    </aside>
+
+    <header>
+        <div class="header-container">
+            <div class="brand-wrapper">
+                <button class="btn-sidebar-toggle" id="btnToggleSidebar">&#9776;</button>
+                <img src="images/logo.png"
+                    onerror="this.src='https://coderent.vn/storage/settings/YfEwVsPubmDolpSAhDLDc5DKuDdRCZZccY3M9yfO.png'"
+                    alt="Sunrise Hotel Logo" class="brand-logo">
+                <div class="brand-title">SUNRISE HOTEL</div>
+            </div>
+            <div class="header-status-group">
+                <button class="btn-secondary" id="btnOpenConfig">Cài đặt API Key</button>
+                <a href="/swagger" target="_blank" class="btn-secondary">Swagger UI</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="hotel-info-banner">
+            <div class="info-tag">📍 <strong>Địa chỉ:</strong> 25 Trần Phú, Hà Nội</div>
+            <div class="info-tag">⏰ <strong>Nhận phòng:</strong> từ 14:00 &nbsp;|&nbsp; <strong>Trả phòng:</strong>
+                trước 12:00</div>
+            <div class="info-tag">🍳 <strong>Bữa sáng:</strong> 6:30 - 9:30 (miễn phí)</div>
+            <div class="info-tag">🏊 <strong>Tiện ích:</strong> Hồ bơi tầng 5 &nbsp;|&nbsp; Đón sân bay Nội Bài (Suite)
+            </div>
+        </div>
+
+        <nav class="nav-tabs-desktop">
+            <button class="tab-btn active" data-tab="tabReport">Báo Cáo Đặt Phòng</button>
+            <button class="tab-btn" data-tab="tabAsk">Hỏi Đáp Khách Sạn</button>
+            <button class="tab-btn" data-tab="tabParse">Đặt Phòng Câu Thoại</button>
+            <button class="tab-btn" data-tab="tabAssistant">Trợ Lý AI Chatbot</button>
+            <button class="tab-btn" data-tab="tabRooms">Danh Mục Phòng</button>
+        </nav>
+
+        <section id="tabReport" class="tab-content active">
+            <div class="card">
+                <div class="card-title">
+                    <span>Báo Cáo Danh Sách Đặt Phòng (Đã Xác Nhận)</span>
+                    <span style="font-size: 13px; font-weight: normal; color: #5f6368;">
+                        Tổng số: <strong id="reportCount" style="color: #1a73e8;">0</strong> booking |
+                        Tổng doanh thu: <strong id="reportTotalRevenue" style="color: #0f9d58;">0 đ</strong>
+                    </span>
+                </div>
+                <div class="card-desc">
+                    Lọc danh sách các booking đã xác nhận theo khoảng thời gian nhận phòng (Check-in). Dữ liệu tương ứng
+                    API: <code>GET /api/reports/bookings?from=...&to=...</code>.
+                </div>
+
+                <div class="filter-bar">
+                    <div class="form-group">
+                        <label class="form-label" for="filterFrom">Từ ngày (Check-in từ):</label>
+                        <input type="date" id="filterFrom" class="form-control" value="2026-11-20">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filterTo">Đến ngày (Check-in đến):</label>
+                        <input type="date" id="filterTo" class="form-control" value="2026-11-30">
+                    </div>
+                    <button id="btnFilter" class="btn-primary">Lọc dữ liệu</button>
+                    <button id="btnResetFilter" class="btn-secondary">Xem tất cả</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">STT</th>
+                                <th>Số phòng</th>
+                                <th>Loại phòng</th>
+                                <th>Tên khách hàng</th>
+                                <th>Ngày nhận phòng</th>
+                                <th>Ngày trả phòng</th>
+                                <th style="text-align: center;">Số đêm</th>
+                                <th class="money-header">Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="tabAsk" class="tab-content">
+            <div class="card">
+                <div class="card-title">Hỏi Đáp Thông Tin Sunrise Hotel (API: askhotel)</div>
+                <div class="card-desc">
+                    Gemini đóng vai trò nhân viên lễ tân Sunrise Hotel lịch sự, thân thiện, chỉ trả lời các thông tin
+                    liên quan đến Sunrise Hotel (25 Trần Phú, Hà Nội) và từ chối các câu hỏi không liên quan.
+                </div>
+
+                <div class="quick-chips">
+                    <span class="chip" data-target="askInput"
+                        data-text="Giờ nhận phòng và trả phòng của khách sạn là mấy giờ?">Mẫu: Giờ check-in /
+                        check-out?</span>
+                    <span class="chip" data-target="askInput"
+                        data-text="Bữa sáng miễn phí phục vụ trong khung giờ nào?">Mẫu: Bữa sáng miễn phí?</span>
+                    <span class="chip" data-target="askInput" data-text="Hồ bơi của khách sạn nằm ở tầng mấy?">Mẫu: Hồ
+                        bơi ở đâu?</span>
+                    <span class="chip" data-target="askInput"
+                        data-text="Khách sạn có dịch vụ đón sân bay miễn phí không?">Mẫu: Đón sân bay Nội Bài?</span>
+                    <span class="chip" data-target="askInput" data-text="Thời tiết hôm nay ở Tokyo thế nào?">Mẫu câu từ
+                        chối: Thời tiết Tokyo?</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label class="form-label" for="askInput">Câu hỏi của bạn dành cho lễ tân:</label>
+                    <input type="text" id="askInput" class="form-control"
+                        placeholder="Nhập câu hỏi về khách sạn Sunrise Hotel...">
+                </div>
+
+                <button id="btnAsk" class="btn-primary">Gửi câu hỏi</button>
+
+                <div style="margin-top: 18px;">
+                    <label class="form-label">Câu trả lời từ lễ tân khách sạn:</label>
+                    <div id="askResult" class="result-box">Chưa có câu hỏi nào được gửi.</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tabParse" class="tab-content">
+            <div class="card">
+                <div class="card-title">Đặt Phòng Bằng Ngôn Ngữ Tự Nhiên (API: parsebooking)</div>
+                <div class="card-desc">
+                    Gemini trích xuất dữ liệu có cấu trúc JSON (sử dụng JSON mode / response schema), sau đó backend C#
+                    kiểm tra phòng trống, tính tổng tiền và tự động lưu đặt phòng mới vào CSDL với trạng thái Confirmed.
+                </div>
+
+                <div class="quick-chips">
+                    <span class="chip" data-target="parseInput"
+                        data-text="Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người">Mẫu
+                        đề thi: Nguyễn Văn An - Phòng đôi 20/11 - 22/11</span>
+                    <span class="chip" data-target="parseInput"
+                        data-text="Mình là Phạm Minh Quang, số điện thoại 0933888999, cần đặt 1 phòng suite từ 28/11/2026 đến 30/11/2026 cho 3 người">Mẫu:
+                        Phạm Minh Quang - Phòng Suite 28/11 - 30/11</span>
+                    <span class="chip" data-target="parseInput"
+                        data-text="Tôi là Hoàng Thùy Linh, phone 0988776655, muốn đặt 1 phòng đơn từ 05/12/2026 đến 07/12/2026 cho 1 người">Mẫu:
+                        Hoàng Thùy Linh - Phòng Single 05/12 - 07/12</span>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label class="form-label" for="parseInput">Nội dung câu đặt phòng tự nhiên:</label>
+                    <textarea id="parseInput" class="form-control" rows="3"
+                        placeholder="Ví dụ: Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người"></textarea>
+                </div>
+
+                <button id="btnParse" class="btn-primary">Phân tích & Tự động Đặt phòng</button>
+
+                <div id="parseResultCard" style="display: none; margin-top: 18px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+                        <div>
+                            <label class="form-label">Dữ liệu JSON Gemini trích xuất (JSON Schema):</label>
+                            <pre id="parseJsonView" class="json-view"></pre>
+                        </div>
+                        <div>
+                            <label class="form-label">Kết quả lưu vào Cơ sở dữ liệu C#:</label>
+                            <div id="parseBookingMsg" class="result-box" style="margin-top: 0;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tabAssistant" class="tab-content">
+            <div class="card">
+                <div class="card-title">
+                    <span>Trợ Lý Ảo Đặt Phòng AI (API: bookingassistant - Function Calling)</span>
+                    <button class="btn-secondary" id="btnClearChat" style="font-size: 12px; padding: 4px 10px;">Xóa lịch sử chat</button>
+                </div>
+                <div class="card-desc">
+                    Trợ lý tích hợp Google Gemini Function Calling với 3 hàm C#: <code>CheckAvailability</code> (kiểm
+                    tra phòng trống & giá), <code>GetBookingsByPhone</code> (tra cứu booking theo SĐT), và
+                    <code>CancelBooking</code> (hủy booking theo mã). Lịch sử trò chuyện được lưu tự động trên trình duyệt.
+                </div>
+
+                <div class="quick-chips">
+                    <span class="chip" data-target="chatInput"
+                        data-text="Còn phòng Suite nào trống từ 24/12/2026 đến 26/12/2026 không?">Mẫu đề thi 1: Còn
+                        phòng Suite trống 24/12 - 26/12 không?</span>
+                    <span class="chip" data-target="chatInput"
+                        data-text="Tra cứu giúp tôi các booking đã đặt của số điện thoại 0901234567">Mẫu tra cứu: Tra
+                        cứu booking theo SĐT 0901234567</span>
+                    <span class="chip" data-target="chatInput" data-text="Hủy giúp tôi booking số 3">Mẫu đề thi 2: Hủy
+                        giúp tôi booking số 3</span>
+                    <span class="chip" data-target="chatInput"
+                        data-text="Kiểm tra phòng Double còn trống từ 15/12/2026 đến 18/12/2026">Mẫu: Kiểm tra phòng
+                        Double 15/12 - 18/12</span>
+                </div>
+
+                <div class="chat-box">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-bubble assistant">
+                            Xin kính chào Quý khách! Em là trợ lý ảo của Sunrise Hotel Hà Nội. Em có thể hỗ trợ Quý
+                            khách kiểm tra phòng trống, tra cứu đặt phòng qua số điện thoại hoặc hỗ trợ hủy đặt phòng.
+                            Em có thể giúp gì cho Quý khách hôm nay ạ?
+                        </div>
+                    </div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chatInput" class="form-control" style="flex: 1;"
+                            placeholder="Nhập tin nhắn trao đổi với trợ lý ảo...">
+                        <button id="btnSendChat" class="btn-primary">Gửi</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tabRooms" class="tab-content">
+            <div class="card">
+                <div class="card-title">Danh Sách 5 Phòng Khách Sạn Sunrise Hotel (Bảng Room)</div>
+                <div class="card-desc">
+                    Dữ liệu khởi tạo từ đề thi được lưu trong MySQL database: <code>SUNRISEHOTEL</code> trên Laragon.
+                </div>
+                <div class="grid-cards" id="roomsGrid"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Toàn Bộ Dữ Liệu Bảng Booking (CSDL MySQL)</div>
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
+                            <tr>
+                                <th>Mã Booking</th>
+                                <th>Phòng</th>
+                                <th>Tên khách hàng</th>
+                                <th>Số điện thoại</th>
+                                <th>Thời gian lưu trú</th>
+                                <th class="money-header">Tổng tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allBookingsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-backdrop" id="configModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Cấu hình Google Gemini API Key</div>
+                <button class="modal-close" id="btnCloseModal">&times;</button>
+            </div>
+            <div id="modalKeyStatus" style="font-size: 13px; font-weight: 600; color: #1a73e8; margin-bottom: 12px;">
+                Trạng thái: Đang kiểm tra...</div>
+            <div class="form-group" style="margin-bottom: 14px;">
+                <label class="form-label" for="apiKeyInput">Gemini API Key của bạn:</label>
+                <input type="password" id="apiKeyInput" class="form-control" placeholder="Nhập mã AIzaSy...">
+                <div style="font-size: 12px; color: #5f6368; margin-top: 6px;">
+                    API Key sẽ được tự động lưu vào file <code>.env</code> của hệ thống để sử dụng lâu dài và không bị
+                    mất khi khởi động lại ứng dụng.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="btnCancelModal">Hủy</button>
+                <button class="btn-primary" id="btnSaveKey">Lưu API Key</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>

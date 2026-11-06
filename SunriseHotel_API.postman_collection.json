@@ -1,0 +1,210 @@
+{
+  "info": {
+    "name": "Sunrise Hotel AI Booking API",
+    "description": "Postman Collection cho hệ thống Sunrise Hotel AI Booking Assistant theo đề thi FPT Aptech SET02",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Hỏi đáp khách sạn - askhotel",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Giờ check-in và check-out của khách sạn là mấy giờ? Có bữa sáng miễn phí không?\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/ai/ask",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "ai", "ask"]
+        }
+      }
+    },
+    {
+      "name": "2. Đặt phòng câu thoại - parsebooking",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/bookings/parse",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "bookings", "parse"]
+        }
+      }
+    },
+    {
+      "name": "3. Trợ lý AI - CheckAvailability",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Còn phòng Suite nào trống từ 24/12/2026 đến 26/12/2026 không?\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/assistant/chat",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "assistant", "chat"]
+        }
+      }
+    },
+    {
+      "name": "3. Trợ lý AI - GetBookingsByPhone",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Tra cứu giúp tôi các booking đã đặt của số điện thoại 0901234567\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/assistant/chat",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "assistant", "chat"]
+        }
+      }
+    },
+    {
+      "name": "3. Trợ lý AI - CancelBooking",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Hủy giúp tôi booking số 3\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/assistant/chat",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "assistant", "chat"]
+        }
+      }
+    },
+    {
+      "name": "4. Báo cáo đặt phòng - getbookingreport",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5000/api/reports/bookings?from=2026-11-20&to=2026-11-30",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "reports", "bookings"],
+          "query": [
+            {
+              "key": "from",
+              "value": "2026-11-20"
+            },
+            {
+              "key": "to",
+              "value": "2026-11-30"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Danh sách tất cả phòng",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5000/api/rooms",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "rooms"]
+        }
+      }
+    },
+    {
+      "name": "6. Danh sách tất cả booking",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5000/api/bookings",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "bookings"]
+        }
+      }
+    },
+    {
+      "name": "7. Kiểm tra trạng thái API Key",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5000/api/config/status",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "config", "status"]
+        }
+      }
+    },
+    {
+      "name": "8. Cập nhật Gemini API Key",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"apiKey\": \"AIzaSyYourActualKeyHere\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/config/key",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "config", "key"]
+        }
+      }
+    }
+  ]
+}
+

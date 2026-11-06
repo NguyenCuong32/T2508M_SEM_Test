@@ -1,0 +1,6 @@
+@SunriseHotel_HostAddress = http://localhost:5208
+
+GET {{SunriseHotel_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

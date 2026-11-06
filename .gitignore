@@ -1,0 +1,10 @@
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+appsettings.Development.json
+.env
+.env.local
+.gemini_key
+*.key
