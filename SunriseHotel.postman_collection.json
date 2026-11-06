@@ -1,0 +1,10 @@
+{
+  "info": {"name":"Sunrise Hotel API", "schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "variable":[{"key":"baseUrl","value":"http://localhost:8080"}],
+  "item":[
+    {"name":"Ask hotel","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"question\":\"Khách sạn có hồ bơi không?\"}"},"url":"{{baseUrl}}/api/ai/ask"}},
+    {"name":"Parse and create booking","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"text\":\"Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người\"}"},"url":"{{baseUrl}}/api/bookings/parse"}},
+    {"name":"Assistant chat","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"message\":\"Còn phòng Suite nào trống từ 2026-12-24 đến 2026-12-26 không?\"}"},"url":"{{baseUrl}}/api/assistant/chat"}},
+    {"name":"Booking report","request":{"method":"GET","url":"{{baseUrl}}/api/reports/bookings?from=2026-11-01&to=2026-11-30"}}
+  ]
+}
