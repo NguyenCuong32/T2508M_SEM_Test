@@ -550,7 +550,7 @@ QUY TẮC ĐỐI THOẠI BẮT BUỘC:
                             ["parts"] = new JsonArray { new JsonObject { ["text"] = systemPrompt } }
                         },
                         ["contents"] = secondContents,
-                        ["tools"] = toolsDeclaration
+                        ["tools"] = JsonNode.Parse(toolsDeclaration.ToJsonString())
                     };
 
                     var secondResponseJson = await SendGeminiRequestWithRetryAsync(secondPayload, apiKey);
