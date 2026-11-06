@@ -1,0 +1,125 @@
+{
+  "info": {
+    "name": "Sunrise Hotel AI API Collection",
+    "description": "Postman Collection for Generative AI for .NET Developers Exam Paper - SET02",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Ask Hotel (POST /api/ai/ask)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Khách sạn có bể bơi không và ở tầng mấy? Giờ ăn sáng thế nào?\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5130/api/ai/ask",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5130",
+          "path": ["api", "ai", "ask"]
+        }
+      }
+    },
+    {
+      "name": "2. Parse Booking (POST /api/bookings/parse)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5130/api/bookings/parse",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5130",
+          "path": ["api", "bookings", "parse"]
+        }
+      }
+    },
+    {
+      "name": "3. Booking Assistant - Check Availability (POST /api/assistant/chat)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Còn phòng Suite nào trống từ 24/12/2026 đến 26/12/2026 không?\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5130/api/assistant/chat",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5130",
+          "path": ["api", "assistant", "chat"]
+        }
+      }
+    },
+    {
+      "name": "3. Booking Assistant - Cancel Booking (POST /api/assistant/chat)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Hủy giúp tôi booking số 3.\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5130/api/assistant/chat",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5130",
+          "path": ["api", "assistant", "chat"]
+        }
+      }
+    },
+    {
+      "name": "4. Get Booking Report (GET /api/reports/bookings)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5130/api/reports/bookings?from=2026-11-20&to=2026-11-30",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5130",
+          "path": ["api", "reports", "bookings"],
+          "query": [
+            {
+              "key": "from",
+              "value": "2026-11-20"
+            },
+            {
+              "key": "to",
+              "value": "2026-11-30"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

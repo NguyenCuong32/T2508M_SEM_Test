@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise Hotel - Booking Management & AI Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header-bg {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        .table thead {
+            background-color: #1e3c72;
+            color: white;
+        }
+        .badge-confirmed {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-primary {
+            background-color: #1e3c72;
+            border-color: #1e3c72;
+        }
+        .btn-primary:hover {
+            background-color: #2a5298;
+            border-color: #2a5298;
+        }
+        .chat-box {
+            height: 320px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            background-color: #ffffff;
+        }
+        .chat-msg {
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .chat-msg.user {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+        }
+        .chat-msg.bot {
+            background-color: #f1f5f9;
+            color: #334155;
+            margin-right: auto;
+            border-bottom-left-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header-bg">
+        <div class="container text-center">
+            <h1 class="fw-bold"><i class="fa-solid fa-hotel me-2"></i>Sunrise Hotel</h1>
+            <p class="mb-0 fs-5 text-light opacity-75">25 Trần Phú, Nha Trang &bull; Hệ thống Quản trị & Trợ lý Đặt phòng AI</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills mb-4 justify-content-center" id="mainTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-semibold" id="report-tab" data-bs-toggle="pill" data-bs-target="#report" type="button" role="tab">
+                    <i class="fa-solid fa-chart-line me-2"></i>Báo Cáo Đặt Phòng
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="booking-tab" data-bs-toggle="pill" data-bs-target="#booking" type="button" role="tab">
+                    <i class="fa-solid fa-calendar-check me-2"></i>Đặt Phòng Tự Động
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="reception-tab" data-bs-toggle="pill" data-bs-target="#reception" type="button" role="tab">
+                    <i class="fa-solid fa-concierge-bell me-2"></i>Lễ Tân AI
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="assistant-tab" data-bs-toggle="pill" data-bs-target="#assistant" type="button" role="tab">
+                    <i class="fa-solid fa-robot me-2"></i>Trợ Lý Nghiệp Vụ
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="mainTabContent">
+            <!-- TAB 1: BOOKING REPORT (Requirement 4 & 5) -->
+            <div class="tab-pane fade show active" id="report" role="tabpanel">
+                <div class="card p-4">
+                    <h4 class="card-title fw-bold text-dark mb-4">
+                        <i class="fa-solid fa-filter me-2 text-primary"></i>Lọc Báo Cáo Đặt Phòng Theo Khoảng Ngày
+                    </h4>
+                    
+                    <div class="row g-3 align-items-end mb-4">
+                        <div class="col-md-4">
+                            <label for="fromDate" class="form-label fw-semibold">Từ ngày (From):</label>
+                            <input type="date" id="fromDate" class="form-control" value="2026-11-20">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="toDate" class="form-label fw-semibold">Đến ngày (To):</label>
+                            <input type="date" id="toDate" class="form-control" value="2026-11-30">
+                        </div>
+                        <div class="col-md-4">
+                            <button id="btnFilter" class="btn btn-primary w-100 fw-semibold" onclick="loadReport()">
+                                <i class="fa-solid fa-magnifying-glass me-2"></i>Lọc Dữ Liệu
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Alert message -->
+                    <div id="alertBox" class="alert alert-danger d-none" role="alert"></div>
+
+                    <!-- Report Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered align-middle text-center mb-0" id="reportTable">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 50px;">No</th>
+                                    <th scope="col">Room number</th>
+                                    <th scope="col">Room type</th>
+                                    <th scope="col">Guest name</th>
+                                    <th scope="col">Check-in</th>
+                                    <th scope="col">Check-out</th>
+                                    <th scope="col">Nights</th>
+                                    <th scope="col">Total price</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportTableBody">
+                                <tr>
+                                    <td colspan="8" class="text-muted py-4">Đang tải dữ liệu...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: SMART BOOKING (Requirement 2) -->
+            <div class="tab-pane fade" id="booking" role="tabpanel">
+                <div class="card p-4">
+                    <h4 class="card-title fw-bold text-dark mb-3">
+                        <i class="fa-solid fa-calendar-check me-2 text-primary"></i>Đặt Phòng Tự Động Bằng Ngôn Ngữ Tự Nhiên
+                    </h4>
+                    <p class="text-muted">Nhập yêu cầu đặt phòng tự nhiên của bạn. AI Gemini sẽ trích xuất thông tin JSON, tự động tìm phòng trống, tính tiền và <strong>lưu trực tiếp đơn đặt phòng vào Database</strong>.</p>
+                    
+                    <div class="mb-3">
+                        <label for="bookingText" class="form-label fw-semibold">Nội dung yêu cầu đặt phòng:</label>
+                        <textarea id="bookingText" class="form-control" rows="3" placeholder="Ví dụ: Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người">Tôi là Trần Cường, sđt 0123456789, muốn đặt 1 phòng đơn từ 06/11/2026 đến 07/11/2026 cho 1 người</textarea>
+                    </div>
+
+                    <button class="btn btn-primary fw-semibold px-4" onclick="submitBooking()" id="btnSubmitBooking">
+                        <i class="fa-solid fa-paper-plane me-2"></i>Xác Nhận Đặt Phòng (Lưu Vào Database)
+                    </button>
+
+                    <div id="bookingResult" class="mt-4 d-none"></div>
+                </div>
+            </div>
+
+            <!-- TAB 3: RECEPTIONIST AI (Requirement 1) -->
+            <div class="tab-pane fade" id="reception" role="tabpanel">
+                <div class="card p-4">
+                    <h4 class="card-title fw-bold text-dark mb-3">
+                        <i class="fa-solid fa-comments me-2 text-primary"></i>Hỏi Đáp Với Lễ Tân Sunrise Hotel
+                    </h4>
+                    <p class="text-muted">Gemini đóng vai lễ tân lịch sự, chỉ giải đáp thông tin về khách sạn Sunrise Hotel.</p>
+                    
+                    <div class="chat-box mb-3" id="receptionChatBox">
+                        <div class="chat-msg bot">
+                            <strong>Lễ tân:</strong> Xin chào quý khách! Tôi là trợ lý lễ tân của Sunrise Hotel (25 Trần Phú, Nha Trang). Tôi có thể giúp gì cho quý khách về thông tin khách sạn?
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="text" id="receptionInput" class="form-control" placeholder="Ví dụ: Giờ check-in và ăn sáng là mấy giờ?" onkeypress="handleReceptionEnter(event)">
+                        <button class="btn btn-primary" onclick="askReception()">
+                            <i class="fa-solid fa-paper-plane me-1"></i>Gửi
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: ASSISTANT CHAT WITH FUNCTION CALLING (Requirement 3) -->
+            <div class="tab-pane fade" id="assistant" role="tabpanel">
+                <div class="card p-4">
+                    <h4 class="card-title fw-bold text-dark mb-3">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2 text-primary"></i>Trợ Lý Nghiệp Vụ (Function Calling)
+                    </h4>
+                    <p class="text-muted">Hỗ trợ tra cứu phòng trống, kiểm tra đặt phòng theo SĐT và hủy đặt phòng bằng cách gọi hàm C#.</p>
+                    
+                    <div class="chat-box mb-3" id="assistantChatBox">
+                        <div class="chat-msg bot">
+                            <strong>Trợ lý AI:</strong> Xin chào! Quý khách có thể hỏi tôi để tra cứu phòng trống (vd: <em>"Còn phòng Suite nào trống từ 24/12 đến 26/12 không?"</em>), kiểm tra đơn đặt phòng qua SĐT (vd: <em>"Kiểm tra booking của sđt 0901234567"</em>) hoặc hủy đơn (vd: <em>"Hủy giúp tôi booking số 3"</em>).
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="text" id="assistantInput" class="form-control" placeholder="Nhập yêu cầu của bạn..." onkeypress="handleAssistantEnter(event)">
+                        <button class="btn btn-primary" onclick="askAssistant()">
+                            <i class="fa-solid fa-paper-plane me-1"></i>Gửi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 1. Load Booking Report (Requirement 4 & 5)
+        async function loadReport() {
+            const from = document.getElementById('fromDate').value;
+            const to = document.getElementById('toDate').value;
+            const alertBox = document.getElementById('alertBox');
+            const tbody = document.getElementById('reportTableBody');
+
+            alertBox.classList.add('d-none');
+            tbody.innerHTML = '<tr><td colspan="8" class="text-muted py-3"><div class="spinner-border spinner-border-sm me-2"></div>Đang tải dữ liệu...</td></tr>';
+
+            if (!from || !to) {
+                alertBox.textContent = 'Vui lòng chọn đầy đủ ngày bắt đầu và ngày kết thúc.';
+                alertBox.classList.remove('d-none');
+                tbody.innerHTML = '<tr><td colspan="8" class="text-muted py-3">Không có dữ liệu</td></tr>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/reports/bookings?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Lỗi khi tải báo cáo.');
+                }
+
+                const data = await response.json();
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-muted py-3">Không có đơn đặt phòng nào trong khoảng thời gian này.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                data.forEach(item => {
+                    const formattedPrice = new Intl.NumberFormat('vi-VN').format(item.totalPrice);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="fw-semibold">${item.no}</td>
+                        <td class="fw-bold text-primary">${item.roomNumber}</td>
+                        <td><span class="badge bg-secondary">${item.roomType}</span></td>
+                        <td class="text-start ps-3 fw-semibold">${item.guestName}</td>
+                        <td>${item.checkIn}</td>
+                        <td>${item.checkOut}</td>
+                        <td><span class="badge bg-info text-dark">${item.nights}</span></td>
+                        <td class="text-end pe-3 fw-bold text-success">${formattedPrice} đ</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                alertBox.textContent = err.message;
+                alertBox.classList.remove('d-none');
+                tbody.innerHTML = '<tr><td colspan="8" class="text-danger py-3">Không thể tải dữ liệu báo cáo.</td></tr>';
+            }
+        }
+
+        // 2. Chat with Receptionist (Requirement 1)
+        async function askReception() {
+            const input = document.getElementById('receptionInput');
+            const chatBox = document.getElementById('receptionChatBox');
+            const q = input.value.trim();
+            if (!q) return;
+
+            chatBox.innerHTML += `<div class="chat-msg user"><strong>Bạn:</strong> ${q}</div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const loadingId = 'rec_load_' + Date.now();
+            chatBox.innerHTML += `<div class="chat-msg bot" id="${loadingId}"><div class="spinner-border spinner-border-sm me-2"></div>Đang trả lời...</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const res = await fetch('/api/ai/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: q })
+                });
+                const data = await res.json();
+                const loader = document.getElementById(loadingId);
+                if (loader) {
+                    loader.innerHTML = `<strong>Lễ tân:</strong> ${data.answer || data.message || 'Lỗi xử lý'}`;
+                }
+            } catch (e) {
+                const loader = document.getElementById(loadingId);
+                if (loader) {
+                    loader.innerHTML = `<strong>Lễ tân:</strong> Lỗi kết nối: ${e.message}`;
+                }
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleReceptionEnter(e) {
+            if (e.key === 'Enter') askReception();
+        }
+
+        // 3. Chat with Assistant (Requirement 3)
+        async function askAssistant() {
+            const input = document.getElementById('assistantInput');
+            const chatBox = document.getElementById('assistantChatBox');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            chatBox.innerHTML += `<div class="chat-msg user"><strong>Bạn:</strong> ${msg}</div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const loadingId = 'ast_load_' + Date.now();
+            chatBox.innerHTML += `<div class="chat-msg bot" id="${loadingId}"><div class="spinner-border spinner-border-sm me-2"></div>Đang kiểm tra nghiệp vụ...</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const res = await fetch('/api/assistant/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await res.json();
+                const loader = document.getElementById(loadingId);
+                if (loader) {
+                    loader.innerHTML = `<strong>Trợ lý AI:</strong> ${data.reply || data.message || 'Lỗi xử lý'}`;
+                }
+            } catch (e) {
+                const loader = document.getElementById(loadingId);
+                if (loader) {
+                    loader.innerHTML = `<strong>Trợ lý AI:</strong> Lỗi kết nối: ${e.message}`;
+                }
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function handleAssistantEnter(e) {
+            if (e.key === 'Enter') askAssistant();
+        }
+
+        // 4. Submit Booking (Requirement 2)
+        async function submitBooking() {
+            const textInput = document.getElementById('bookingText');
+            const resultBox = document.getElementById('bookingResult');
+            const btn = document.getElementById('btnSubmitBooking');
+            const text = textInput.value.trim();
+            if (!text) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý đặt phòng...';
+            resultBox.className = 'mt-4 alert alert-info';
+            resultBox.innerHTML = 'AI Gemini đang phân tích yêu cầu, kiểm tra phòng trống và lưu vào Database...';
+
+            try {
+                const res = await fetch('/api/bookings/parse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: text })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.message || 'Không thể tạo đặt phòng.');
+                }
+
+                const b = data.booking;
+                const priceFormatted = new Intl.NumberFormat('vi-VN').format(b.totalPrice);
+                resultBox.className = 'mt-4 alert alert-success';
+                resultBox.innerHTML = `
+                    <h5 class="fw-bold mb-2"><i class="fa-solid fa-circle-check me-2"></i>Đặt Phòng Thành Công!</h5>
+                    <p class="mb-1"><strong>Mã đặt phòng:</strong> #${b.bookingId} &bull; <strong>Phòng:</strong> ${b.roomNumber} (${b.roomType})</p>
+                    <p class="mb-1"><strong>Khách hàng:</strong> ${b.guestName} (${b.phone})</p>
+                    <p class="mb-1"><strong>Lưu trú:</strong> ${b.checkIn} đến ${b.checkOut} (${b.nights} đêm)</p>
+                    <p class="mb-2"><strong>Tổng tiền:</strong> <span class="text-danger fw-bold fs-5">${priceFormatted} đ</span> &bull; <strong>Trạng thái:</strong> <span class="badge bg-success">${b.status}</span></p>
+                    <button class="btn btn-sm btn-outline-success fw-semibold mt-2" onclick="viewInReport('${b.checkIn}', '${b.checkOut}')">
+                        <i class="fa-solid fa-arrow-right me-1"></i>Xem Ngay Trên Báo Cáo
+                    </button>
+                `;
+
+                // Auto update report dates to encompass the new booking
+                document.getElementById('fromDate').value = b.checkIn;
+                document.getElementById('toDate').value = b.checkOut;
+                loadReport();
+            } catch (err) {
+                resultBox.className = 'mt-4 alert alert-danger';
+                resultBox.innerHTML = `<strong>Lỗi:</strong> ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i>Xác Nhận Đặt Phòng (Lưu Vào Database)';
+            }
+        }
+
+        function viewInReport(from, to) {
+            document.getElementById('fromDate').value = from;
+            document.getElementById('toDate').value = to;
+            loadReport();
+            const reportTab = new bootstrap.Tab(document.getElementById('report-tab'));
+            reportTab.show();
+        }
+
+        // Auto load report on page load
+        window.onload = function() {
+            loadReport();
+        };
+    </script>
+</body>
+</html>
