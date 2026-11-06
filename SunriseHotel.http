@@ -1,0 +1,76 @@
+@SunriseHotel_HostAddress = http://localhost:5000
+
+### 1. REQUIREMENT 1: ASK HOTEL API
+POST {{SunriseHotel_HostAddress}}/api/ai/ask
+Content-Type: application/json
+
+{
+  "question": "Does the hotel have a swimming pool?"
+}
+
+### 1.1 ASK HOTEL API - Tiếng Việt
+POST {{SunriseHotel_HostAddress}}/api/ai/ask
+Content-Type: application/json
+
+{
+  "question": "Khách sạn có buffet sáng miễn phí và đón sân bay không?"
+}
+
+### 1.2 ASK HOTEL API - Hỏi ngoài lề (Sẽ bị từ chối lịch sự)
+POST {{SunriseHotel_HostAddress}}/api/ai/ask
+Content-Type: application/json
+
+{
+  "question": "Thời tiết ngày mai ở Hà Nội thế nào?"
+}
+
+### ----------------------------------------------------------------
+
+### 2. REQUIREMENT 2: PARSE BOOKING API
+POST {{SunriseHotel_HostAddress}}/api/bookings/parse
+Content-Type: application/json
+
+{
+  "text": "Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người"
+}
+
+### 2.1 PARSE BOOKING API - Đặt phòng đơn (Single)
+POST {{SunriseHotel_HostAddress}}/api/bookings/parse
+Content-Type: application/json
+
+{
+  "text": "Tên tôi là Lê Thị Mai, sđt 0988776655, cần đặt phòng single từ 2026-12-01 đến 2026-12-05 cho 1 người"
+}
+
+### ----------------------------------------------------------------
+
+### 3. REQUIREMENT 3: BOOKING ASSISTANT API (FUNCTION CALLING)
+### 3.1 Function 1: CheckAvailability
+POST {{SunriseHotel_HostAddress}}/api/assistant/chat
+Content-Type: application/json
+
+{
+  "message": "Còn phòng Suite nào trống từ 24/12 đến 26/12 không?"
+}
+
+### 3.2 Function 2: GetBookingsByPhone
+POST {{SunriseHotel_HostAddress}}/api/assistant/chat
+Content-Type: application/json
+
+{
+  "message": "Kiểm tra giúp tôi các đơn đặt phòng của số điện thoại 0901234567"
+}
+
+### 3.3 Function 3: CancelBooking
+POST {{SunriseHotel_HostAddress}}/api/assistant/chat
+Content-Type: application/json
+
+{
+  "message": "Tôi muốn hủy đơn đặt phòng có mã booking ID là 1"
+}
+
+### ----------------------------------------------------------------
+
+### 4. REQUIREMENT 4: BOOKING REPORT API
+GET {{SunriseHotel_HostAddress}}/api/reports/bookings?from=2026-01-01&to=2026-12-31
+Accept: application/json
