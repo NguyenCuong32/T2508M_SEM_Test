@@ -1,0 +1,27 @@
+## Visual Studio / .NET Core
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# Visual Studio
+.vs/
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+
+# Secrets
+secrets.json
+.env

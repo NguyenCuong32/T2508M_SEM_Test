@@ -1,0 +1,6 @@
+@SunriseHotel.Api_HostAddress = http://localhost:5031
+
+GET {{SunriseHotel.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

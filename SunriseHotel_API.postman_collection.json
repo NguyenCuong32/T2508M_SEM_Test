@@ -1,0 +1,185 @@
+{
+  "info": {
+    "name": "Sunrise Hotel AI Booking Assistant API",
+    "_postman_id": "cfa04d93-1a44-42ef-9901-cc18a0fc0b12",
+    "description": "Postman Collection for Generative AI for .NET Developers with Google AI - Exam SET02\nAuthor: GANA_LeTrungKien",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. AI Receptionist - Ask Hotel",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Giờ check-in và check-out của khách sạn là mấy giờ, và bữa sáng phục vụ lúc nào?\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/ai/ask",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "ai", "ask"]
+        },
+        "description": "Requirement 1: Asks question about Sunrise Hotel."
+      }
+    },
+    {
+      "name": "1. AI Receptionist - Refuse Unrelated Question",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"question\": \"Thủ đô của nước Pháp là gì và diện tích là bao nhiêu?\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/ai/ask",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "ai", "ask"]
+        },
+        "description": "Requirement 1: AI must politely refuse questions unrelated to Sunrise Hotel."
+      }
+    },
+    {
+      "name": "2. Parse Booking Natural Language",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/bookings/parse",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "bookings", "parse"]
+        },
+        "description": "Requirement 2: Uses Gemini JSON structured mode to parse text, validate in C#, check availability and save booking."
+      }
+    },
+    {
+      "name": "3. Booking Assistant - Check Availability (Function Calling)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Còn phòng Suite nào trống từ 24/12/2026 đến 26/12/2026 không?\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/assistant/chat",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "assistant", "chat"]
+        },
+        "description": "Requirement 3: Calls CheckAvailability function in C#."
+      }
+    },
+    {
+      "name": "3. Booking Assistant - Get Bookings by Phone (Function Calling)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Tra cứu giúp tôi các đơn đặt phòng của khách có số điện thoại 0901234567.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/assistant/chat",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "assistant", "chat"]
+        },
+        "description": "Requirement 3: Calls GetBookingsByPhone function in C#."
+      }
+    },
+    {
+      "name": "3. Booking Assistant - Cancel Booking (Function Calling)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"message\": \"Hủy giúp tôi booking số 3.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/assistant/chat",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "assistant", "chat"]
+        },
+        "description": "Requirement 3: Calls CancelBooking function in C#."
+      }
+    },
+    {
+      "name": "4. Get Booking Report (All Confirmed)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reports/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reports", "bookings"]
+        },
+        "description": "Requirement 4: Returns list of confirmed bookings matching the report format."
+      }
+    },
+    {
+      "name": "4. Get Booking Report (With Date Filter)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/reports/bookings?from=2026-11-20&to=2026-11-23",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reports", "bookings"],
+          "query": [
+            {
+              "key": "from",
+              "value": "2026-11-20"
+            },
+            {
+              "key": "to",
+              "value": "2026-11-23"
+            }
+          ]
+        },
+        "description": "Requirement 4: Returns confirmed bookings filtered by date range."
+      }
+    }
+  ]
+}
