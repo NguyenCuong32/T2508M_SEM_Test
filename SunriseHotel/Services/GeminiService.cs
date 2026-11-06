@@ -506,26 +506,13 @@ QUY TẮC ĐỐI THOẠI BẮT BUỘC:
                         toolExecutionResult = await bookingService.CancelBookingAsync(bookingId);
                     }
 
-                    var modelTurn = new JsonObject
-                    {
-                        ["role"] = "model",
-                        ["parts"] = new JsonArray
-                        {
-                            new JsonObject
-                            {
-                                ["functionCall"] = new JsonObject
-                                {
-                                    ["name"] = functionName,
-                                    ["args"] = JsonNode.Parse(functionArgs.ToJsonString())
-                                }
-                            }
-                        }
-                    };
+                    var modelContentNode = responseJson["candidates"]?[0]?["content"];
+                    var modelTurn = JsonNode.Parse(modelContentNode?.ToJsonString() ?? "{}");
 
                     var toolResultNode = JsonNode.Parse(JsonSerializer.Serialize(toolExecutionResult));
                     var functionTurn = new JsonObject
                     {
-                        ["role"] = "function",
+                        ["role"] = "user",
                         ["parts"] = new JsonArray
                         {
                             new JsonObject
