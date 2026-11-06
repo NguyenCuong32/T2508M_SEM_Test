@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SunriseHotel.Api/SunriseHotel.Api.csproj" />
+    <Project Path="src/SunriseHotel.Application/SunriseHotel.Application.csproj" />
+    <Project Path="src/SunriseHotel.Domain/SunriseHotel.Domain.csproj" />
+    <Project Path="src/SunriseHotel.Infrastructure/SunriseHotel.Infrastructure.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,98 @@
+{
+  "info": {
+    "name": "Sunrise Hotel - Gemini AI (SET02)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5080" }
+  ],
+  "item": [
+    {
+      "name": "1. askhotel",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/ai/ask",
+        "body": { "mode": "raw", "raw": "{\n  \"question\": \"Khách sạn có hồ bơi không và check-in lúc mấy giờ?\"\n}" }
+      }
+    },
+    {
+      "name": "1b. askhotel - unrelated question (should refuse)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/ai/ask",
+        "body": { "mode": "raw", "raw": "{\n  \"question\": \"Viết giúp tôi một đoạn code Python sắp xếp mảng\"\n}" }
+      }
+    },
+    {
+      "name": "2. parsebooking",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/bookings/parse",
+        "body": { "mode": "raw", "raw": "{\n  \"text\": \"Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người\"\n}" }
+      }
+    },
+    {
+      "name": "2b. parsebooking - Single",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/bookings/parse",
+        "body": { "mode": "raw", "raw": "{\n  \"text\": \"Mình là Trần Thị Bình, số điện thoại 0912 345 678, đặt phòng đơn từ 21/11/2026 đến 24/11/2026\"\n}" }
+      }
+    },
+    {
+      "name": "2c. parsebooking - Suite",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/bookings/parse",
+        "body": { "mode": "raw", "raw": "{\n  \"text\": \"Lê Hoàng Nam, 0987654321, cần 1 phòng Suite ngày 25/11/2026 trả phòng 26/11/2026 cho 3 người\"\n}" }
+      }
+    },
+    {
+      "name": "3a. bookingassistant - CheckAvailability",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/assistant/chat",
+        "body": { "mode": "raw", "raw": "{\n  \"message\": \"Còn phòng Suite nào trống từ 24/12 đến 26/12 không?\"\n}" }
+      }
+    },
+    {
+      "name": "3b. bookingassistant - GetBookingsByPhone",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/assistant/chat",
+        "body": { "mode": "raw", "raw": "{\n  \"message\": \"Cho tôi xem các booking của số 0901234567\"\n}" }
+      }
+    },
+    {
+      "name": "3c. bookingassistant - CancelBooking",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": "{{baseUrl}}/api/assistant/chat",
+        "body": { "mode": "raw", "raw": "{\n  \"message\": \"Hủy giúp tôi booking số 3\"\n}" }
+      }
+    },
+    {
+      "name": "4. getbookingreport",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/reports/bookings?from=2026-11-01&to=2026-11-30",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "reports", "bookings"],
+          "query": [
+            { "key": "from", "value": "2026-11-01" },
+            { "key": "to", "value": "2026-11-30" }
+          ]
+        }
+      }
+    }
+  ]
+}

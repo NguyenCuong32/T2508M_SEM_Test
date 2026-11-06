@@ -1,0 +1,107 @@
+@page "/reports"
+@model ReportsModel
+@{
+    ViewData["Title"] = "Báo cáo đặt phòng";
+    var today = DateOnly.FromDateTime(DateTime.Today);
+    var monthStart = new DateOnly(today.Year, today.Month, 1);
+    var nextMonthStart = monthStart.AddMonths(1);
+    string Link(DateOnly f, DateOnly t) => $"/reports?from={f:yyyy-MM-dd}&to={t:yyyy-MM-dd}";
+    string BadgeFor(string type) => "badge badge-" + type.ToLowerInvariant();
+}
+
+<div class="page-head">
+    <h1>Báo cáo đặt phòng</h1>
+    <p class="muted">Các booking đã xác nhận (Confirmed), lọc theo ngày nhận phòng.</p>
+</div>
+
+<form method="get" class="card filter">
+    <label class="field">Từ ngày
+        <input class="input" type="date" name="from" value="@Model.From?.ToString("yyyy-MM-dd")" />
+    </label>
+    <label class="field">Đến ngày
+        <input class="input" type="date" name="to" value="@Model.To?.ToString("yyyy-MM-dd")" />
+    </label>
+    <button class="btn btn-primary" type="submit">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>
+        Lọc
+    </button>
+    <a class="btn btn-ghost" href="/reports">Xóa bộ lọc</a>
+</form>
+
+<div class="presets">
+    <span>Chọn nhanh:</span>
+    <a class="chip" href="@Link(today, today.AddDays(6))">7 ngày tới</a>
+    <a class="chip" href="@Link(monthStart, nextMonthStart.AddDays(-1))">Tháng này</a>
+    <a class="chip" href="@Link(nextMonthStart, nextMonthStart.AddMonths(1).AddDays(-1))">Tháng sau</a>
+    <a class="chip" href="@Link(new DateOnly(today.Year, 1, 1), new DateOnly(today.Year, 12, 31))">Năm @today.Year</a>
+</div>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-warn">@Model.ErrorMessage</div>
+}
+else if (Model.Report is { } report)
+{
+    var nights = report.Rows.Sum(r => r.Nights);
+
+    <div class="stats">
+        <div class="card stat">
+            <div class="label">Số booking</div>
+            <div class="value">@report.TotalBookings</div>
+        </div>
+        <div class="card stat">
+            <div class="label">Tổng số đêm</div>
+            <div class="value">@nights <small>đêm</small></div>
+        </div>
+        <div class="card stat highlight">
+            <div class="label">Doanh thu</div>
+            <div class="value">@report.GrandTotal <small>₫</small></div>
+        </div>
+    </div>
+
+    <div class="card table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th class="num">No</th>
+                <th>Room number</th>
+                <th>Room type</th>
+                <th>Guest name</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th class="num">Nights</th>
+                <th class="num">Total price</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if (report.Rows.Count == 0)
+            {
+                <tr><td colspan="8" class="empty">Không có booking nào đã xác nhận trong khoảng ngày này.</td></tr>
+            }
+            @foreach (var row in report.Rows)
+            {
+                <tr>
+                    <td class="num">@row.No</td>
+                    <td><strong>@row.RoomNumber</strong></td>
+                    <td><span class="@BadgeFor(row.RoomType)">@row.RoomType</span></td>
+                    <td>@row.GuestName</td>
+                    <td>@row.CheckIn</td>
+                    <td>@row.CheckOut</td>
+                    <td class="num">@row.Nights</td>
+                    <td class="num">@row.TotalPrice</td>
+                </tr>
+            }
+            </tbody>
+            @if (report.Rows.Count > 0)
+            {
+                <tfoot>
+                <tr>
+                    <td colspan="6">Tổng cộng (@report.TotalBookings booking)</td>
+                    <td class="num">@nights</td>
+                    <td class="num">@report.GrandTotal</td>
+                </tr>
+                </tfoot>
+            }
+        </table>
+    </div>
+}

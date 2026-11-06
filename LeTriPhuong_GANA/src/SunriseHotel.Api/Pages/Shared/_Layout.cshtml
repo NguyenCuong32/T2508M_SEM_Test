@@ -1,0 +1,55 @@
+@{
+    var path = Context.Request.Path.Value?.TrimEnd('/').ToLowerInvariant() ?? "";
+    string Active(string p) => (p == "" ? path == "" : path.StartsWith(p)) ? "active" : "";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · Sunrise Hotel</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><circle cx='12' cy='14' r='6' fill='%23e8590c'/></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+<header class="site-header">
+    <div class="container bar">
+        <a class="brand" href="/">
+            <span class="brand-mark" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v2M5.6 6.6l1.4 1.4M3 13h2M19 13h2M17 8l1.4-1.4M7 16a5 5 0 0 1 10 0M3 19h18"/></svg>
+            </span>
+            <span class="brand-name">Sunrise Hotel<small>Nha Trang</small></span>
+        </a>
+
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+        <label for="nav-toggle" class="nav-toggle-btn" aria-label="Mở menu">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </label>
+        <nav class="nav" aria-label="Điều hướng chính">
+            <a class="@Active("")" href="/">Trang chủ</a>
+            <a class="@Active("/chat")" href="/chat">Trợ lý AI</a>
+            <a class="@Active("/booking")" href="/booking">Đặt phòng nhanh</a>
+            <a class="@Active("/reports")" href="/reports">Báo cáo</a>
+            <a href="/swagger">API</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    @RenderBody()
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <span>© @DateTime.Now.Year Sunrise Hotel · 25 Trần Phú, Nha Trang</span>
+        <span>Trợ lý AI chạy trên Google Gemini</span>
+    </div>
+</footer>
+
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

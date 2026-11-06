@@ -1,0 +1,116 @@
+@page
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<section class="hero">
+    <div class="eyebrow">Khách sạn ven biển · Nha Trang</div>
+    <h1>Đón bình minh bên bờ biển Trần Phú</h1>
+    <p>Hỏi đáp, kiểm tra phòng trống và đặt phòng chỉ bằng một câu nói — trợ lý AI của Sunrise Hotel luôn sẵn sàng 24/7.</p>
+    <div class="hero-actions">
+        <a class="btn btn-primary" href="/booking">Đặt phòng ngay</a>
+        <a class="btn btn-ghost" href="/chat">Trò chuyện với lễ tân AI</a>
+    </div>
+</section>
+
+<section class="section">
+    <div class="grid grid-4">
+        <div class="card info-item">
+            <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <div><strong>Nhận phòng 14:00</strong><span>Trả phòng trước 12:00</span></div>
+        </div>
+        <div class="card info-item">
+            <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 11h13a3 3 0 0 1 0 6h-1M4 11v4a5 5 0 0 0 5 5h3a5 5 0 0 0 5-5v-4M8 3v4M12 3v4"/></svg></div>
+            <div><strong>Bữa sáng miễn phí</strong><span>06:30 – 09:30 mỗi ngày</span></div>
+        </div>
+        <div class="card info-item">
+            <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 17c2 0 2 1.5 4 1.5S8 17 10 17s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5M7 15V5a2 2 0 0 1 4 0M17 15V5a2 2 0 0 0-4 0M7 9h6"/></svg></div>
+            <div><strong>Hồ bơi tầng 5</strong><span>Tầm nhìn hướng biển</span></div>
+        </div>
+        <div class="card info-item">
+            <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div>
+            <div><strong>Đưa đón sân bay</strong><span>Miễn phí cho phòng Suite</span></div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-head">
+        <div>
+            <h2>Hạng phòng</h2>
+            <p class="muted">5 phòng được thiết kế cho mọi nhu cầu nghỉ dưỡng.</p>
+        </div>
+        <a class="btn btn-ghost" href="/chat?mode=assistant">Kiểm tra phòng trống →</a>
+    </div>
+    <div class="grid grid-3">
+        <article class="card room-card">
+            <div class="room-visual single"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 18v-6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v6M3 18h18M3 18v2M21 18v2M14 14h7v4M6 10V7"/></svg></div>
+            <div class="room-body">
+                <span class="badge badge-single" style="align-self:flex-start">Single</span>
+                <h3>Phòng đơn</h3>
+                <div class="room-price">600.000 ₫ <small>/ đêm</small></div>
+                <div class="room-meta"><span>Tối đa 1 khách</span>·<span>Phòng 101, 102</span></div>
+                <ul><li>Giường đơn cao cấp</li><li>Bữa sáng miễn phí</li></ul>
+            </div>
+        </article>
+        <article class="card room-card">
+            <div class="room-visual double"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 18v-6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6M2 18h20M2 18v2M22 18v2M5 10V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3M13 10V7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"/></svg></div>
+            <div class="room-body">
+                <span class="badge badge-double" style="align-self:flex-start">Double</span>
+                <h3>Phòng đôi</h3>
+                <div class="room-price">950.000 ₫ <small>/ đêm</small></div>
+                <div class="room-meta"><span>Tối đa 2 khách</span>·<span>Phòng 201, 202</span></div>
+                <ul><li>Giường đôi rộng rãi</li><li>Bữa sáng cho 2 người</li></ul>
+            </div>
+        </article>
+        <article class="card room-card">
+            <div class="room-visual suite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m2 8 4 10h12l4-10-6 4-4-7-4 7z"/><path d="M6 21h12"/></svg></div>
+            <div class="room-body">
+                <span class="badge badge-suite" style="align-self:flex-start">Suite</span>
+                <h3>Phòng Suite</h3>
+                <div class="room-price">2.200.000 ₫ <small>/ đêm</small></div>
+                <div class="room-meta"><span>Tối đa 4 khách</span>·<span>Phòng 301</span></div>
+                <ul><li>Phòng khách riêng, view biển</li><li>Miễn phí đưa đón sân bay</li></ul>
+            </div>
+        </article>
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-head">
+        <div>
+            <h2>Trợ lý thông minh</h2>
+            <p class="muted">Bốn tính năng AI giúp khách và quản lý tiết kiệm thời gian.</p>
+        </div>
+    </div>
+    <div class="grid grid-4">
+        <a class="card feature-card" href="/chat?mode=ask">
+            <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></div>
+            <h3>Hỏi lễ tân AI</h3>
+            <p>Giờ nhận phòng, tiện ích, địa chỉ… trả lời lịch sự, đúng thông tin khách sạn.</p>
+            <span class="api">POST /api/ai/ask</span>
+            <span class="go">Bắt đầu hỏi →</span>
+        </a>
+        <a class="card feature-card" href="/booking">
+            <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16v14H4zM4 9h16M9 13h6M9 16h4"/></svg></div>
+            <h3>Đặt phòng bằng câu nói</h3>
+            <p>Viết yêu cầu tự nhiên, AI trích xuất thông tin và tạo booking ngay.</p>
+            <span class="api">POST /api/bookings/parse</span>
+            <span class="go">Đặt phòng →</span>
+        </a>
+        <a class="card feature-card" href="/chat?mode=assistant">
+            <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2"/><circle cx="12" cy="12" r="3"/></svg></div>
+            <h3>Trợ lý đặt phòng</h3>
+            <p>Kiểm tra phòng trống, tra cứu và hủy booking qua Function Calling.</p>
+            <span class="api">POST /api/assistant/chat</span>
+            <span class="go">Mở trợ lý →</span>
+        </a>
+        <a class="card feature-card" href="/reports">
+            <div class="info-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+            <h3>Báo cáo đặt phòng</h3>
+            <p>Danh sách booking đã xác nhận, lọc theo khoảng ngày, tổng doanh thu.</p>
+            <span class="api">GET /api/reports/bookings</span>
+            <span class="go">Xem báo cáo →</span>
+        </a>
+    </div>
+</section>

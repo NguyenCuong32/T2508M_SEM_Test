@@ -1,0 +1,102 @@
+@page "/booking"
+@{
+    ViewData["Title"] = "Đặt phòng nhanh";
+}
+
+<div class="page-head">
+    <h1>Đặt phòng bằng một câu</h1>
+    <p class="muted">Viết yêu cầu như khi nhắn tin cho lễ tân — AI sẽ trích xuất thông tin, tìm phòng trống và xác nhận đặt phòng.</p>
+</div>
+
+<div class="booking-layout">
+    <section class="card">
+        <form id="booking-form">
+            <label class="field" for="booking-text">Yêu cầu đặt phòng
+                <textarea class="input" id="booking-text" maxlength="2000" required
+                          placeholder="Ví dụ: Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người"></textarea>
+            </label>
+            <p class="hint">Nên có: họ tên, số điện thoại, loại phòng (đơn / đôi / suite), ngày nhận – trả phòng và số khách.</p>
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit" id="submit-btn">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m5 12 5 5L20 7"/></svg>
+                    <span>Đặt phòng</span>
+                </button>
+                <button class="btn btn-ghost" type="button" id="sample-btn">Dùng câu mẫu</button>
+            </div>
+        </form>
+
+        <ol class="steps" aria-label="Quy trình">
+            <li><span class="n">1</span>Gemini đọc yêu cầu</li>
+            <li><span class="n">2</span>Trả về JSON</li>
+            <li><span class="n">3</span>Kiểm tra & tìm phòng</li>
+            <li><span class="n">4</span>Lưu booking</li>
+        </ol>
+    </section>
+
+    <section class="card" id="result" aria-live="polite">
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 5h16v14H4zM4 9h16M9 13h6M9 16h4"/></svg>
+            <p>Kết quả đặt phòng sẽ hiển thị ở đây.</p>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+<script>
+(() => {
+    const SAMPLES = [
+        "Tôi là Nguyễn Văn An, sđt 0901234567, muốn đặt 1 phòng đôi từ 20/11/2026 đến 22/11/2026 cho 2 người",
+        "Mình tên Trần Thị Bình, số 0912345678, cần 1 phòng đơn từ 21/11/2026 tới 24/11/2026",
+        "Lê Hoàng Nam - 0987654321 - đặt phòng Suite ngày 25/11/2026 đến 26/11/2026 cho gia đình 4 người"
+    ];
+    const { esc, money, date } = window.hotel;
+    const form = document.getElementById("booking-form");
+    const text = document.getElementById("booking-text");
+    const btn = document.getElementById("submit-btn");
+    const result = document.getElementById("result");
+    let sampleIdx = 0;
+
+    document.getElementById("sample-btn").onclick = () => {
+        text.value = SAMPLES[sampleIdx++ % SAMPLES.length];
+        text.focus();
+    };
+
+    const roomLabel = { Single: "Phòng đơn", Double: "Phòng đôi", Suite: "Phòng Suite" };
+
+    form.addEventListener("submit", async e => {
+        e.preventDefault();
+        const value = text.value.trim();
+        if (!value) return;
+        btn.disabled = true;
+        btn.querySelector("span").textContent = "Đang xử lý…";
+        result.innerHTML = `<div class="empty-state"><div class="typing"><i></i><i></i><i></i></div><p>AI đang phân tích yêu cầu…</p></div>`;
+
+        try {
+            const { parsed, booking: b } = await window.hotel.postJson("/api/bookings/parse", { text: value });
+            const badge = `badge-${String(b.roomType).toLowerCase()}`;
+            result.innerHTML = `
+                <div class="confirm-head">
+                    <div class="confirm-icon"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m5 12 5 5L20 7"/></svg></div>
+                    <div><h3>Đặt phòng thành công</h3><p>Mã booking #${esc(b.bookingId)} · <span class="badge badge-ok">${esc(b.status)}</span></p></div>
+                </div>
+                <dl class="dl">
+                    <dt>Khách hàng</dt><dd>${esc(b.guestName)}</dd>
+                    <dt>Số điện thoại</dt><dd>${esc(b.phone)}</dd>
+                    <dt>Phòng</dt><dd>${esc(b.roomNumber)} <span class="badge ${badge}">${esc(roomLabel[b.roomType] ?? b.roomType)}</span></dd>
+                    <dt>Nhận phòng</dt><dd>${date(b.checkIn)} · 14:00</dd>
+                    <dt>Trả phòng</dt><dd>${date(b.checkOut)} · trước 12:00</dd>
+                    <dt>Số đêm</dt><dd>${esc(b.nights)}</dd>
+                    <dt class="total-row">Tổng tiền</dt><dd class="total-row">${money(b.totalPrice)}</dd>
+                </dl>
+                <span class="code-label">JSON do Gemini trích xuất</span>
+                <pre class="code-block">${esc(JSON.stringify(parsed, null, 2))}</pre>`;
+        } catch (err) {
+            result.innerHTML = `<div class="alert alert-error">${esc(err.message)}</div>`;
+        } finally {
+            btn.disabled = false;
+            btn.querySelector("span").textContent = "Đặt phòng";
+        }
+    });
+})();
+</script>
+}
