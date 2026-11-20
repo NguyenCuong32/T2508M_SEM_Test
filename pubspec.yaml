@@ -1,0 +1,7 @@
+name: orderly_dashboard
+description: A polished Dart order management dashboard.
+version: 1.0.0
+publish_to: none
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
