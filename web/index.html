@@ -3,16 +3,149 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Order - Introduction to Dart Programming (SET01)</title>
+  <title>My Order - FPT Tech Store (Dart Programming SET01)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="page-wrapper">
-    <main class="order-container">
-      <!-- Page Title matching the exam screenshot -->
-      <h1 class="page-title">My Order</h1>
+  <!-- Top Store Navigation Bar -->
+  <header class="shop-navbar">
+    <div class="navbar-inner">
+      <div class="brand-logo">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">AptechMobile<span class="brand-dot">.vn</span></span>
+          <span class="brand-tagline">Official Apple &amp; Tech Store</span>
+        </div>
+      </div>
 
-      <!-- Order Input Form matching the exam screenshot -->
+      <div class="navbar-stats">
+        <div class="cart-stat">
+          <span class="stat-label">Items in Cart</span>
+          <span class="stat-value" id="navCartCount">2</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="cart-stat">
+          <span class="stat-label">Estimated Total</span>
+          <span class="stat-value highlight" id="navCartTotal">2.700 USD</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <!-- Quick Shop Product Catalog (1-Click Quick Fill or Quick Buy) -->
+    <section class="catalog-section">
+      <div class="section-head">
+        <div class="section-title-group">
+          <span class="badge-hot">HOT DEALS</span>
+          <h2>Featured Store Products</h2>
+        </div>
+        <p class="section-hint">Click <strong>"Select Item"</strong> to auto-fill the form or <strong>"Quick Add"</strong> directly into <code>order.json</code></p>
+      </div>
+
+      <div class="product-grid" id="productCatalog">
+        <!-- Product 1 -->
+        <article class="product-card" data-item="A1000" data-name="Iphone 15" data-price="1200" data-currency="USD">
+          <div class="product-badge">Best Seller</div>
+          <div class="product-thumb thumb-blue">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <div class="product-info">
+            <span class="product-sku">SKU: A1000</span>
+            <h3 class="product-title">Iphone 15</h3>
+            <div class="product-price">1.200 <small>USD</small></div>
+          </div>
+          <div class="product-actions">
+            <button type="button" class="btn-pick" onclick="prefillProduct('A1000', 'Iphone 15', 1200, 'USD')">Select Item</button>
+            <button type="button" class="btn-quick-buy" onclick="quickAddProduct('A1000', 'Iphone 15', 1200, 'USD')">+ Quick Add</button>
+          </div>
+        </article>
+
+        <!-- Product 2 -->
+        <article class="product-card" data-item="A1001" data-name="Iphone 16" data-price="1500" data-currency="USD">
+          <div class="product-badge badge-new">New Arrival</div>
+          <div class="product-thumb thumb-orange">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <div class="product-info">
+            <span class="product-sku">SKU: A1001</span>
+            <h3 class="product-title">Iphone 16</h3>
+            <div class="product-price">1.500 <small>USD</small></div>
+          </div>
+          <div class="product-actions">
+            <button type="button" class="btn-pick" onclick="prefillProduct('A1001', 'Iphone 16', 1500, 'USD')">Select Item</button>
+            <button type="button" class="btn-quick-buy" onclick="quickAddProduct('A1001', 'Iphone 16', 1500, 'USD')">+ Quick Add</button>
+          </div>
+        </article>
+
+        <!-- Product 3 -->
+        <article class="product-card" data-item="A1002" data-name="Iphone 16 Pro Max" data-price="1850" data-currency="USD">
+          <div class="product-badge badge-pro">Flagship</div>
+          <div class="product-thumb thumb-purple">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+              <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+          </div>
+          <div class="product-info">
+            <span class="product-sku">SKU: A1002</span>
+            <h3 class="product-title">Iphone 16 Pro Max</h3>
+            <div class="product-price">1.850 <small>USD</small></div>
+          </div>
+          <div class="product-actions">
+            <button type="button" class="btn-pick" onclick="prefillProduct('A1002', 'Iphone 16 Pro Max', 1850, 'USD')">Select Item</button>
+            <button type="button" class="btn-quick-buy" onclick="quickAddProduct('A1002', 'Iphone 16 Pro Max', 1850, 'USD')">+ Quick Add</button>
+          </div>
+        </article>
+
+        <!-- Product 4 -->
+        <article class="product-card" data-item="A1003" data-name="MacBook Air M3" data-price="2100" data-currency="USD">
+          <div class="product-thumb thumb-teal">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="2" y1="20" x2="22" y2="20"></line>
+            </svg>
+          </div>
+          <div class="product-info">
+            <span class="product-sku">SKU: A1003</span>
+            <h3 class="product-title">MacBook Air M3</h3>
+            <div class="product-price">2.100 <small>USD</small></div>
+          </div>
+          <div class="product-actions">
+            <button type="button" class="btn-pick" onclick="prefillProduct('A1003', 'MacBook Air M3', 2100, 'USD')">Select Item</button>
+            <button type="button" class="btn-quick-buy" onclick="quickAddProduct('A1003', 'MacBook Air M3', 2100, 'USD')">+ Quick Add</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Main Exam Card: "My Order" -->
+    <main class="order-card">
+      <!-- Page Title matching the exam screenshot -->
+      <div class="order-header">
+        <h1 class="page-title">My Order</h1>
+        <p class="page-subtitle">Add custom items or manage your shopping cart below</p>
+      </div>
+
+      <!-- Order Input Form matching the exam screenshot layout -->
       <form id="orderForm" class="order-form" novalidate>
         <div class="form-row row-two-cols">
           <div class="form-group">
@@ -21,7 +154,7 @@
               type="text"
               id="itemInput"
               name="item"
-              placeholder="Item"
+              placeholder="Item (e.g. A1002)"
               required
               autocomplete="off"
             />
@@ -33,7 +166,7 @@
               type="text"
               id="itemNameInput"
               name="itemName"
-              placeholder="Item"
+              placeholder="Item (e.g. Iphone 15)"
               required
               autocomplete="off"
             />
@@ -82,32 +215,53 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" id="addBtn" class="btn-add">Add Item to Cart</button>
+          <button type="submit" id="addBtn" class="btn-add">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span>Add Item to Cart</span>
+          </button>
         </div>
       </form>
 
-      <!-- Search Order by ItemName (3 Marks) & Status Notification -->
+      <!-- Search Order by ItemName (3 Marks) & Cart Controls -->
       <section class="toolbar-section">
         <div class="search-box">
-          <label for="searchInput" class="search-label">Search by Item Name:</label>
-          <div class="search-input-group">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
             <input
               type="text"
               id="searchInput"
-              placeholder="Enter Item Name to search (e.g. Iphone 15)..."
+              placeholder="Search Order by Item Name (e.g. Iphone 15)..."
               autocomplete="off"
             />
-            <button type="button" id="clearSearchBtn" class="btn-clear" title="Clear search">Clear</button>
+            <button type="button" id="clearSearchBtn" class="btn-clear" title="Clear search">
+              Clear
+            </button>
           </div>
         </div>
 
-        <div class="json-actions">
+        <div class="toolbar-actions">
+          <button type="button" id="resetDefaultBtn" class="btn-ghost" title="Reset to exam initial JSON string">
+            Reset Sample Data
+          </button>
           <button type="button" id="downloadJsonBtn" class="btn-outline" title="Download order.json">
-            Download order.json
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Export order.json</span>
           </button>
         </div>
       </section>
 
+      <!-- Status Notification Banner -->
       <div id="statusMessage" class="status-message" aria-live="polite"></div>
 
       <!-- Orders Table matching the exam screenshot -->
@@ -130,9 +284,37 @@
         </table>
       </div>
 
+      <!-- Shop Cart Checkout Summary Strip -->
+      <div class="cart-summary-bar">
+        <div class="summary-left">
+          <span class="summary-badge" id="orderCountBadge">2 Orders</span>
+          <span class="summary-text" id="totalQtyBadge">Total Quantity: 2 items</span>
+        </div>
+        <div class="summary-right">
+          <span class="summary-total-label">Grand Total:</span>
+          <span class="summary-total-amount" id="totalAmountBadge">2.700 USD</span>
+        </div>
+      </div>
+
+      <!-- Collapsible Live order.json Inspector -->
+      <details class="json-preview-card">
+        <summary class="json-preview-header">
+          <span>Live <code>order.json</code> File Preview</span>
+          <span class="json-hint">Click to view JSON</span>
+        </summary>
+        <pre id="jsonPreviewCode" class="json-preview-code"></pre>
+      </details>
+
       <!-- Footer matching the exam screenshot -->
       <footer class="page-footer">
-        Số 8, Tôn Thất Thuyết, Cầu giấy, Hà Nội
+        <div class="footer-address">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <span>Số 8, Tôn Thất Thuyết, Cầu giấy, Hà Nội</span>
+        </div>
+        <span class="footer-copy">FPT Aptech &bull; Introduction to Dart Programming - SET01</span>
       </footer>
     </main>
   </div>
