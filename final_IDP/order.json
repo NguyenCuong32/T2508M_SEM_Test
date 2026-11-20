@@ -1,0 +1,79 @@
+[
+  {
+    "Item": "A1000",
+    "ItemName": "Iphone 16",
+    "Price": 1200,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1001",
+    "ItemName": "Iphone 16",
+    "Price": 1500,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1002",
+    "ItemName": "Iphone 15 Pro",
+    "Price": 1200,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1003",
+    "ItemName": "Iphone 15 Pro Max",
+    "Price": 1200,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1004",
+    "ItemName": "Iphone 15 Plus",
+    "Price": 1200,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1005",
+    "ItemName": "Iphone 14",
+    "Price": 1200,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1006",
+    "ItemName": "Iphone 14 Pro",
+    "Price": 1200,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1007",
+    "ItemName": "Iphone 13",
+    "Price": 1200,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1008",
+    "ItemName": "Iphone 13 Pro",
+    "Price": 1200,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1009",
+    "ItemName": "Iphone 16 Pro Max",
+    "Price": 1600,
+    "Currency": "USD",
+    "Quantity": 1
+  },
+  {
+    "Item": "A1010",
+    "ItemName": "Iphone 17 Pro Max",
+    "Price": 1600,
+    "Currency": "USD",
+    "Quantity": 1
+  }
+]

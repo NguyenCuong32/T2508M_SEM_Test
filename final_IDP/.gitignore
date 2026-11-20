@@ -1,0 +1,13 @@
+# Dart & Flutter artifacts
+.dart_tool/
+.packages
+build/
+
+# Compilation intermediates
+web/*.js.deps
+web/*.js.map
+
+# IDE files
+.idea/
+.vscode/
+*.iml
