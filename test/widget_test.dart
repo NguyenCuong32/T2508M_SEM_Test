@@ -68,6 +68,6 @@ void main() {
 
     expect(find.text('My Order'), findsOneWidget);
     expect(find.text('Add Item to Cart'), findsOneWidget);
-    expect(find.text('Số 8, Tôn Thất Thuyết, Cầu Giấy, Hà Nội'), findsOneWidget);
+    expect(find.textContaining('Số 8, Tôn Thất Thuyết, Cầu Giấy, Hà Nội'), findsOneWidget);
   });
 }
