@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Order — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">🛒</span>
+      <span class="logo-text">OrderHub</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active">
+        <span class="nav-icon">📦</span>
+        <span>Orders</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="nav-icon">📊</span>
+        <span>Analytics</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="nav-icon">⚙️</span>
+        <span>Settings</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <div class="main">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">Order Management</h1>
+        <span class="breadcrumb">Dashboard / Orders</span>
+      </div>
+      <div class="topbar-right">
+        <div class="avatar">HCC</div>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Items</div>
+          <div class="stat-value" id="stat-items">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Value</div>
+          <div class="stat-value" id="stat-value">$0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Currencies</div>
+          <div class="stat-value" id="stat-currency">0</div>
+        </div>
+      </div>
+
+      <!-- Add / Edit Order Panel -->
+      <div class="panel" id="form-panel">
+        <div class="panel-header">
+          <span class="panel-title" id="form-panel-title">➕ Add New Order</span>
+          <button id="btn-cancel-edit" class="btn-cancel" style="display:none;">✕ Cancel</button>
+        </div>
+        <div class="panel-body">
+          <!-- hidden: tracks which order is being edited (-1 = add mode) -->
+          <input type="hidden" id="edit-id" value="-1" />
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="input-item">Item Code</label>
+              <input id="input-item" class="form-input" type="text" placeholder="e.g. A1002" />
+            </div>
+            <div class="form-group">
+              <label for="input-item-name">Item Name</label>
+              <input id="input-item-name" class="form-input" type="text" placeholder="e.g. Iphone 15" />
+            </div>
+            <div class="form-group">
+              <label for="input-price">Price</label>
+              <div class="input-prefix-wrap">
+                <span class="input-prefix">$</span>
+                <input id="input-price" class="form-input has-prefix" type="number" placeholder="0.00" min="0" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="input-quantity">Quantity</label>
+              <input id="input-quantity" class="form-input" type="number" placeholder="1" min="1" />
+            </div>
+            <div class="form-group">
+              <label for="input-currency">Currency</label>
+              <input id="input-currency" class="form-input" type="text" placeholder="USD" value="USD" />
+            </div>
+          </div>
+
+          <div id="form-message" class="message"></div>
+
+          <div class="form-actions">
+            <button id="btn-add" class="btn-primary">
+              <span id="btn-add-icon">＋</span>
+              <span id="btn-add-label">Add to Order List</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">📋 Order List</span>
+          <div class="panel-header-right">
+            <div class="search-wrap">
+              <span class="search-icon">🔍</span>
+              <input id="search-input" type="text" placeholder="Search by item name..." />
+            </div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Item Code</th>
+                <th>Item Name</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Currency</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="order-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+  <script defer src="main.dart.js"></script>
+</body>
+</html>
