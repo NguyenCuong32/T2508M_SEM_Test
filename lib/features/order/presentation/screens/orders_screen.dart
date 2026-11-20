@@ -42,7 +42,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     _controller.search('');
   }
 
-  Future<void> _addOrder() async {
+  Future<void> _openOrderForm([Order? original]) async {
     FocusScope.of(context).unfocus();
     final order = await showModalBottomSheet<Order>(
       context: context,
@@ -52,16 +52,25 @@ class _OrdersScreenState extends State<OrdersScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
-      builder: (context) => OrderForm(existingItems: _controller.existingItems),
+      builder: (context) => OrderForm(
+        initialOrder: original,
+        existingItems: _controller.existingItems..remove(original?.item),
+      ),
     );
     if (order == null || !mounted) {
       return;
     }
-    final saved = await _controller.addOrder(order);
+    final saved = original == null
+        ? await _controller.addOrder(order)
+        : await _controller.updateOrder(original, order);
     if (!mounted) return;
     if (saved) {
-      _search.clear();
-      _notify('Đã thêm ${order.itemName}');
+      if (original == null) {
+        _search.clear();
+        _notify('Đã thêm ${order.itemName}');
+      } else {
+        _notify('Đã cập nhật ${order.itemName}');
+      }
     } else {
       _notify('Không thể lưu đơn hàng. Vui lòng thử lại.');
     }
@@ -329,6 +338,30 @@ class _OrdersScreenState extends State<OrdersScreen> {
                               ),
                             ),
                           ),
+                          PopupMenuButton<OrderSort>(
+                            tooltip: 'Sắp xếp đơn hàng',
+                            icon: const Icon(Icons.sort, color: accent),
+                            initialValue: _controller.sort,
+                            onSelected: _controller.sortBy,
+                            itemBuilder: (context) => const [
+                              PopupMenuItem(
+                                value: OrderSort.added,
+                                child: Text('Thứ tự thêm'),
+                              ),
+                              PopupMenuItem(
+                                value: OrderSort.newest,
+                                child: Text('Mới nhất trước'),
+                              ),
+                              PopupMenuItem(
+                                value: OrderSort.name,
+                                child: Text('Tên sản phẩm A–Z'),
+                              ),
+                              PopupMenuItem(
+                                value: OrderSort.price,
+                                child: Text('Đơn giá tăng theo tiền tệ'),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -351,7 +384,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       const SizedBox(height: 14),
                       FilledButton.icon(
                         key: const Key('addOrder'),
-                        onPressed: _controller.saving ? null : _addOrder,
+                        onPressed: _controller.saving ? null : _openOrderForm,
                         icon: _controller.saving
                             ? const SizedBox(
                                 width: 18,
@@ -404,6 +437,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
                           padding: const EdgeInsets.only(bottom: 12),
                           child: _OrderCard(
                             order: order,
+                            onEdit: _controller.saving
+                                ? null
+                                : () => _openOrderForm(order),
                             onDelete: _controller.saving
                                 ? null
                                 : () => _delete(order),
@@ -434,9 +470,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
 }
 
 class _OrderCard extends StatelessWidget {
-  const _OrderCard({required this.order, required this.onDelete});
+  const _OrderCard({
+    required this.order,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   final Order order;
+  final VoidCallback? onEdit;
   final VoidCallback? onDelete;
 
   @override
@@ -489,6 +530,11 @@ class _OrderCard extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+              IconButton(
+                tooltip: 'Sửa ${order.itemName}',
+                onPressed: onEdit,
+                icon: const Icon(Icons.edit_outlined, color: accent, size: 20),
               ),
               IconButton(
                 tooltip: 'Xóa ${order.itemName}',

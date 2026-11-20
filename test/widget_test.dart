@@ -82,6 +82,63 @@ void main() {
     expect(find.text('2/2'), findsOneWidget);
   });
 
+  testWidgets('Edits an order in place and rejects another order’s code', (
+    tester,
+  ) async {
+    final repository = MemoryRepository();
+    await open(tester, repository);
+    final edit = find.byTooltip('Sửa Iphone 15');
+    await tester.ensureVisible(edit);
+    await tester.tap(edit);
+    await tester.pumpAndSettle();
+    expect(find.text('Sửa đơn hàng'), findsOneWidget);
+    final itemField = find.byKey(const Key('item'));
+    expect(tester.widget<TextFormField>(itemField).controller!.text, 'A1000');
+    final save = find.byKey(const Key('saveOrder'));
+    await tester.enterText(itemField, 'A1001');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(find.text('Mã sản phẩm đã tồn tại'), findsOneWidget);
+    expect(repository.orders.first.item, 'A1000');
+
+    await tester.enterText(itemField, 'A1000');
+    await tester.enterText(find.byKey(const Key('itemName')), 'Iphone 15 Pro');
+    await tester.enterText(find.byKey(const Key('quantity')), '2');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    expect(repository.orders.length, 2);
+    expect(repository.orders.first.itemName, 'Iphone 15 Pro');
+    expect(repository.orders.first.quantity, 2);
+    expect(find.text('3,900.00 USD'), findsOneWidget);
+  });
+
+  testWidgets('Sorts the visible list without changing storage order', (
+    tester,
+  ) async {
+    final repository = MemoryRepository();
+    await open(tester, repository);
+    final menu = find.byTooltip('Sắp xếp đơn hàng');
+    await tester.tap(menu);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Mới nhất trước'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getTopLeft(find.text('Iphone 16')).dy,
+      lessThan(tester.getTopLeft(find.text('Iphone 15')).dy),
+    );
+    expect(repository.orders.first.item, 'A1000');
+    await tester.tap(menu);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Đơn giá tăng theo tiền tệ'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getTopLeft(find.text('Iphone 15')).dy,
+      lessThan(tester.getTopLeft(find.text('Iphone 16')).dy),
+    );
+  });
+
   testWidgets('Validates empty, duplicate, and invalid numeric fields', (
     tester,
   ) async {

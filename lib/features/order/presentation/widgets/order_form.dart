@@ -6,9 +6,10 @@ import 'package:my_order/core/constants/app_constants.dart';
 import '../../data/models/order_model.dart';
 
 class OrderForm extends StatefulWidget {
-  const OrderForm({super.key, required this.existingItems});
+  const OrderForm({super.key, required this.existingItems, this.initialOrder});
 
   final Set<String> existingItems;
+  final Order? initialOrder;
 
   @override
   State<OrderForm> createState() => _OrderFormState();
@@ -16,11 +17,15 @@ class OrderForm extends StatefulWidget {
 
 class _OrderFormState extends State<OrderForm> {
   final _form = GlobalKey<FormState>();
-  final _item = TextEditingController();
-  final _name = TextEditingController();
-  final _price = TextEditingController();
-  final _quantity = TextEditingController(text: '1');
-  String _currency = 'USD';
+  late final _item = TextEditingController(text: widget.initialOrder?.item);
+  late final _name = TextEditingController(text: widget.initialOrder?.itemName);
+  late final _price = TextEditingController(
+    text: widget.initialOrder?.price.toString(),
+  );
+  late final _quantity = TextEditingController(
+    text: widget.initialOrder?.quantity.toString() ?? '1',
+  );
+  late String _currency = widget.initialOrder?.currency ?? 'USD';
 
   @override
   void dispose() {
@@ -49,6 +54,13 @@ class _OrderFormState extends State<OrderForm> {
 
   @override
   Widget build(BuildContext context) {
+    final editing = widget.initialOrder != null;
+    final currencies = {
+      'USD',
+      'VND',
+      'EUR',
+      if (editing) widget.initialOrder!.currency,
+    };
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SingleChildScrollView(
@@ -78,16 +90,16 @@ class _OrderFormState extends State<OrderForm> {
                       color: AppConstants.tint,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
-                      Icons.playlist_add,
+                    child: Icon(
+                      editing ? Icons.edit_outlined : Icons.playlist_add,
                       color: AppConstants.accent,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      'Thêm đơn hàng',
-                      style: TextStyle(
+                      editing ? 'Sửa đơn hàng' : 'Thêm đơn hàng',
+                      style: const TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.w800,
                         letterSpacing: -0.5,
@@ -200,7 +212,7 @@ class _OrderFormState extends State<OrderForm> {
                     child: DropdownButtonFormField<String>(
                       initialValue: _currency,
                       decoration: const InputDecoration(labelText: 'Tiền tệ'),
-                      items: ['USD', 'VND', 'EUR']
+                      items: currencies
                           .map(
                             (v) => DropdownMenuItem(value: v, child: Text(v)),
                           )
@@ -214,7 +226,7 @@ class _OrderFormState extends State<OrderForm> {
               FilledButton.icon(
                 key: const Key('saveOrder'),
                 onPressed: _submit,
-                icon: const Icon(Icons.add),
+                icon: Icon(editing ? Icons.check : Icons.add),
                 label: const Text('Lưu đơn hàng'),
               ),
             ],
