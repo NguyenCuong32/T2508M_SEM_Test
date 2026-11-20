@@ -1,0 +1,6 @@
+.dart_tool/
+.temp_appdata/
+pubspec.lock
+build/
+.DS_Store
+*.swp

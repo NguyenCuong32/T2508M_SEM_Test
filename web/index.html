@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Order - Introduction to Dart Programming SET01</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header Title (as pictured: "My Order" in gold/ochre) -->
+    <header class="page-header">
+      <h1 class="page-title">My Order</h1>
+    </header>
+
+    <!-- Status / Notification Message -->
+    <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+    <!-- Editing Badge Indicator -->
+    <div id="editingBadge" class="editing-badge" style="display: none;">
+      <div class="editing-info">
+        <span>✏️ Đang chỉnh sửa đơn hàng: <strong id="editingOrderTitle"></strong></span>
+      </div>
+      <button type="button" class="btn-cancel-edit" onclick="cancelEditOrder()">
+        ✕ Hủy sửa
+      </button>
+    </div>
+
+    <!-- Order Input Form -->
+    <form id="orderForm" class="order-form" autocomplete="off">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label for="itemInput">Item</label>
+          <input
+            type="text"
+            id="itemInput"
+            name="item"
+            placeholder="Item"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="itemNameInput">Item Name</label>
+          <input
+            type="text"
+            id="itemNameInput"
+            name="itemName"
+            placeholder="Item"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          <label for="priceInput">Price</label>
+          <input
+            type="text"
+            inputmode="decimal"
+            id="priceInput"
+            name="price"
+            placeholder="Price"
+            pattern="^[0-9]+(\.[0-9]+)?$"
+            title="Vui lòng chỉ nhập số"
+            oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1')"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="quantityInput">Quantity</label>
+          <input
+            type="text"
+            inputmode="numeric"
+            id="quantityInput"
+            name="quantity"
+            placeholder="Quantity"
+            value="1"
+            pattern="^[0-9]+$"
+            title="Vui lòng chỉ nhập số nguyên"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="currencyInput">Currency</label>
+          <input
+            type="text"
+            id="currencyInput"
+            name="currency"
+            value="USD"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-action-row">
+        <!-- Quick Sample Presets (Bonus UX) -->
+        <div class="quick-presets" id="quickPresetsGroup">
+          <span class="quick-label">Gợi ý nhanh:</span>
+          <button type="button" class="btn-preset" onclick="prefillForm('A1000', 'Iphone 15', 1200, 'USD', 1)">Iphone 15</button>
+          <button type="button" class="btn-preset" onclick="prefillForm('A1001', 'Iphone 16', 1500, 'USD', 1)">Iphone 16</button>
+          <button type="button" class="btn-preset" onclick="prefillForm('A1002', 'Iphone 16 Pro Max', 1800, 'USD', 1)">Iphone 16 Pro</button>
+        </div>
+
+        <div class="form-buttons-group">
+          <button type="button" id="cancelEditBtn" class="btn-cancel-edit-inline" style="display: none;" onclick="cancelEditOrder()">
+            Hủy sửa
+          </button>
+          <!-- Add Item to Cart / Update Button -->
+          <button type="submit" id="addToCartBtn" class="btn-add-cart">
+            Add Item to Cart
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Search Section (Allows search Order by ItemName - 3 Marks) -->
+    <div class="search-section">
+      <div class="search-box-wrapper">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search Order by ItemName (e.g. Iphone 15)..."
+        />
+        <button type="button" id="clearSearchBtn" class="btn-clear-search" title="Clear Search">
+          &times;
+        </button>
+      </div>
+      <div class="search-actions">
+        <button type="button" id="downloadJsonBtn" class="btn-outline-small" title="Download current order.json">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          order.json
+        </button>
+        <button type="button" id="resetDefaultsBtn" class="btn-outline-small" title="Reset to initial exam JSON">
+          Reset Data
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter & Sort Toolbar (Bộ lọc và Sắp xếp dữ liệu) -->
+    <div class="filter-toolbar">
+      <div class="filter-controls">
+        <div class="filter-item">
+          <label for="currencyFilter">Tiền tệ:</label>
+          <select id="currencyFilter" class="filter-select">
+            <option value="ALL">Tất cả</option>
+            <option value="USD">USD</option>
+            <option value="VND">VND</option>
+            <option value="EUR">EUR</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label for="priceFilter">Mức giá:</label>
+          <select id="priceFilter" class="filter-select">
+            <option value="ALL">Tất cả mức giá</option>
+            <option value="under1300">&lt; 1.300 USD</option>
+            <option value="1300-1600">1.300 - 1.600 USD</option>
+            <option value="above1600">&gt; 1.600 USD</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label for="sortFilter">Sắp xếp:</label>
+          <select id="sortFilter" class="filter-select">
+            <option value="added">Thứ tự mặc định</option>
+            <option value="newest">Mới nhất trước</option>
+            <option value="nameAsc">Tên sản phẩm (A-Z)</option>
+            <option value="nameDesc">Tên sản phẩm (Z-A)</option>
+            <option value="priceAsc">Giá tăng dần</option>
+            <option value="priceDesc">Giá giảm dần</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-count-badge" id="filterCountBadge">
+        Hiển thị: <strong>2/2</strong> đơn hàng
+      </div>
+    </div>
+
+    <!-- Orders Table (Matches exact color and columns in exam picture) -->
+    <div class="table-card">
+      <table class="orders-table">
+        <thead>
+          <tr>
+            <th style="width: 7%;">Id</th>
+            <th style="width: 14%;">Item</th>
+            <th style="width: 28%;">Item Name</th>
+            <th style="width: 11%;">Quantity</th>
+            <th style="width: 13%;">Price</th>
+            <th style="width: 10%;">Currency</th>
+            <th style="width: 17%; text-align: center;">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+          <!-- Dynamically populated rows -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cart Summary Badges -->
+    <div class="cart-summary">
+      <div class="summary-item">
+        <span>Tổng số lượng:</span>
+        <strong id="totalQuantity">0</strong>
+      </div>
+      <div class="summary-item">
+        <span>Tổng giá trị đơn:</span>
+        <strong id="totalAmount">0 USD</strong>
+      </div>
+    </div>
+
+    <!-- Footer Banner (Exact as pictured: "Số 8, Tôn Thất Thuyết, Cầu giấy, Hà Nội") -->
+    <footer class="page-footer">
+      <div class="footer-bar">
+        Số 8, Tôn Thất Thuyết, Cầu giấy, Hà Nội
+      </div>
+    </footer>
+  </div>
+
+  <!-- Edit Modal Dialog (Popup Chỉnh sửa dữ liệu trực quan) -->
+  <div id="editModal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">✏️ Sửa đơn hàng</h3>
+        <button type="button" class="btn-close-modal" onclick="closeEditModal()">&times;</button>
+      </div>
+      <form id="modalEditForm" autocomplete="off">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="modalItem">Item (Mã sản phẩm)</label>
+          <input type="text" id="modalItem" required />
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label for="modalItemName">Item Name (Tên sản phẩm)</label>
+          <input type="text" id="modalItemName" required />
+        </div>
+        <div class="form-row-3" style="margin-bottom: 16px;">
+          <div class="form-group">
+            <label for="modalPrice">Price (Giá)</label>
+            <input
+              type="text"
+              inputmode="decimal"
+              id="modalPrice"
+              oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1')"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="modalQuantity">Quantity (SL)</label>
+            <input
+              type="text"
+              inputmode="numeric"
+              id="modalQuantity"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="modalCurrency">Currency</label>
+            <input type="text" id="modalCurrency" required />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-modal-cancel" onclick="closeEditModal()">Hủy bỏ</button>
+          <button type="submit" class="btn-modal-save">💾 Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Inline Script ensures 0% Browser Caching issue -->
+  <script>
+    const INITIAL_ORDERS_JSON_STRING =
+      '[{"Item": "A1000","ItemName": "Iphone 15","Price": 1200,"Currency": "USD","Quantity":1},{"Item": "A1001","ItemName": "Iphone 16","Price": 1500,"Currency": "USD","Quantity":1}]';
+
+    class Order {
+      constructor({ Item, ItemName, Price, Currency, Quantity }) {
+        this.item = (Item || '').toString().trim();
+        this.itemName = (ItemName || '').toString().trim();
+        this.price = typeof Price === 'number' ? Price : parseFloat(Price) || 0;
+        this.currency = (Currency || 'USD').toString().trim();
+        this.quantity = typeof Quantity === 'number' ? Quantity : parseInt(Quantity, 10) || 1;
+      }
+
+      static fromJson(json) {
+        return new Order({
+          Item: json.Item ?? json.item,
+          ItemName: json.ItemName ?? json.itemName,
+          Price: json.Price ?? json.price,
+          Currency: json.Currency ?? json.currency,
+          Quantity: json.Quantity ?? json.quantity,
+        });
+      }
+
+      toJson() {
+        return {
+          Item: this.item,
+          ItemName: this.itemName,
+          Price: this.price,
+          Currency: this.currency,
+          Quantity: this.quantity,
+        };
+      }
+
+      get formattedPrice() {
+        const isWhole = Number.isInteger(this.price);
+        const raw = isWhole ? this.price.toString() : this.price.toFixed(2);
+        const parts = raw.split('.');
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        return parts.length > 1 ? parts.join(',') : parts[0];
+      }
+
+      get total() {
+        return this.price * this.quantity;
+      }
+    }
+
+    let orders = [];
+    let hasBackend = false;
+    let editingIndex = null;
+    let modalEditingIndex = null;
+
+    const orderForm = document.getElementById('orderForm');
+    const itemInput = document.getElementById('itemInput');
+    const itemNameInput = document.getElementById('itemNameInput');
+    const priceInput = document.getElementById('priceInput');
+    const quantityInput = document.getElementById('quantityInput');
+    const currencyInput = document.getElementById('currencyInput');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const editingBadge = document.getElementById('editingBadge');
+    const editingOrderTitle = document.getElementById('editingOrderTitle');
+
+    const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const currencyFilter = document.getElementById('currencyFilter');
+    const priceFilter = document.getElementById('priceFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const filterCountBadge = document.getElementById('filterCountBadge');
+
+    const ordersTableBody = document.getElementById('ordersTableBody');
+    const statusMessage = document.getElementById('statusMessage');
+    const downloadJsonBtn = document.getElementById('downloadJsonBtn');
+    const resetDefaultsBtn = document.getElementById('resetDefaultsBtn');
+    const totalQuantityElem = document.getElementById('totalQuantity');
+    const totalAmountElem = document.getElementById('totalAmount');
+
+    // Modal elements
+    const editModal = document.getElementById('editModal');
+    const modalEditForm = document.getElementById('modalEditForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalItem = document.getElementById('modalItem');
+    const modalItemName = document.getElementById('modalItemName');
+    const modalPrice = document.getElementById('modalPrice');
+    const modalQuantity = document.getElementById('modalQuantity');
+    const modalCurrency = document.getElementById('modalCurrency');
+
+    function parseOrdersFromString(jsonString) {
+      try {
+        const parsed = JSON.parse(jsonString);
+        if (Array.isArray(parsed)) {
+          return parsed.map((item) => Order.fromJson(item));
+        }
+        return [];
+      } catch (err) {
+        console.error('Failed to parse JSON string:', err);
+        return [];
+      }
+    }
+
+    function getFilteredAndSortedOrders() {
+      const query = (searchInput.value || '').trim().toLowerCase();
+      const selectedCurrency = currencyFilter ? currencyFilter.value : 'ALL';
+      const selectedPriceRange = priceFilter ? priceFilter.value : 'ALL';
+      const selectedSort = sortFilter ? sortFilter.value : 'added';
+
+      let result = orders.filter((order) => {
+        if (!query) return true;
+        return order.itemName.toLowerCase().includes(query) ||
+               order.item.toLowerCase().includes(query);
+      });
+
+      if (selectedCurrency !== 'ALL') {
+        result = result.filter((order) =>
+          order.currency.toUpperCase() === selectedCurrency.toUpperCase()
+        );
+      }
+
+      if (selectedPriceRange === 'under1300') {
+        result = result.filter((order) => order.price < 1300);
+      } else if (selectedPriceRange === '1300-1600') {
+        result = result.filter((order) => order.price >= 1300 && order.price <= 1600);
+      } else if (selectedPriceRange === 'above1600') {
+        result = result.filter((order) => order.price > 1600);
+      }
+
+      result = [...result];
+      switch (selectedSort) {
+        case 'newest':
+          result.reverse();
+          break;
+        case 'nameAsc':
+          result.sort((a, b) => a.itemName.toLowerCase().localeCompare(b.itemName.toLowerCase()));
+          break;
+        case 'nameDesc':
+          result.sort((a, b) => b.itemName.toLowerCase().localeCompare(a.itemName.toLowerCase()));
+          break;
+        case 'priceAsc':
+          result.sort((a, b) => a.price - b.price);
+          break;
+        case 'priceDesc':
+          result.sort((a, b) => b.price - a.price);
+          break;
+        case 'added':
+        default:
+          break;
+      }
+
+      return result;
+    }
+
+    async function initializeData() {
+      try {
+        const res = await fetch('/api/orders');
+        if (res.ok) {
+          const data = await res.json();
+          hasBackend = true;
+          orders = (data.orders || []).map((o) => Order.fromJson(o));
+          showToast('Đã kết nối với Dart Server! Đọc dữ liệu từ order.json.');
+          renderTable();
+          return;
+        }
+      } catch (_) {
+        hasBackend = false;
+      }
+
+      const saved = localStorage.getItem('order_json_content');
+      if (saved) {
+        orders = parseOrdersFromString(saved);
+      } else {
+        orders = parseOrdersFromString(INITIAL_ORDERS_JSON_STRING);
+        syncLocalStorage();
+      }
+      renderTable();
+    }
+
+    function renderTable() {
+      const query = searchInput.value.trim();
+      const filtered = getFilteredAndSortedOrders();
+
+      clearSearchBtn.style.display = query.length > 0 ? 'block' : 'none';
+      if (filterCountBadge) {
+        filterCountBadge.innerHTML = `Hiển thị: <strong>${filtered.length}/${orders.length}</strong> đơn hàng`;
+      }
+
+      ordersTableBody.innerHTML = '';
+
+      if (filtered.length === 0) {
+        const emptyRow = document.createElement('tr');
+        emptyRow.innerHTML = `
+          <td colspan="7" class="empty-state-cell">
+            ${query ? `Không tìm thấy đơn hàng nào khớp với từ khóa "${query}".` : 'Không có đơn hàng nào khớp với bộ lọc đã chọn.'}
+          </td>
+        `;
+        ordersTableBody.appendChild(emptyRow);
+      } else {
+        filtered.forEach((order, index) => {
+          const trueIndex = orders.indexOf(order);
+          const isCurrentlyEditing = editingIndex === trueIndex;
+          const row = document.createElement('tr');
+          if (isCurrentlyEditing) {
+            row.style.backgroundColor = '#fff9db';
+          }
+
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td><strong>${escapeHtml(order.item)}</strong></td>
+            <td>${escapeHtml(order.itemName)}</td>
+            <td>${order.quantity}</td>
+            <td>${order.formattedPrice}</td>
+            <td>${escapeHtml(order.currency)}</td>
+            <td class="col-center">
+              <div class="action-cell-btns">
+                <!-- NÚT SỬA ĐƠN HÀNG RÕ RÀNG -->
+                <button
+                  type="button"
+                  class="btn-action-edit"
+                  title="Sửa đơn hàng ${escapeHtml(order.item)} - ${escapeHtml(order.itemName)}"
+                  onclick="openEditModal(${trueIndex})"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  <span>Sửa</span>
+                </button>
+
+                <!-- NÚT XÓA ĐƠN HÀNG -->
+                <button
+                  type="button"
+                  class="btn-action-delete"
+                  title="Xóa đơn hàng ${escapeHtml(order.item)}"
+                  onclick="handleDeleteOrder(${trueIndex})"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  <span>Xóa</span>
+                </button>
+              </div>
+            </td>
+          `;
+          ordersTableBody.appendChild(row);
+        });
+      }
+
+      updateCartSummary(filtered);
+    }
+
+    // Modal Edit Functions
+    window.openEditModal = function (index) {
+      if (index < 0 || index >= orders.length) return;
+      const target = orders[index];
+      modalEditingIndex = index;
+
+      modalTitle.textContent = `✏️ Sửa đơn hàng: ${target.itemName} (${target.item})`;
+      modalItem.value = target.item;
+      modalItemName.value = target.itemName;
+      modalPrice.value = target.price;
+      modalQuantity.value = target.quantity;
+      modalCurrency.value = target.currency;
+
+      editModal.style.display = 'flex';
+      modalItemName.focus();
+    };
+
+    window.closeEditModal = function () {
+      modalEditingIndex = null;
+      editModal.style.display = 'none';
+      modalEditForm.reset();
+    };
+
+    modalEditForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      if (modalEditingIndex === null) return;
+
+      const item = modalItem.value.trim();
+      const itemName = modalItemName.value.trim();
+      const price = parseFloat(modalPrice.value);
+      const quantity = parseInt(modalQuantity.value, 10);
+      const currency = modalCurrency.value.trim() || 'USD';
+
+      if (!item || !itemName || isNaN(price) || price < 0 || isNaN(quantity) || quantity < 1) {
+        alert('Vui lòng nhập đầy đủ thông tin hợp lệ!');
+        return;
+      }
+
+      const updated = new Order({
+        Item: item,
+        ItemName: itemName,
+        Price: price,
+        Currency: currency,
+        Quantity: quantity,
+      });
+
+      if (hasBackend) {
+        try {
+          const res = await fetch(`/api/orders/${modalEditingIndex}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updated.toJson()),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            orders = (data.orders || []).map((o) => Order.fromJson(o));
+          } else {
+            orders[modalEditingIndex] = updated;
+          }
+        } catch (_) {
+          orders[modalEditingIndex] = updated;
+        }
+      } else {
+        orders[modalEditingIndex] = updated;
+        syncLocalStorage();
+      }
+
+      closeEditModal();
+      renderTable();
+      showToast(`Đã lưu thay đổi cho đơn hàng "${updated.itemName}" (${updated.item})!`);
+    });
+
+    async function handleFormSubmit(event) {
+      event.preventDefault();
+
+      const item = itemInput.value.trim();
+      const itemName = itemNameInput.value.trim();
+      const price = parseFloat(priceInput.value);
+      const quantity = parseInt(quantityInput.value, 10);
+      const currency = currencyInput.value.trim() || 'USD';
+
+      if (!item || !itemName) {
+        showToast('Vui lòng nhập Item và Item Name!', true);
+        return;
+      }
+
+      if (isNaN(price) || price < 0) {
+        showToast('Vui lòng nhập Price là số hợp lệ!', true);
+        return;
+      }
+
+      if (isNaN(quantity) || quantity < 1) {
+        showToast('Vui lòng nhập Quantity >= 1!', true);
+        return;
+      }
+
+      const orderData = new Order({
+        Item: item,
+        ItemName: itemName,
+        Price: price,
+        Currency: currency,
+        Quantity: quantity,
+      });
+
+      if (editingIndex !== null) {
+        if (hasBackend) {
+          try {
+            const res = await fetch(`/api/orders/${editingIndex}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(orderData.toJson()),
+            });
+            if (res.ok) {
+              const data = await res.json();
+              orders = (data.orders || []).map((o) => Order.fromJson(o));
+            } else {
+              orders[editingIndex] = orderData;
+            }
+          } catch (_) {
+            orders[editingIndex] = orderData;
+          }
+        } else {
+          orders[editingIndex] = orderData;
+          syncLocalStorage();
+        }
+
+        showToast(`Đã cập nhật thành công đơn hàng "${orderData.itemName}"!`);
+        cancelEditOrder();
+        renderTable();
+        return;
+      }
+
+      if (hasBackend) {
+        try {
+          const res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData.toJson()),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            orders = (data.orders || []).map((o) => Order.fromJson(o));
+            showToast(`Đã thêm thành công "${orderData.itemName}" (${orderData.item}) vào order.json!`);
+          } else {
+            orders.push(orderData);
+            showToast(`Đã thêm "${orderData.itemName}" vào giỏ hàng!`);
+          }
+        } catch (_) {
+          orders.push(orderData);
+          showToast(`Đã thêm "${orderData.itemName}" vào giỏ hàng!`);
+        }
+      } else {
+        orders.push(orderData);
+        syncLocalStorage();
+        showToast(`Đã thêm "${orderData.itemName}" (${orderData.item}) vào danh sách!`);
+      }
+
+      orderForm.reset();
+      currencyInput.value = 'USD';
+      quantityInput.value = '1';
+      itemInput.focus();
+
+      renderTable();
+    }
+
+    window.cancelEditOrder = function () {
+      editingIndex = null;
+      orderForm.reset();
+      currencyInput.value = 'USD';
+      quantityInput.value = '1';
+
+      if (editingBadge) editingBadge.style.display = 'none';
+      if (cancelEditBtn) cancelEditBtn.style.display = 'none';
+      addToCartBtn.textContent = 'Add Item to Cart';
+      addToCartBtn.style.backgroundColor = '';
+
+      renderTable();
+    };
+
+    window.handleDeleteOrder = async function (index) {
+      if (index < 0 || index >= orders.length) return;
+      const target = orders[index];
+
+      if (!confirm(`Bạn có chắc muốn xóa đơn hàng "${target.itemName}" (${target.item}) khỏi order.json?`)) {
+        return;
+      }
+
+      if (editingIndex === index) {
+        cancelEditOrder();
+      }
+
+      if (hasBackend) {
+        try {
+          const res = await fetch(`/api/orders/${index}`, { method: 'DELETE' });
+          if (res.ok) {
+            const data = await res.json();
+            orders = (data.orders || []).map((o) => Order.fromJson(o));
+            showToast(`Đã xóa đơn hàng "${target.itemName}" khỏi order.json!`);
+          } else {
+            orders.splice(index, 1);
+          }
+        } catch (_) {
+          orders.splice(index, 1);
+        }
+      } else {
+        orders.splice(index, 1);
+        syncLocalStorage();
+        showToast(`Đã xóa "${target.itemName}" khỏi danh sách!`);
+      }
+
+      renderTable();
+    };
+
+    window.prefillForm = function (item, itemName, price, currency, quantity) {
+      if (editingIndex !== null) cancelEditOrder();
+      itemInput.value = item;
+      itemNameInput.value = itemName;
+      priceInput.value = price;
+      currencyInput.value = currency;
+      quantityInput.value = quantity;
+      showToast(`Đã chọn mẫu: ${itemName}`);
+    };
+
+    function updateCartSummary(currentList) {
+      const totalQty = currentList.reduce((acc, o) => acc + o.quantity, 0);
+      const totalAmt = currentList.reduce((acc, o) => acc + o.total, 0);
+
+      totalQuantityElem.textContent = totalQty;
+      const formattedAmt = totalAmt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      totalAmountElem.textContent = `${formattedAmt} USD`;
+    }
+
+    function syncLocalStorage() {
+      const json = JSON.stringify(orders.map((o) => o.toJson()), null, 2);
+      localStorage.setItem('order_json_content', json);
+    }
+
+    function downloadOrderJson() {
+      const json = JSON.stringify(orders.map((o) => o.toJson()), null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'order.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Đã tải xuống tệp order.json thành công!');
+    }
+
+    function resetToExamDefaults() {
+      if (confirm('Khôi phục danh sách về 2 đơn hàng mẫu ban đầu trong đề thi?')) {
+        cancelEditOrder();
+        orders = parseOrdersFromString(INITIAL_ORDERS_JSON_STRING);
+        syncLocalStorage();
+        searchInput.value = '';
+        if (currencyFilter) currencyFilter.value = 'ALL';
+        if (priceFilter) priceFilter.value = 'ALL';
+        if (sortFilter) sortFilter.value = 'added';
+        renderTable();
+        showToast('Đã khôi phục dữ liệu ban đầu từ đề thi!');
+      }
+    }
+
+    let toastTimeout;
+    function showToast(text, isError = false) {
+      clearTimeout(toastTimeout);
+      statusMessage.textContent = text;
+      statusMessage.className = `status-message ${isError ? 'error' : ''}`;
+      statusMessage.style.display = 'block';
+
+      toastTimeout = setTimeout(() => {
+        statusMessage.style.display = 'none';
+      }, 4500);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // Number input guards
+    priceInput.addEventListener('keypress', (e) => {
+      if (!/[0-9.]/.test(e.key)) e.preventDefault();
+      if (e.key === '.' && priceInput.value.includes('.')) e.preventDefault();
+    });
+
+    priceInput.addEventListener('input', () => {
+      let val = priceInput.value.replace(/[^0-9.]/g, '');
+      const parts = val.split('.');
+      if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+      priceInput.value = val;
+    });
+
+    quantityInput.addEventListener('keypress', (e) => {
+      if (!/[0-9]/.test(e.key)) e.preventDefault();
+    });
+
+    quantityInput.addEventListener('input', () => {
+      quantityInput.value = quantityInput.value.replace(/[^0-9]/g, '');
+    });
+
+    orderForm.addEventListener('submit', handleFormSubmit);
+    searchInput.addEventListener('input', renderTable);
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      renderTable();
+      searchInput.focus();
+    });
+
+    if (currencyFilter) currencyFilter.addEventListener('change', renderTable);
+    if (priceFilter) priceFilter.addEventListener('change', renderTable);
+    if (sortFilter) sortFilter.addEventListener('change', renderTable);
+
+    downloadJsonBtn.addEventListener('click', downloadOrderJson);
+    resetDefaultsBtn.addEventListener('click', resetToExamDefaults);
+
+    initializeData();
+  </script>
+</body>
+</html>

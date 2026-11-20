@@ -1,0 +1,6 @@
+name: my_order_app
+description: Introduction to Dart Programming - SET01 Exam Practical Paper (My Order Management)
+version: 1.0.0
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
