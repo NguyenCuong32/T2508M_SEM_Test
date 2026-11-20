@@ -42,6 +42,7 @@ const pageSize = 5;
 int currentPage = 1;
 int requestVersion = 0;
 String currentSearch = '';
+String? editingId;
 Timer? searchTimer;
 Timer? toastTimer;
 
@@ -144,8 +145,12 @@ void renderOrders() {
       <td><span class="quantity-badge">${order.quantity}</span></td>
       <td><span class="total-price">${_money(order.total, order.currency)}</span></td>
       <td><span class="currency-badge">${_escape(order.currency)}</span></td>
-      <td><button class="row-menu">···</button></td>''';
-    row.querySelector('.row-menu')?.setAttribute('aria-label', 'More options');
+      <td><div class="row-actions"><button class="edit-order">Edit</button><button class="delete-order">Delete</button></div></td>''';
+    row.querySelector('.edit-order')?.onClick.listen((_) => openModal(order));
+    row
+        .querySelector('.delete-order')
+        ?.onClick
+        .listen((_) => deleteOrder(order));
     body.append(row);
   }
   html.querySelector('#empty-state')?.hidden = count != 0;
@@ -189,20 +194,25 @@ Future<void> saveOrder() async {
   };
   final error = html.querySelector('#form-error') as html.DivElement;
   try {
+    final isEditing = editingId != null;
+    final url = isEditing
+        ? '/api/orders?${Uri(queryParameters: {'id': editingId!}).query}'
+        : '/api/orders';
     final result = await html.HttpRequest.request(
-      '/api/orders',
-      method: 'POST',
+      url,
+      method: isEditing ? 'PUT' : 'POST',
       sendData: jsonEncode(payload),
       requestHeaders: {'Content-Type': 'application/json'},
     );
-    if (result.status == 201) {
+    if (result.status == 201 || result.status == 200) {
       closeModal();
       form.reset();
       (form.querySelector('[name="quantity"]') as html.InputElement).value =
           '1';
       (html.querySelector('#search-input') as html.InputElement).value = '';
       currentPage = 1;
-      showToast('Order ${payload['Item']} added successfully.');
+      showToast(
+          'Order ${payload['Item']} ${isEditing ? 'updated' : 'added'} successfully.');
       await loadOrders();
       return;
     }
@@ -211,14 +221,58 @@ Future<void> saveOrder() async {
         'Unable to save order.';
     error.text = '$message';
     error.hidden = false;
-  } catch (_) {
-    error.text =
-        'Unable to save this order. Check your connection and try again.';
+  } catch (event) {
+    final request = event is html.ProgressEvent ? event.target : null;
+    if (request is html.HttpRequest && request.responseText != null) {
+      try {
+        error.text =
+            (jsonDecode(request.responseText!) as Map<String, dynamic>)['error']
+                    ?.toString() ??
+                'Unable to save order.';
+      } catch (_) {
+        error.text = 'Unable to save order.';
+      }
+    } else {
+      error.text =
+          'Unable to save this order. Check your connection and try again.';
+    }
     error.hidden = false;
   }
 }
 
-void openModal() {
+Future<void> deleteOrder(Order order) async {
+  if (!html.window.confirm('Delete order ${order.item} (${order.itemName})?'))
+    return;
+  try {
+    await html.HttpRequest.request(
+        '/api/orders?${Uri(queryParameters: {'id': order.item}).query}',
+        method: 'DELETE');
+    showToast('Order ${order.item} deleted.');
+    await loadOrders();
+  } catch (_) {
+    showToast('Unable to delete order. Please try again.');
+  }
+}
+
+void openModal([Order? order]) {
+  editingId = order?.item;
+  final form = html.querySelector('#order-form') as html.FormElement;
+  form.reset();
+  (form.querySelector('[name="item"]') as html.InputElement).value =
+      order?.item ?? '';
+  (form.querySelector('[name="itemName"]') as html.InputElement).value =
+      order?.itemName ?? '';
+  (form.querySelector('[name="price"]') as html.InputElement).value =
+      order?.price.toString() ?? '';
+  (form.querySelector('[name="quantity"]') as html.InputElement).value =
+      order?.quantity.toString() ?? '1';
+  (form.querySelector('[name="currency"]') as html.SelectElement).value =
+      order?.currency ?? 'USD';
+  html.querySelector('#modal-title')?.text =
+      order == null ? 'Add an order' : 'Edit order';
+  html.querySelector('.modal-kicker')?.text =
+      order == null ? 'NEW ENTRY' : 'UPDATE ORDER';
+  (html.querySelector('#form-error') as html.Element).hidden = true;
   (html.querySelector('#modal') as html.Element).hidden = false;
   (html.querySelector('#order-form [name="item"]') as html.InputElement?)
       ?.focus();

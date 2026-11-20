@@ -17,20 +17,20 @@ class Order {
   final int quantity;
 
   factory Order.fromJson(Map<String, dynamic> json) => Order(
-    item: json['Item'] as String,
-    itemName: json['ItemName'] as String,
-    price: (json['Price'] as num).toDouble(),
-    currency: json['Currency'] as String,
-    quantity: (json['Quantity'] as num).toInt(),
-  );
+        item: json['Item'] as String,
+        itemName: json['ItemName'] as String,
+        price: (json['Price'] as num).toDouble(),
+        currency: json['Currency'] as String,
+        quantity: (json['Quantity'] as num).toInt(),
+      );
 
   Map<String, Object> toJson() => {
-    'Item': item,
-    'ItemName': itemName,
-    'Price': price,
-    'Currency': currency,
-    'Quantity': quantity,
-  };
+        'Item': item,
+        'ItemName': itemName,
+        'Price': price,
+        'Currency': currency,
+        'Quantity': quantity,
+      };
 }
 
 Future<void> main(List<String> args) async {
@@ -101,7 +101,29 @@ Future<void> _handle(
     return;
   }
 
-  if (request.uri.path == '/api/orders' && request.method == 'POST') {
+  if (request.uri.path == '/api/orders' && request.method == 'DELETE') {
+    final id = request.uri.queryParameters['id'] ?? '';
+    final raw = jsonDecode(await dataFile.readAsString()) as List<dynamic>;
+    final orders = raw
+        .map((entry) => Order.fromJson(entry as Map<String, dynamic>))
+        .toList();
+    final index = orders.indexWhere((order) => order.item == id);
+    response.headers.contentType = ContentType.json;
+    if (index < 0) {
+      response.statusCode = HttpStatus.notFound;
+      response.write(jsonEncode({'error': 'Order not found.'}));
+    } else {
+      orders.removeAt(index);
+      await dataFile.writeAsString(const JsonEncoder.withIndent('  ')
+          .convert(orders.map((order) => order.toJson()).toList()));
+      response.write(jsonEncode({'success': true}));
+    }
+    await response.close();
+    return;
+  }
+
+  if (request.uri.path == '/api/orders' &&
+      (request.method == 'POST' || request.method == 'PUT')) {
     final body = await utf8.decoder.bind(request).join();
     final payload = jsonDecode(body) as Map<String, dynamic>;
     final order = Order.fromJson(payload);
@@ -120,30 +142,47 @@ Future<void> _handle(
     final orders = raw
         .map((entry) => Order.fromJson(entry as Map<String, dynamic>))
         .toList();
-    if (orders.any(
-      (existing) => existing.item.toLowerCase() == order.item.toLowerCase(),
-    )) {
+    final id = request.uri.queryParameters['id'];
+    final index = request.method == 'PUT'
+        ? orders.indexWhere((existing) => existing.item == id)
+        : -1;
+    if (request.method == 'PUT' && index < 0) {
+      response.statusCode = HttpStatus.notFound;
+      response.headers.contentType = ContentType.json;
+      response.write(jsonEncode({'error': 'Order not found.'}));
+      await response.close();
+      return;
+    }
+    if (orders.asMap().entries.any(
+          (entry) =>
+              entry.key != index &&
+              entry.value.item.toLowerCase() == order.item.toLowerCase(),
+        )) {
       response.statusCode = HttpStatus.conflict;
       response.headers.contentType = ContentType.json;
       response.write(jsonEncode({'error': 'That order ID already exists.'}));
       await response.close();
       return;
     }
-    orders.insert(0, order);
+    if (request.method == 'PUT') {
+      orders[index] = order;
+    } else {
+      orders.insert(0, order);
+    }
     await dataFile.writeAsString(
       const JsonEncoder.withIndent('  ')
           .convert(orders.map((value) => value.toJson()).toList()),
     );
-    response.statusCode = HttpStatus.created;
+    response.statusCode =
+        request.method == 'POST' ? HttpStatus.created : HttpStatus.ok;
     response.headers.contentType = ContentType.json;
     response.write(jsonEncode(order.toJson()));
     await response.close();
     return;
   }
 
-  final requested = request.uri.path == '/'
-      ? 'index.html'
-      : request.uri.path.substring(1);
+  final requested =
+      request.uri.path == '/' ? 'index.html' : request.uri.path.substring(1);
   if (requested.contains('..') ||
       requested.contains('/') ||
       requested.contains('\\')) {

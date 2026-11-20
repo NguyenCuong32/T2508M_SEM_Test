@@ -4115,6 +4115,28 @@
       object2 = A.SystemHash_finish(A.SystemHash_combine(A.SystemHash_combine($.$get$_hashSeed(), t1), object2));
       return object2;
     },
+    _Uri__Uri(queryParameters) {
+      var t1, hasAuthority, path, _null = null,
+        userInfo = A._Uri__makeUserInfo(_null, 0, 0),
+        host = A._Uri__makeHost(_null, 0, 0, false),
+        query = A._Uri__makeQuery(_null, 0, 0, queryParameters),
+        fragment = A._Uri__makeFragment(_null, 0, 0),
+        port = A._Uri__makePort(_null, "");
+      if (host == null)
+        t1 = userInfo.length !== 0;
+      else
+        t1 = false;
+      if (t1)
+        host = "";
+      t1 = host == null;
+      hasAuthority = !t1;
+      path = A._Uri__makePath(_null, 0, 0, _null, "", hasAuthority);
+      if (t1 && !B.JSString_methods.startsWith$1(path, "/"))
+        path = A._Uri__normalizeRelativePath(path, hasAuthority);
+      else
+        path = A._Uri__removeDotSegments(path);
+      return new A._Uri("", userInfo, t1 && B.JSString_methods.startsWith$1(path, "//") ? "" : host, port, path, query, fragment);
+    },
     _Uri__defaultPort(scheme) {
       if (scheme === "http")
         return 80;
@@ -4768,7 +4790,7 @@
     loadOrders() {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$returnValue, $async$handler = 2, $async$errorStack = [], version, query, result, data, input, t1, t2, t3, userInfo, host, query0, hasAuthority, path, exception, version0, $async$exception;
+        $async$returnValue, $async$handler = 2, $async$errorStack = [], version, query, result, data, input, t1, t2, t3, query0, exception, version0, $async$exception;
       var $async$loadOrders = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1) {
           $async$errorStack.push($async$result);
@@ -4793,25 +4815,7 @@
               $.currentSearch = t1;
               t2 = type$.String;
               t3 = type$.dynamic;
-              t1 = t1.length === 0 ? A.LinkedHashMap_LinkedHashMap$_empty(t2, t3) : A.LinkedHashMap_LinkedHashMap$_literal(["search", t1], t2, t3);
-              userInfo = A._Uri__makeUserInfo(null, 0, 0);
-              host = A._Uri__makeHost(null, 0, 0, false);
-              query0 = A._Uri__makeQuery(null, 0, 0, t1);
-              A._Uri__makeFragment(null, 0, 0);
-              A._Uri__makePort(null, "");
-              if (host == null)
-                t1 = userInfo.length !== 0;
-              else
-                t1 = false;
-              t2 = (t1 ? "" : host) == null;
-              hasAuthority = !t2;
-              path = A._Uri__makePath(null, 0, 0, null, "", hasAuthority);
-              if (t2 && !B.JSString_methods.startsWith$1(path, "/"))
-                path = A._Uri__normalizeRelativePath(path, hasAuthority);
-              else
-                path = A._Uri__removeDotSegments(path);
-              if (t2)
-                B.JSString_methods.startsWith$1(path, "//");
+              query0 = A._Uri__Uri(t1.length === 0 ? A.LinkedHashMap_LinkedHashMap$_empty(t2, t3) : A.LinkedHashMap_LinkedHashMap$_literal(["search", t1], t2, t3))._query;
               query = query0 == null ? "" : query0;
               $async$handler = 4;
               $async$goto = 7;
@@ -4913,10 +4917,19 @@
         t9 = A.stringReplaceAllUnchecked(t9, "<", _s4_);
         t9 = A.stringReplaceAllUnchecked(t9, ">", _s4_0);
         t9 = A.stringReplaceAllUnchecked(t9, '"', _s6_);
-        B.TableRowElement_methods.setInnerHtml$1(t5, '      <td><span class="order-id">' + t7 + '</span></td>\n      <td><div class="product-cell"><span class="product-thumb ' + tone + '">' + icon + "</span>" + t6 + '</div></td>\n      <td><span class="unit-price">' + t10 + '</span></td>\n      <td><span class="quantity-badge">' + t11 + '</span></td>\n      <td><span class="total-price">' + t8 + '</span></td>\n      <td><span class="currency-badge">' + A.stringReplaceAllUnchecked(t9, "'", _s5_0) + '</span></td>\n      <td><button class="row-menu">\xb7\xb7\xb7</button></td>');
-        t6 = t5.querySelector(".row-menu");
-        if (t6 != null)
-          t6.setAttribute("aria-label", "More options");
+        B.TableRowElement_methods.setInnerHtml$1(t5, '      <td><span class="order-id">' + t7 + '</span></td>\n      <td><div class="product-cell"><span class="product-thumb ' + tone + '">' + icon + "</span>" + t6 + '</div></td>\n      <td><span class="unit-price">' + t10 + '</span></td>\n      <td><span class="quantity-badge">' + t11 + '</span></td>\n      <td><span class="total-price">' + t8 + '</span></td>\n      <td><span class="currency-badge">' + A.stringReplaceAllUnchecked(t9, "'", _s5_0) + '</span></td>\n      <td><div class="row-actions"><button class="edit-order">Edit</button><button class="delete-order">Delete</button></div></td>');
+        t6 = t5.querySelector(".edit-order");
+        if (t6 != null) {
+          t6 = J.get$onClick$x(t6);
+          t7 = t6.$ti;
+          A._EventStreamSubscription$(t6._target, t6._eventType, t7._eval$1("~(1)?")._as(new A.renderOrders_closure(order)), false, t7._precomputed1);
+        }
+        t6 = t5.querySelector(".delete-order");
+        if (t6 != null) {
+          t6 = J.get$onClick$x(t6);
+          t7 = t6.$ti;
+          A._EventStreamSubscription$(t6._target, t6._eventType, t7._eval$1("~(1)?")._as(new A.renderOrders_closure0(order)), false, t7._precomputed1);
+        }
         body.appendChild(t5).toString;
       }
       t3 = t1.querySelector("#empty-state");
@@ -4927,11 +4940,11 @@
         J.set$text$x(t3, "" + count);
       t3 = t1.querySelector("#total-items");
       if (t3 != null)
-        J.set$text$x(t3, "" + B.JSArray_methods.fold$1$2($.orders, 0, new A.renderOrders_closure(), type$.int));
-      value = B.JSArray_methods.fold$1$2($.orders, 0, new A.renderOrders_closure0(), type$.double);
+        J.set$text$x(t3, "" + B.JSArray_methods.fold$1$2($.orders, 0, new A.renderOrders_closure1(), type$.int));
+      value = B.JSArray_methods.fold$1$2($.orders, 0, new A.renderOrders_closure2(), type$.double);
       t3 = $.orders;
       t4 = A._arrayInstanceType(t3);
-      currencies = new A.MappedListIterable(t3, t4._eval$1("String(1)")._as(new A.renderOrders_closure1()), t4._eval$1("MappedListIterable<1,String>")).toSet$0(0);
+      currencies = new A.MappedListIterable(t3, t4._eval$1("String(1)")._as(new A.renderOrders_closure3()), t4._eval$1("MappedListIterable<1,String>")).toSet$0(0);
       t3 = currencies._collection$_length;
       if (t3 <= 1)
         valueLabel = A._money(value, t3 === 0 ? "USD" : currencies.get$first(0));
@@ -4968,7 +4981,7 @@
     saveOrder() {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$returnValue, $async$handler = 2, $async$errorStack = [], payload, error, result, message, t3, t4, t5, t6, t7, $name, t8, message0, exception, t1, form, t2, values, $async$exception;
+        $async$returnValue, $async$handler = 2, $async$errorStack = [], payload, error, isEditing, url, result, message, $event, request, t3, t4, t5, t6, t7, $name, t8, url0, message0, exception, t1, form, t2, values, $async$exception;
       var $async$saveOrder = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1) {
           $async$errorStack.push($async$result);
@@ -5018,13 +5031,23 @@
               payload = A.LinkedHashMap_LinkedHashMap$_literal(["Item", t3, "ItemName", t4, "Price", t5, "Currency", t7, "Quantity", t8 == null ? 0 : t8], t2, type$.Object);
               error = type$.DivElement._as(t1.querySelector("#form-error"));
               $async$handler = 4;
-              t3 = B.C_JsonCodec.encode$2$toEncodable(payload, null);
+              t3 = $.editingId;
+              isEditing = t3 != null;
+              if (isEditing) {
+                t3.toString;
+                t3 = A._Uri__Uri(A.LinkedHashMap_LinkedHashMap$_literal(["id", t3], t2, type$.dynamic))._query;
+                url0 = "/api/orders?" + (t3 == null ? "" : t3);
+              } else
+                url0 = "/api/orders";
+              url = url0;
+              t3 = isEditing ? "PUT" : "POST";
+              t4 = B.C_JsonCodec.encode$2$toEncodable(payload, null);
               $async$goto = 7;
-              return A._asyncAwait(A.HttpRequest_request("/api/orders", "POST", A.LinkedHashMap_LinkedHashMap$_literal(["Content-Type", "application/json"], t2, t2), t3), $async$saveOrder);
+              return A._asyncAwait(A.HttpRequest_request(url, t3, A.LinkedHashMap_LinkedHashMap$_literal(["Content-Type", "application/json"], t2, t2), t4), $async$saveOrder);
             case 7:
               // returning from await.
               result = $async$result;
-              $async$goto = result.status === 201 ? 8 : 9;
+              $async$goto = result.status === 201 || result.status === 200 ? 8 : 9;
               break;
             case 8:
               // then
@@ -5033,7 +5056,9 @@
               B.InputElement_methods.set$value(t6._as(J.querySelector$1$x(form, '[name="quantity"]')), "1");
               B.InputElement_methods.set$value(t6._as(t1.querySelector("#search-input")), "");
               $.currentPage = 1;
-              A.showToast("Order " + A.S(J.$index$asx(payload, "Item")) + " added successfully.");
+              t1 = A.S(J.$index$asx(payload, "Item"));
+              t2 = isEditing ? "updated" : "added";
+              A.showToast("Order " + t1 + " " + t2 + " successfully.");
               $async$goto = 10;
               return A._asyncAwait(A.loadOrders(), $async$saveOrder);
             case 10:
@@ -5056,7 +5081,22 @@
               // catch
               $async$handler = 3;
               $async$exception = $async$errorStack.pop();
-              J.set$text$x(error, "Unable to save this order. Check your connection and try again.");
+              $event = A.unwrapException($async$exception);
+              request = type$.ProgressEvent._is($event) ? A._convertNativeToDart_EventTarget($event.target) : null;
+              if (type$.HttpRequest._is(request) && request.responseText != null)
+                try {
+                  t1 = request.responseText;
+                  t1.toString;
+                  t1 = type$.Map_String_dynamic._as(B.C_JsonCodec.decode$2$reviver(0, t1, null)).$index(0, "error");
+                  t1 = t1 == null ? null : J.toString$0$(t1);
+                  if (t1 == null)
+                    t1 = "Unable to save order.";
+                  J.set$text$x(error, t1);
+                } catch (exception) {
+                  J.set$text$x(error, "Unable to save order.");
+                }
+              else
+                J.set$text$x(error, "Unable to save this order. Check your connection and try again.");
               error.hidden = false;
               // goto after finally
               $async$goto = 6;
@@ -5077,6 +5117,107 @@
           }
       });
       return A._asyncStartSync($async$saveOrder, $async$completer);
+    },
+    deleteOrder(order) {
+      return A.deleteOrder$body(order);
+    },
+    deleteOrder$body(order) {
+      var $async$goto = 0,
+        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
+        $async$returnValue, $async$handler = 2, $async$errorStack = [], t2, exception, t1, $async$exception;
+      var $async$deleteOrder = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
+        if ($async$errorCode === 1) {
+          $async$errorStack.push($async$result);
+          $async$goto = $async$handler;
+        }
+        for (;;)
+          switch ($async$goto) {
+            case 0:
+              // Function start
+              t1 = window;
+              t1.toString;
+              t2 = order.item;
+              if (!B.Window_methods.confirm$1(t1, "Delete order " + t2 + " (" + order.itemName + ")?")) {
+                // goto return
+                $async$goto = 1;
+                break;
+              }
+              $async$handler = 4;
+              t1 = A._Uri__Uri(A.LinkedHashMap_LinkedHashMap$_literal(["id", t2], type$.String, type$.dynamic))._query;
+              $async$goto = 7;
+              return A._asyncAwait(A.HttpRequest_request("/api/orders?" + (t1 == null ? "" : t1), "DELETE", null, null), $async$deleteOrder);
+            case 7:
+              // returning from await.
+              A.showToast("Order " + t2 + " deleted.");
+              $async$goto = 8;
+              return A._asyncAwait(A.loadOrders(), $async$deleteOrder);
+            case 8:
+              // returning from await.
+              $async$handler = 2;
+              // goto after finally
+              $async$goto = 6;
+              break;
+            case 4:
+              // catch
+              $async$handler = 3;
+              $async$exception = $async$errorStack.pop();
+              A.showToast("Unable to delete order. Please try again.");
+              // goto after finally
+              $async$goto = 6;
+              break;
+            case 3:
+              // uncaught
+              // goto rethrow
+              $async$goto = 2;
+              break;
+            case 6:
+              // after finally
+            case 1:
+              // return
+              return A._asyncReturn($async$returnValue, $async$completer);
+            case 2:
+              // rethrow
+              return A._asyncRethrow($async$errorStack.at(-1), $async$completer);
+          }
+      });
+      return A._asyncStartSync($async$deleteOrder, $async$completer);
+    },
+    openModal(order) {
+      var t2, form, t3, t4, t5, _null = null,
+        t1 = order == null;
+      $.editingId = t1 ? _null : order.item;
+      t2 = document;
+      form = type$.FormElement._as(t2.querySelector("#order-form"));
+      form.reset();
+      t3 = type$.InputElement;
+      t4 = t3._as(form.querySelector('[name="item"]'));
+      t5 = t1 ? _null : order.item;
+      B.InputElement_methods.set$value(t4, t5 == null ? "" : t5);
+      t4 = t3._as(form.querySelector('[name="itemName"]'));
+      t5 = t1 ? _null : order.itemName;
+      B.InputElement_methods.set$value(t4, t5 == null ? "" : t5);
+      t4 = t3._as(form.querySelector('[name="price"]'));
+      t5 = t1 ? _null : B.JSNumber_methods.toString$0(order.price);
+      B.InputElement_methods.set$value(t4, t5 == null ? "" : t5);
+      t3 = t3._as(form.querySelector('[name="quantity"]'));
+      t4 = t1 ? _null : B.JSInt_methods.toString$0(order.quantity);
+      B.InputElement_methods.set$value(t3, t4 == null ? "1" : t4);
+      t3 = type$.SelectElement._as(form.querySelector('[name="currency"]'));
+      t4 = t1 ? _null : order.currency;
+      B.SelectElement_methods.set$value(t3, t4 == null ? "USD" : t4);
+      t3 = t2.querySelector("#modal-title");
+      if (t3 != null)
+        J.set$text$x(t3, t1 ? "Add an order" : "Edit order");
+      t3 = t2.querySelector(".modal-kicker");
+      if (t3 != null)
+        J.set$text$x(t3, t1 ? "NEW ENTRY" : "UPDATE ORDER");
+      t1 = t2.querySelector("#form-error");
+      (t1 == null ? type$.Element._as(t1) : t1).hidden = true;
+      t1 = t2.querySelector("#modal");
+      (t1 == null ? type$.Element._as(t1) : t1).hidden = false;
+      t1 = type$.nullable_InputElement._as(t2.querySelector('#order-form [name="item"]'));
+      if (t1 != null)
+        t1.focus();
     },
     closeModal() {
       var error,
@@ -5152,11 +5293,17 @@
     },
     loadOrders_closure: function loadOrders_closure() {
     },
-    renderOrders_closure: function renderOrders_closure() {
+    renderOrders_closure: function renderOrders_closure(t0) {
+      this.order = t0;
     },
-    renderOrders_closure0: function renderOrders_closure0() {
+    renderOrders_closure0: function renderOrders_closure0(t0) {
+      this.order = t0;
     },
     renderOrders_closure1: function renderOrders_closure1() {
+    },
+    renderOrders_closure2: function renderOrders_closure2() {
+    },
+    renderOrders_closure3: function renderOrders_closure3() {
     },
     showToast_closure: function showToast_closure(t0) {
       this.toast = t0;
@@ -8480,6 +8627,9 @@
     get$length(receiver) {
       return receiver.length;
     },
+    set$value(receiver, value) {
+      receiver.value = value;
+    },
     $isSelectElement: 1
   };
   A.TableElement.prototype = {
@@ -8530,7 +8680,14 @@
   };
   A.TemplateElement.prototype = {$isTemplateElement: 1};
   A.UIEvent.prototype = {};
-  A.Window.prototype = {$isWindowBase: 1};
+  A.Window.prototype = {
+    confirm$1(receiver, message) {
+      var t1 = receiver.confirm(message);
+      t1.toString;
+      return t1;
+    },
+    $isWindowBase: 1
+  };
   A._Attr.prototype = {$is_Attr: 1};
   A._NamedNodeMap.prototype = {
     get$length(receiver) {
@@ -9153,15 +9310,8 @@
   };
   A.main_closure.prototype = {
     call$1(_) {
-      var t1, t2;
       type$.MouseEvent._as(_);
-      t1 = document;
-      t2 = t1.querySelector("#modal");
-      (t2 == null ? type$.Element._as(t2) : t2).hidden = false;
-      t1 = type$.nullable_InputElement._as(t1.querySelector('#order-form [name="item"]'));
-      if (t1 != null)
-        t1.focus();
-      return null;
+      return A.openModal(null);
     },
     $signature: 1
   };
@@ -9304,12 +9454,26 @@
     $signature: 28
   };
   A.renderOrders_closure.prototype = {
+    call$1(_) {
+      type$.MouseEvent._as(_);
+      return A.openModal(this.order);
+    },
+    $signature: 1
+  };
+  A.renderOrders_closure0.prototype = {
+    call$1(_) {
+      type$.MouseEvent._as(_);
+      return A.deleteOrder(this.order);
+    },
+    $signature: 1
+  };
+  A.renderOrders_closure1.prototype = {
     call$2(sum, order) {
       return A._asInt(sum) + type$.Order._as(order).quantity;
     },
     $signature: 29
   };
-  A.renderOrders_closure0.prototype = {
+  A.renderOrders_closure2.prototype = {
     call$2(sum, order) {
       A._asDouble(sum);
       type$.Order._as(order);
@@ -9317,7 +9481,7 @@
     },
     $signature: 30
   };
-  A.renderOrders_closure1.prototype = {
+  A.renderOrders_closure3.prototype = {
     call$1(order) {
       return type$.Order._as(order).currency;
     },
@@ -9385,10 +9549,10 @@
     _inheritMany(A.EfficientLengthIterable, [A.ListIterable, A.LinkedHashMapKeysIterable]);
     _inheritMany(A.ListIterable, [A.MappedListIterable, A._JsonMapKeyIterable]);
     _inherit(A.NullError, A.TypeError);
-    _inheritMany(A.Closure, [A.Closure0Args, A.Closure2Args, A.TearOffClosure, A.initHooks_closure, A.initHooks_closure1, A._AsyncRun__initializeScheduleImmediate_internalCallback, A._AsyncRun__initializeScheduleImmediate_closure, A._awaitOnObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure, A.Stream_length_closure, A._RootZone_bindUnaryCallbackGuarded_closure, A.Element_Element$html_closure, A.HttpRequest_request_closure0, A._EventStreamSubscription_closure, A.NodeValidatorBuilder_allowsElement_closure, A.NodeValidatorBuilder_allowsAttribute_closure, A._SimpleNodeValidator_closure, A._SimpleNodeValidator_closure0, A._TemplatingNodeValidator_closure, A.CssClassSetImpl_add_closure, A.FilteredElementList__iterable_closure, A.FilteredElementList__iterable_closure0, A.main_closure, A.main_closure0, A.main_closure1, A.main_closure2, A.main_closure3, A.main_closure4, A.main_closure5, A.main_closure6, A.main_closure7, A.main_closure8, A.main_closure9, A.loadOrders_closure, A.renderOrders_closure1, A.exportOrders_closure, A._money_closure]);
+    _inheritMany(A.Closure, [A.Closure0Args, A.Closure2Args, A.TearOffClosure, A.initHooks_closure, A.initHooks_closure1, A._AsyncRun__initializeScheduleImmediate_internalCallback, A._AsyncRun__initializeScheduleImmediate_closure, A._awaitOnObject_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure, A.Stream_length_closure, A._RootZone_bindUnaryCallbackGuarded_closure, A.Element_Element$html_closure, A.HttpRequest_request_closure0, A._EventStreamSubscription_closure, A.NodeValidatorBuilder_allowsElement_closure, A.NodeValidatorBuilder_allowsAttribute_closure, A._SimpleNodeValidator_closure, A._SimpleNodeValidator_closure0, A._TemplatingNodeValidator_closure, A.CssClassSetImpl_add_closure, A.FilteredElementList__iterable_closure, A.FilteredElementList__iterable_closure0, A.main_closure, A.main_closure0, A.main_closure1, A.main_closure2, A.main_closure3, A.main_closure4, A.main_closure5, A.main_closure6, A.main_closure7, A.main_closure8, A.main_closure9, A.loadOrders_closure, A.renderOrders_closure, A.renderOrders_closure0, A.renderOrders_closure3, A.exportOrders_closure, A._money_closure]);
     _inheritMany(A.TearOffClosure, [A.StaticClosure, A.BoundClosure]);
     _inheritMany(A.MapBase, [A.JsLinkedHashMap, A._JsonMap, A._AttributeMap]);
-    _inheritMany(A.Closure2Args, [A.initHooks_closure0, A._awaitOnObject_closure0, A._wrapJsFunctionForAsync_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure0, A.MapBase_mapToString_closure, A._JsonStringifier_writeMap_closure, A._JsonPrettyPrintMixin_writeMap_closure, A._Uri__makeQueryFromParameters_closure, A._Uri__makeQueryFromParametersDefault_writeParameter, A._Uri__makeQueryFromParametersDefault_closure, A.HttpRequest_request_closure, A._ValidatingTreeSanitizer_sanitizeTree_walk, A.renderOrders_closure, A.renderOrders_closure0]);
+    _inheritMany(A.Closure2Args, [A.initHooks_closure0, A._awaitOnObject_closure0, A._wrapJsFunctionForAsync_closure, A._Future__propagateToListeners_handleWhenCompleteCallback_closure0, A.MapBase_mapToString_closure, A._JsonStringifier_writeMap_closure, A._JsonPrettyPrintMixin_writeMap_closure, A._Uri__makeQueryFromParameters_closure, A._Uri__makeQueryFromParametersDefault_writeParameter, A._Uri__makeQueryFromParametersDefault_closure, A.HttpRequest_request_closure, A._ValidatingTreeSanitizer_sanitizeTree_walk, A.renderOrders_closure1, A.renderOrders_closure2]);
     _inherit(A.NativeTypedArray, A.NativeTypedData);
     _inherit(A._NativeTypedArrayOfInt_NativeTypedArray_ListMixin, A.NativeTypedArray);
     _inherit(A._NativeTypedArrayOfInt_NativeTypedArray_ListMixin_FixedLengthListMixin, A._NativeTypedArrayOfInt_NativeTypedArray_ListMixin);
@@ -9468,6 +9632,7 @@
       Event: findType("Event"),
       FormElement: findType("FormElement"),
       Function: findType("Function"),
+      HttpRequest: findType("HttpRequest"),
       InputElement: findType("InputElement"),
       Iterable_Node: findType("Iterable<Node>"),
       Iterable_dynamic: findType("Iterable<@>"),
@@ -9566,9 +9731,11 @@
     B.JavaScriptFunction_methods = J.JavaScriptFunction.prototype;
     B.JavaScriptObject_methods = J.JavaScriptObject.prototype;
     B.PlainJavaScriptObject_methods = J.PlainJavaScriptObject.prototype;
+    B.SelectElement_methods = A.SelectElement.prototype;
     B.TableElement_methods = A.TableElement.prototype;
     B.TableRowElement_methods = A.TableRowElement.prototype;
     B.UnknownJavaScriptObject_methods = J.UnknownJavaScriptObject.prototype;
+    B.Window_methods = A.Window.prototype;
     B.C_JS_CONST = function getTagFallback(o) {
   var s = Object.prototype.toString.call(o);
   return s.substring(8, s.length - 1);
@@ -9742,6 +9909,7 @@
     $.currentPage = 1;
     $.requestVersion = 0;
     $.currentSearch = "";
+    $.editingId = null;
     $.searchTimer = null;
     $.toastTimer = null;
   })();
