@@ -1,0 +1,7 @@
+name: my_order
+description: Introduction to Dart Programming - SET01 (My Order).
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.0.0
