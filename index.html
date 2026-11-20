@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Order - Dart Exam SET01</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1 class="title">My Order</h1>
+
+    <div class="form-row">
+      <div class="form-group col-4">
+        <label for="item">Item</label>
+        <input type="text" id="item" placeholder="Item">
+      </div>
+      <div class="form-group col-5">
+        <label for="itemName">Item Name</label>
+        <input type="text" id="itemName" placeholder="Item Name">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-4">
+        <label for="price">Price</label>
+        <input type="number" id="price" placeholder="Price">
+      </div>
+      <div class="form-group col-3">
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" placeholder="Quantity">
+      </div>
+      <div class="form-group col-2">
+        <label for="currency">Currency</label>
+        <input type="text" id="currency" value="USD">
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search by ItemName...">
+      <button id="addBtn" class="btn-add">Add Item to Cart</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Item</th>
+          <th>Item Name</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Currency</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="orderTableBody"></tbody>
+    </table>
+
+    <div class="footer">
+      Số 8, Tôn Thất Thuyết, Cầu giấy, Hà Nội
+    </div>
+  </div>
+</body>
+</html>
