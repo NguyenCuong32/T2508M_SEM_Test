@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Order - Introduction to Dart Programming (SET01)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <main class="order-container">
+      <!-- Page Title matching the exam screenshot -->
+      <h1 class="page-title">My Order</h1>
+
+      <!-- Order Input Form matching the exam screenshot -->
+      <form id="orderForm" class="order-form" novalidate>
+        <div class="form-row row-two-cols">
+          <div class="form-group">
+            <label for="itemInput">Item</label>
+            <input
+              type="text"
+              id="itemInput"
+              name="item"
+              placeholder="Item"
+              required
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="itemNameInput">Item Name</label>
+            <input
+              type="text"
+              id="itemNameInput"
+              name="itemName"
+              placeholder="Item"
+              required
+              autocomplete="off"
+            />
+          </div>
+        </div>
+
+        <div class="form-row row-three-cols">
+          <div class="form-group">
+            <label for="priceInput">Price</label>
+            <input
+              type="number"
+              id="priceInput"
+              name="price"
+              placeholder="Price"
+              min="0"
+              step="any"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="quantityInput">Quantity</label>
+            <input
+              type="number"
+              id="quantityInput"
+              name="quantity"
+              placeholder="Quantity"
+              min="1"
+              step="1"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="currencyInput">Currency</label>
+            <input
+              type="text"
+              id="currencyInput"
+              name="currency"
+              placeholder="USD"
+              value="USD"
+              required
+              autocomplete="off"
+            />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" id="addBtn" class="btn-add">Add Item to Cart</button>
+        </div>
+      </form>
+
+      <!-- Search Order by ItemName (3 Marks) & Status Notification -->
+      <section class="toolbar-section">
+        <div class="search-box">
+          <label for="searchInput" class="search-label">Search by Item Name:</label>
+          <div class="search-input-group">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Enter Item Name to search (e.g. Iphone 15)..."
+              autocomplete="off"
+            />
+            <button type="button" id="clearSearchBtn" class="btn-clear" title="Clear search">Clear</button>
+          </div>
+        </div>
+
+        <div class="json-actions">
+          <button type="button" id="downloadJsonBtn" class="btn-outline" title="Download order.json">
+            Download order.json
+          </button>
+        </div>
+      </section>
+
+      <div id="statusMessage" class="status-message" aria-live="polite"></div>
+
+      <!-- Orders Table matching the exam screenshot -->
+      <div class="table-container">
+        <table class="orders-table" id="ordersTable">
+          <thead>
+            <tr>
+              <th class="col-id">Id</th>
+              <th class="col-item">Item</th>
+              <th class="col-name">Item Name</th>
+              <th class="col-qty">Quantity</th>
+              <th class="col-price">Price</th>
+              <th class="col-currency">Currency</th>
+              <th class="col-action" aria-label="Actions"></th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <!-- Dynamically populated from List<Order> orders -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer matching the exam screenshot -->
+      <footer class="page-footer">
+        Số 8, Tôn Thất Thuyết, Cầu giấy, Hà Nội
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
